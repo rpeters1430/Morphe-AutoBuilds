@@ -3,7 +3,7 @@
     "name": "busuu-learn-languages",
     "type": "APK", 
     "arch": "universal",
-    "dpi": "nodpi",
+    "dpi": "120",
     "package" : "com.busuu.android.enc",
     "version" : ""
 }
