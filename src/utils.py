@@ -150,6 +150,17 @@ def normalize_version(version: str) -> list[int]:
             normalized.append(int(match.group(1)))
         else:
             normalized.append(0)
+    
+    # Include build number in comparison for versions like "6.6 build 002"
+    build_match = re.search(r'build\s+(\d+)', version, re.IGNORECASE)
+    if build_match:
+        normalized.append(int(build_match.group(1)))
+    
+    # Also check for parentheses format like "32.30.0(1575420)"
+    paren_match = re.search(r'\((\d+)\)$', version)
+    if paren_match:
+        normalized.append(int(paren_match.group(1)))
+    
     return normalized
 
 def get_highest_version(versions: list[str]) -> str | None:
@@ -189,6 +200,7 @@ def get_supported_version(package_name: str, cli: str, patches: str) -> Optional
         logging.warning("No supported versions found")
         return None
 
+    logging.info(f"CLI returned versions: {versions}")
     return get_highest_version(versions)
 
 def extract_filename(response, fallback_url=None) -> str:
