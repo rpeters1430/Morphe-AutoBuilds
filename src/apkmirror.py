@@ -6,6 +6,26 @@ from src import session
 
 base_url = "https://www.apkmirror.com"
 
+def get_build_number_for_version(version: str, config: dict) -> str | None:
+    """Fetch build number for a specific version from APKMirror"""
+    try:
+        main_url = f"{base_url}/apk/{config['org']}/{config['name']}/"
+        response = session.get(main_url)
+        if response.status_code == 200:
+            soup = BeautifulSoup(response.content, "html.parser")
+            # Find all version links
+            for link in soup.find_all('a', href=True):
+                href = link['href']
+                text = link.get_text()
+                # Check if this link is for our version with build number
+                if version in text and '(' in text:
+                    build_match = re.search(rf'{re.escape(version)}\((\d+)\)', text)
+                    if build_match:
+                        return build_match.group(1)
+    except Exception as e:
+        logging.debug(f"Could not fetch build number: {e}")
+    return None
+
 def get_download_link(version: str, app_name: str, config: dict, arch: str = None) -> str: 
     target_arch = arch if arch else config.get('arch', 'universal')
     
@@ -18,6 +38,11 @@ def get_download_link(version: str, app_name: str, config: dict, arch: str = Non
     if build_match:
         build_number = build_match.group(1)
         version = version[:build_match.start()]
+    else:
+        # Try to fetch build number from APKMirror for this version
+        build_number = get_build_number_for_version(version, config)
+        if build_number:
+            logging.info(f"Found build number {build_number} for version {version}")
     
     version_parts = version.split('.')
     found_soup = None
