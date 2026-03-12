@@ -144,9 +144,8 @@ def get_download_link(version: str, app_name: str, config: dict, arch: str = Non
                     # Check in page text
                     for check in version_checks:
                         if check and check in page_text:
-                            # Additional check: make sure it's not just in a list of other versions
-                            # Look for the version in a context that suggests it's the main version
-                            if check == version or check == version.replace('.', '-'):
+                            # Accept version match if it's the base version or includes build info
+                            if check == version or check == version.replace('.', '-') or check == current_ver_str:
                                 is_correct_page = True
                                 break
                     
@@ -184,6 +183,7 @@ def get_download_link(version: str, app_name: str, config: dict, arch: str = Non
                         continue
                         
                 elif response.status_code == 404:
+                    logging.info(f"URL not found (404): {url}")
                     continue
                 else:
                     logging.warning(f"URL {url} returned status {response.status_code}")
