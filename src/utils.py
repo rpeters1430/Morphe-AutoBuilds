@@ -173,12 +173,27 @@ def get_highest_version(versions: list[str]) -> str | None:
     return highest_version
 
 def get_supported_version(package_name: str, cli: str, patches: str) -> Optional[str]:
-    output = run_process([
-        'java', '-jar', cli,
-        'list-versions',
-        '-p', patches, '-b',
-        '-f', package_name
-    ], capture=True, silent=True, check=False)
+    # Morphe CLI and ReVanced CLI have different list-versions syntax
+    is_morphe_cli = 'morphe' in Path(cli).name.lower()
+
+    if is_morphe_cli:
+        # Morphe CLI: positional patches arg, no -p or -b flags
+        cmd = [
+            'java', '-jar', cli,
+            'list-versions',
+            '-f', package_name,
+            patches
+        ]
+    else:
+        # ReVanced CLI v6: requires -p flag and -b (bypass verification)
+        cmd = [
+            'java', '-jar', cli,
+            'list-versions',
+            '-p', patches, '-b',
+            '-f', package_name
+        ]
+
+    output = run_process(cmd, capture=True, silent=True, check=False)
 
     if not output:
         logging.warning("No output returned from list-versions command")
