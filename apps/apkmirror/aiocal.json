@@ -5,6 +5,6 @@
     "type": "BUNDLE", 
     "arch": "universal",
     "dpi": "120-640dpi",
-    "package" : "com.busuu.android.enc",
+    "package" : "all.in.one.calculator",
     "version" : ""
 }
