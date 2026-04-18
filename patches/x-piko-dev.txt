@@ -1,1 +1,2 @@
 - Add ability to copy media link
+- Change app icon
