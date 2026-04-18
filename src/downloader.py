@@ -1,5 +1,6 @@
 import json
 import logging
+import time
 from pathlib import Path
 from src import (
     utils,
@@ -10,34 +11,96 @@ from src import (
     apkmirror
 )
 
-def download_resource(url: str, name: str = None) -> Path:
-    res = session.get(url, stream=True)
-    res.raise_for_status()
-    final_url = res.url
+def _is_retryable_download_error(error: Exception) -> bool:
+    response = getattr(error, "response", None)
+    status_code = getattr(response, "status_code", None)
+    if status_code in (408, 425, 429, 500, 502, 503, 504):
+        return True
 
-    if not name:
-        name = utils.extract_filename(res, fallback_url=final_url)
-
-    filepath = Path(name)
-    total_size = int(res.headers.get('content-length', 0))
-    downloaded_size = 0
-
-    with filepath.open("wb") as file:
-        for chunk in res.iter_content(chunk_size=8192):
-            if chunk:
-                file.write(chunk)
-                downloaded_size += len(chunk)
-
-    logging.info(
-        f"URL: {final_url} [{downloaded_size}/{total_size}] -> \"{filepath}\" [1]"
+    message = str(error).lower()
+    retryable_markers = (
+        "http error 408",
+        "http error 429",
+        "http error 500",
+        "http error 502",
+        "http error 503",
+        "http error 504",
+        "timed out",
+        "timeout",
+        "connection reset",
+        "connection aborted",
+        "temporarily unavailable",
+        "network is unreachable",
     )
+    return any(marker in message for marker in retryable_markers)
 
-    return filepath
 
-def download_required(source: str) -> tuple[list[Path], str]:
+def download_resource(url: str, name: str = None) -> Path:
+    max_attempts = 4
+    temp_path: Path | None = None
+
+    for attempt in range(1, max_attempts + 1):
+        try:
+            with session.get(url, stream=True, timeout=180) as res:
+                res.raise_for_status()
+                final_url = res.url
+
+                resolved_name = name or utils.extract_filename(res, fallback_url=final_url)
+                filepath = Path(resolved_name)
+                temp_path = filepath.with_suffix(f"{filepath.suffix}.part")
+                total_size = int(res.headers.get("content-length", 0))
+                downloaded_size = 0
+
+                with temp_path.open("wb") as file:
+                    for chunk in res.iter_content(chunk_size=8192):
+                        if chunk:
+                            file.write(chunk)
+                            downloaded_size += len(chunk)
+
+                temp_path.replace(filepath)
+                logging.info(
+                    f"URL: {final_url} [{downloaded_size}/{total_size}] -> \"{filepath}\" [{attempt}]"
+                )
+                return filepath
+        except Exception as e:
+            if temp_path and temp_path.exists():
+                temp_path.unlink(missing_ok=True)
+
+            if attempt < max_attempts and _is_retryable_download_error(e):
+                wait_seconds = attempt * 5
+                logging.warning(
+                    f"Download attempt {attempt}/{max_attempts} failed for {url}: {e}. "
+                    f"Retrying in {wait_seconds}s."
+                )
+                time.sleep(wait_seconds)
+                continue
+            raise
+
+def load_source_config(source: str) -> dict | list:
     source_path = Path("sources") / f"{source}.json"
     with source_path.open() as json_file:
-        repos_info = json.load(json_file)
+        return json.load(json_file)
+
+def describe_source(source: str) -> str:
+    try:
+        source_config = load_source_config(source)
+    except FileNotFoundError:
+        return "Unknown source"
+
+    if isinstance(source_config, dict) and "bundle_url" in source_config:
+        return "Bundle source"
+
+    repo_names = {item.get("repo", "").lower() for item in source_config[1:]}
+    if "morphe-cli" in repo_names or "morphe-patches" in repo_names:
+        return "Morphe patches"
+    if "revanced-cli" in repo_names or "revanced-patches" in repo_names:
+        return "ReVanced patches"
+
+    first_name = str(source_config[0].get("name", source)).strip()
+    return first_name
+
+def download_required(source: str) -> tuple[list[Path], str]:
+    repos_info = load_source_config(source)
 
     # Handle bundle format
     if isinstance(repos_info, dict) and "bundle_url" in repos_info:
@@ -139,13 +202,23 @@ def download_platform(app_name: str, platform: str, cli: str, patches: str, arch
         version = config.get("version") or utils.get_supported_version(config['package'], cli, patches)
         platform_module = globals()[platform]
         version = version or platform_module.get_latest_version(app_name, config)
-        
+        if not version:
+            logging.warning(f"{platform}: could not determine a compatible version for {app_name}")
+            return None, None
+
         download_link = platform_module.get_download_link(version, app_name, config)
+        if not download_link:
+            logging.warning(f"{platform}: no download link found for {app_name} {version}")
+            return None, version
+
         filepath = download_resource(download_link)
         return filepath, version 
 
+    except FileNotFoundError:
+        logging.info(f"{platform}: no config for {app_name}, skipping")
+        return None, None
     except Exception as e:
-        logging.error(f"Unexpected error: {e}")
+        logging.warning(f"{platform}: failed for {app_name}: {e}")
         return None, None
 
 # Update the specific download functions
