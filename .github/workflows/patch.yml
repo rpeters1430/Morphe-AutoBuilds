@@ -97,6 +97,9 @@ jobs:
       - name: Build Target
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          APP_NAME: ${{ matrix.app_name }}
+          SOURCE: ${{ matrix.source }}
+          ARCH: ${{ matrix.arch }}
         run: |
           echo "Building app=${{ matrix.app_name }} source=${{ matrix.source }} arch=${{ matrix.arch }}"
           python -m src "${{ matrix.app_name }}" --source "${{ matrix.source }}" --arch "${{ matrix.arch }}"
