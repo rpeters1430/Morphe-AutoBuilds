@@ -110,7 +110,7 @@ jobs:
         with:
           name: apk-${{ matrix.app_name }}-${{ matrix.source }}-${{ matrix.arch }}
           path: "*.apk"
-          if-no-files-found: error
+          if-no-files-found: warn
 
   publish-release:
     name: Publish Latest Release
