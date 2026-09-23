@@ -1,4 +1,3 @@
-import json
 import logging
 import re
 import os
@@ -11,7 +10,8 @@ from src import (
     r2,
     utils,
     release,
-    downloader
+    downloader,
+    build_config,
 )
 
 def _should_retry_with_older_version(output: str | None) -> bool:
@@ -27,9 +27,16 @@ def _should_retry_with_older_version(output: str | None) -> bool:
         or "patching aborted" in t
     )
 
-def run_build(app_name: str, source: str, arch: str = "universal") -> str:
+def run_build(app_name: str, source: str, arch: str = "universal", settings: dict | None = None) -> str:
     """Build APK for specific architecture"""
-    download_files, name = downloader.download_required(source)
+    settings = settings or build_config.get_entry(app_name, source)
+    experimental = settings["experimental"]
+    force = settings["force"]
+    pinned_version = settings["version"] or None
+
+    download_files, name = downloader.download_required(
+        source, settings["patches_channel"], settings["cli_channel"]
+    )
 
     # Log downloaded files for debugging
     logging.info(f"📦 Downloaded {len(download_files)} files for {source}:")
@@ -116,7 +123,10 @@ def run_build(app_name: str, source: str, arch: str = "universal") -> str:
     candidates: list[str] = []
     used_method = None
     for method in download_methods:
-        input_apk, version, candidates = method(app_name, str(cli), str(patches), arch)
+        input_apk, version, candidates = method(
+            app_name, str(cli), str(patches), arch,
+            override_version=pinned_version, experimental=experimental, force=force,
+        )
         if input_apk:
             used_method = method
             break
@@ -133,18 +143,10 @@ def run_build(app_name: str, source: str, arch: str = "universal") -> str:
     if candidates and version in candidates:
         versions_to_try += [v for v in candidates if v != version]
 
-    exclude_patches = []
-    include_patches = []
-
-    patches_path = Path("patches") / f"{app_name}-{source}.txt"
-    if patches_path.exists():
-        with patches_path.open('r') as patches_file:
-            for line in patches_file:
-                line = line.strip()
-                if line.startswith('-'):
-                    exclude_patches.extend(["-d", line[1:].strip()])
-                elif line.startswith('+'):
-                    include_patches.extend(["-e", line[1:].strip()])
+    include_names, exclude_names = build_config.patch_selection(settings)
+    include_patches = [arg for p in include_names for arg in ("-e", p)]
+    exclude_patches = [arg for p in exclude_names for arg in ("-d", p)]
+    force_args = ["--force"] if force else []
 
     for attempt_idx, ver in enumerate(versions_to_try):
         if attempt_idx > 0:
@@ -157,7 +159,10 @@ def run_build(app_name: str, source: str, arch: str = "universal") -> str:
             except Exception:
                 pass
 
-            input_apk, version, _ = used_method(app_name, str(cli), str(patches), arch, override_version=ver)
+            input_apk, version, _ = used_method(
+                app_name, str(cli), str(patches), arch,
+                override_version=ver, experimental=experimental, force=force,
+            )
             if input_apk is None:
                 continue
             version = ver
@@ -265,7 +270,7 @@ def run_build(app_name: str, source: str, arch: str = "universal") -> str:
                     "java", "-jar", str(cli),
                     "patch", "--patches", str(patches),
                     "--out", str(output_apk), str(input_apk),
-                    *exclude_patches, *include_patches
+                    *exclude_patches, *include_patches, *force_args
                 ]
                 utils.run_process(morphe_cmd, capture=True, stream=True)
             else:
@@ -280,14 +285,14 @@ def run_build(app_name: str, source: str, arch: str = "universal") -> str:
                         "java", "-jar", str(cli),
                         "patch", "-p", str(patches), "-b",
                         "--out", str(output_apk), str(input_apk),
-                        *exclude_patches, *include_patches
+                        *exclude_patches, *include_patches, *force_args
                     ], capture=True, stream=True)
                 else:
                     utils.run_process([
                         "java", "-jar", str(cli),
                         "patch", "--patches", str(patches),
                         "--out", str(output_apk), str(input_apk),
-                        *exclude_patches, *include_patches
+                        *exclude_patches, *include_patches, *force_args
                     ], capture=True, stream=True)
 
         except subprocess.CalledProcessError as e:
@@ -346,39 +351,28 @@ def main():
         logging.error("APP_NAME and SOURCE environment variables must be set")
         exit(1)
 
-    # Read arch-config.json
-    arch_config_path = Path("arch-config.json")
-    if arch_config_path.exists():
-        with open(arch_config_path) as f:
-            arch_config = json.load(f)
-        
-        # Find arches for this app
-        arches = [(getenv("ARCH") or "universal").strip()]
-        for config in arch_config:
-            if not getenv("ARCH") and config["app_name"] == app_name and config["source"] == source:
-                arches = config["arches"]
-                break
-        
-        # Build for each architecture
-        built_apks = []
-        for arch in arches:
-            logging.info(f"🔨 Building {app_name} for {arch} architecture...")
-            apk_path = run_build(app_name, source, arch)
-            if apk_path:
-                built_apks.append(apk_path)
-                print(f"✅ Built {arch} version: {Path(apk_path).name}")
-        
-        # Summary
-        print(f"\n🎯 Built {len(built_apks)} APK(s) for {app_name}:")
-        for apk in built_apks:
-            print(f"  📱 {Path(apk).name}")
-        
-    else:
-        # Fallback to single universal build
-        logging.warning("arch-config.json not found, building universal only")
-        apk_path = run_build(app_name, source, "universal")
+    settings = build_config.get_entry(app_name, source)
+    logging.info(
+        f"⚙️  {app_name}/{source}: patches={settings['patches_channel']} "
+        f"cli={settings['cli_channel']} experimental={settings['experimental']} "
+        f"force={settings['force']} version={settings['version'] or 'auto'}"
+    )
+
+    # An explicit ARCH (manual runs) wins over the configured arches.
+    env_arch = (getenv("ARCH") or "").strip()
+    arches = [env_arch] if env_arch else settings["arches"]
+
+    built_apks = []
+    for arch in arches:
+        logging.info(f"🔨 Building {app_name} for {arch} architecture...")
+        apk_path = run_build(app_name, source, arch, settings)
         if apk_path:
-            print(f"🎯 Final APK path: {apk_path}")
+            built_apks.append(apk_path)
+            print(f"✅ Built {arch} version: {Path(apk_path).name}")
+
+    print(f"\n🎯 Built {len(built_apks)} APK(s) for {app_name}:")
+    for apk in built_apks:
+        print(f"  📱 {Path(apk).name}")
 
 if __name__ == "__main__":
     main()

@@ -196,7 +196,9 @@ def get_highest_version(versions: list[str]) -> str | None:
             highest_version = v
     return highest_version
 
-def get_supported_versions(package_name: str, cli: str, patches: str) -> list[str]:
+def get_supported_versions(
+    package_name: str, cli: str, patches: str, include_experimental: bool = False
+) -> list[str]:
     # Morphe CLI and ReVanced CLI have different list-versions syntax
     cli_name = Path(cli).name.lower()
     is_morphe_cli = 'morphe' in cli_name
@@ -215,6 +217,10 @@ def get_supported_versions(package_name: str, cli: str, patches: str) -> list[st
             '-f', package_name,
             '--patches', patches
         ]
+        if include_experimental:
+            # Morphe marks some supported app versions as experimental and hides
+            # them from list-versions unless asked.
+            cmd.append('--include-experimental')
     elif is_revanced_v6_or_newer:
         cmd = [
             'java', '-jar', cli,
@@ -231,9 +237,18 @@ def get_supported_versions(package_name: str, cli: str, patches: str) -> list[st
             patches
         ]
 
+    if include_experimental and not is_morphe_cli:
+        logging.info("'experimental' only applies to Morphe patches; ignoring it for this CLI")
+
     # We want the raw output even if the CLI returns a non-zero exit code (bad
     # args, missing patches, etc.) so we can decide what to do.
     output = run_process(cmd, capture=True, silent=True, check=False)
+
+    # Older Morphe CLIs don't know --include-experimental; retry without it.
+    if '--include-experimental' in cmd and output and 'unknown option' in output.lower():
+        logging.warning("This Morphe CLI doesn't support --include-experimental; listing stable versions only")
+        cmd.remove('--include-experimental')
+        output = run_process(cmd, capture=True, silent=True, check=False)
 
     if not output:
         logging.warning("No output returned from list-versions command")
@@ -278,7 +293,8 @@ def get_supported_versions(package_name: str, cli: str, patches: str) -> list[st
                 "list-patches",
                 "--with-packages",
                 "--with-versions",
-                patches,
+                *(["--include-experimental"] if include_experimental else []),
+                "--patches", patches,
             ]
             alt_out = run_process(alt_cmd, capture=True, silent=True, check=False) or ""
             derived: list[str] = []
