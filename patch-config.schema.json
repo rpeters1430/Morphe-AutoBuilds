@@ -65,5 +65,6 @@
       }
     }
   },
-  "required": ["patch_list"]
+  "required": ["patch_list"],
+  "additionalProperties": false
 }

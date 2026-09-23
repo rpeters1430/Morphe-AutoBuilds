@@ -36,6 +36,7 @@ FIELD_TYPES = {
     "exclude_patches": list,
 }
 DEFAULTS_FIELDS = set(FIELD_TYPES) - {"app_name", "source"}
+ROOT_FIELDS = {"defaults", "patch_list"}
 CHANNEL_NAMES = set(build_config.CHANNEL_TAGS) | {build_config.SOURCE_CHANNEL}
 
 
@@ -65,6 +66,18 @@ def main() -> int:
     warnings: list[str] = []
 
     raw = build_config.load_raw_config()
+    if not isinstance(raw, dict):
+        errors.append("top level must be an object with a 'patch_list' array")
+        raw = {}
+    for key in raw:
+        if key not in ROOT_FIELDS and not key.startswith(("$", "_")):
+            errors.append(f"unknown top-level field '{key}' (expected one of {sorted(ROOT_FIELDS)})")
+    if not isinstance(raw.get("patch_list"), list):
+        errors.append("'patch_list' is missing or not an array")
+        raw["patch_list"] = []
+    if not isinstance(raw.get("defaults", {}), dict):
+        errors.append("'defaults' must be an object")
+        raw["defaults"] = {}
     check_fields("defaults", raw.get("defaults") or {}, DEFAULTS_FIELDS, errors)
 
     sources = {f.stem for f in SOURCES_DIR.glob("*.json")}
@@ -92,7 +105,8 @@ def main() -> int:
             warnings.append(f"{where}: duplicate entry; only the first one is used")
         seen.add((app, src))
 
-    merged = build_config.iter_entries(include_disabled=True)
+    # Merging needs a well-formed file; skip the summary if it isn't.
+    merged = [] if errors else build_config.iter_entries(include_disabled=True)
     enabled = [e for e in merged if e["enabled"]]
     channels = {}
     for e in enabled:

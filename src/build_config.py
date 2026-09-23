@@ -33,6 +33,7 @@ Manual runs can override a single build via env vars: PATCHES_CHANNEL,
 CLI_CHANNEL, EXPERIMENTAL, FORCE_PATCH, APP_VERSION (empty or "default" = no
 override).
 """
+import hashlib
 import json
 import logging
 import os
@@ -194,8 +195,8 @@ def apply_channels(repo_entries: list, patches_channel: str, cli_channel: str) -
 
 def build_options_signature(entry: dict) -> str:
     """Short string of the settings that change the build output without
-    changing the patch source release. Empty for default settings so existing
-    manifests stay valid."""
+    changing the patch source release, including the +/- rules in
+    patches/<app>-<source>.txt. Empty when none are set."""
     parts = []
     if entry.get("experimental"):
         parts.append("exp")
@@ -205,6 +206,15 @@ def build_options_signature(entry: dict) -> str:
         parts.append("inc=" + ",".join(sorted(entry["include_patches"])))
     if entry.get("exclude_patches"):
         parts.append("exc=" + ",".join(sorted(entry["exclude_patches"])))
+    rules_file = PATCHES_DIR / f"{entry.get('app_name')}-{entry.get('source')}.txt"
+    if rules_file.exists():
+        rules = [
+            line.strip() for line in rules_file.read_text(encoding="utf-8").splitlines()
+            if line.strip().startswith(("+", "-"))
+        ]
+        if rules:
+            digest = hashlib.sha256("\n".join(rules).encode()).hexdigest()[:12]
+            parts.append(f"rules={digest}")
     return "|opts:" + ";".join(parts) if parts else ""
 
 

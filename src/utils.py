@@ -373,7 +373,10 @@ def fetch_json(url: str, headers: dict | None = None) -> dict | list:
 
 def normalize_source_entry(entry: dict) -> dict:
     provider = (entry.get("provider") or "github").lower().strip()
-    tag = (entry.get("tag") or "latest").strip() or "latest"
+    # An omitted tag means "latest"; an explicit "" means the newest release of
+    # any kind (prereleases included), so keep it.
+    tag = entry.get("tag")
+    tag = "latest" if tag is None else str(tag).strip()
 
     if provider in ("github", "codeberg"):
         user = (entry.get("user") or "").strip()
@@ -440,6 +443,19 @@ def detect_release(entry: dict) -> dict:
     raise ValueError(f"Unsupported source provider: {provider}")
 
 
+def pick_release_from_list(releases: list, tag: str) -> dict:
+    """Pick the release a list-style tag asks for from a newest-first list:
+    "" = newest of any kind, "dev" = newest whose tag contains "dev",
+    "prerelease" = newest prerelease (GitLab calls these upcoming releases)."""
+    if tag == "dev":
+        releases = [r for r in releases if "dev" in (r.get("tag_name") or "").lower()]
+    elif tag == "prerelease":
+        releases = [r for r in releases if r.get("prerelease") or r.get("upcoming_release")]
+    if not releases:
+        raise ValueError(f"No release matching '{tag or 'any'}' found")
+    return releases[0]
+
+
 def detect_gitlab_release(project: str, tag: str) -> dict:
     encoded = quote(project, safe="")
     if tag == "latest":
@@ -448,7 +464,7 @@ def detect_gitlab_release(project: str, tag: str) -> dict:
         releases = fetch_json(f"https://gitlab.com/api/v4/projects/{encoded}/releases")
         if not isinstance(releases, list) or not releases:
             raise ValueError(f"No releases found for GitLab project {project}")
-        data = releases[0]
+        data = pick_release_from_list(releases, tag)
     else:
         data = fetch_json(f"https://gitlab.com/api/v4/projects/{encoded}/releases/{quote(tag, safe='')}")
 
@@ -466,7 +482,7 @@ def detect_codeberg_release(user: str, repo: str, tag: str) -> dict:
         releases = fetch_json(base)
         if not isinstance(releases, list) or not releases:
             raise ValueError(f"No releases found for Codeberg repo {user}/{repo}")
-        data = releases[0]
+        data = pick_release_from_list(releases, tag)
     else:
         data = fetch_json(f"{base}/tags/{quote(tag, safe='')}")
 

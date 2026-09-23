@@ -373,7 +373,7 @@ def _fetch_gitlab_signature(project: str, tag: str) -> str:
 
     data = provider_utils.fetch_json(api)
     if isinstance(data, list):
-        data = data[0] if data else {}
+        data = provider_utils.pick_release_from_list(data, tag)
     tag_name = data.get("tag_name") or "?"
     published = data.get("released_at") or data.get("created_at") or "?"
     return f"{tag_name}@{published}"
@@ -390,6 +390,8 @@ def _fetch_codeberg_signature(user: str, repo: str, tag: str) -> str:
         api = f"{base}/tags/{quote(tag, safe='')}"
 
     data = provider_utils.fetch_json(api)
+    if isinstance(data, list):
+        data = provider_utils.pick_release_from_list(data, tag)
     tag_name = data.get("tag_name") or "?"
     published = data.get("published_at") or "?"
     return f"{tag_name}@{published}"
