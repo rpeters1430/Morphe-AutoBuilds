@@ -1,4 +1,10 @@
 {
+  "$schema": "./patch-config.schema.json",
+  "defaults": {
+    "patches_channel": "source",
+    "cli_channel": "source",
+    "experimental": false
+  },
   "patch_list": [
     { "app_name": "tiktok", "source": "icysymmetra"},
     { "app_name": "youtube", "source": "morphe" },
@@ -21,7 +27,6 @@
     { "app_name": "xrecorder", "source": "Hoo" },
     { "app_name": "google-photos", "source": "rookie" },
     { "app_name": "disney-plus", "source": "rookie" },
-    { "app_name": "pinterest", "source": "adobo" },
     { "app_name": "duolingo", "source": "Hoo" },
     { "app_name": "google-news", "source": "rookie" },
     { "app_name": "messenger", "source": "rookie" },

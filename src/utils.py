@@ -196,7 +196,9 @@ def get_highest_version(versions: list[str]) -> str | None:
             highest_version = v
     return highest_version
 
-def get_supported_versions(package_name: str, cli: str, patches: str) -> list[str]:
+def get_supported_versions(
+    package_name: str, cli: str, patches: str, include_experimental: bool = False
+) -> list[str]:
     # Morphe CLI and ReVanced CLI have different list-versions syntax
     cli_name = Path(cli).name.lower()
     is_morphe_cli = 'morphe' in cli_name
@@ -215,6 +217,10 @@ def get_supported_versions(package_name: str, cli: str, patches: str) -> list[st
             '-f', package_name,
             '--patches', patches
         ]
+        if include_experimental:
+            # Morphe marks some supported app versions as experimental and hides
+            # them from list-versions unless asked.
+            cmd.append('--include-experimental')
     elif is_revanced_v6_or_newer:
         cmd = [
             'java', '-jar', cli,
@@ -231,9 +237,19 @@ def get_supported_versions(package_name: str, cli: str, patches: str) -> list[st
             patches
         ]
 
+    if include_experimental and not is_morphe_cli:
+        logging.info("'experimental' only applies to Morphe patches; ignoring it for this CLI")
+
     # We want the raw output even if the CLI returns a non-zero exit code (bad
     # args, missing patches, etc.) so we can decide what to do.
     output = run_process(cmd, capture=True, silent=True, check=False)
+
+    # Older Morphe CLIs don't know --include-experimental; retry without it.
+    if '--include-experimental' in cmd and output and 'unknown option' in output.lower():
+        logging.warning("This Morphe CLI doesn't support --include-experimental; listing stable versions only")
+        cmd.remove('--include-experimental')
+        include_experimental = False  # so the list-patches fallback doesn't pass it either
+        output = run_process(cmd, capture=True, silent=True, check=False)
 
     if not output:
         logging.warning("No output returned from list-versions command")
@@ -278,7 +294,8 @@ def get_supported_versions(package_name: str, cli: str, patches: str) -> list[st
                 "list-patches",
                 "--with-packages",
                 "--with-versions",
-                patches,
+                *(["--include-experimental"] if include_experimental else []),
+                "--patches", patches,
             ]
             alt_out = run_process(alt_cmd, capture=True, silent=True, check=False) or ""
             derived: list[str] = []
@@ -357,7 +374,10 @@ def fetch_json(url: str, headers: dict | None = None) -> dict | list:
 
 def normalize_source_entry(entry: dict) -> dict:
     provider = (entry.get("provider") or "github").lower().strip()
-    tag = (entry.get("tag") or "latest").strip() or "latest"
+    # An omitted tag means "latest"; an explicit "" means the newest release of
+    # any kind (prereleases included), so keep it.
+    tag = entry.get("tag")
+    tag = "latest" if tag is None else str(tag).strip()
 
     if provider in ("github", "codeberg"):
         user = (entry.get("user") or "").strip()
@@ -424,6 +444,19 @@ def detect_release(entry: dict) -> dict:
     raise ValueError(f"Unsupported source provider: {provider}")
 
 
+def pick_release_from_list(releases: list, tag: str) -> dict:
+    """Pick the release a list-style tag asks for from a newest-first list:
+    "" = newest of any kind, "dev" = newest whose tag contains "dev",
+    "prerelease" = newest prerelease (GitLab calls these upcoming releases)."""
+    if tag == "dev":
+        releases = [r for r in releases if "dev" in (r.get("tag_name") or "").lower()]
+    elif tag == "prerelease":
+        releases = [r for r in releases if r.get("prerelease") or r.get("upcoming_release")]
+    if not releases:
+        raise ValueError(f"No release matching '{tag or 'any'}' found")
+    return releases[0]
+
+
 def detect_gitlab_release(project: str, tag: str) -> dict:
     encoded = quote(project, safe="")
     if tag == "latest":
@@ -432,7 +465,7 @@ def detect_gitlab_release(project: str, tag: str) -> dict:
         releases = fetch_json(f"https://gitlab.com/api/v4/projects/{encoded}/releases")
         if not isinstance(releases, list) or not releases:
             raise ValueError(f"No releases found for GitLab project {project}")
-        data = releases[0]
+        data = pick_release_from_list(releases, tag)
     else:
         data = fetch_json(f"https://gitlab.com/api/v4/projects/{encoded}/releases/{quote(tag, safe='')}")
 
@@ -450,7 +483,7 @@ def detect_codeberg_release(user: str, repo: str, tag: str) -> dict:
         releases = fetch_json(base)
         if not isinstance(releases, list) or not releases:
             raise ValueError(f"No releases found for Codeberg repo {user}/{repo}")
-        data = releases[0]
+        data = pick_release_from_list(releases, tag)
     else:
         data = fetch_json(f"{base}/tags/{quote(tag, safe='')}")
 

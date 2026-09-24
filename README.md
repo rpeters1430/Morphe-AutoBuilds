@@ -89,8 +89,9 @@ revanced-nonroot/
 ├── patches/                # Patch inclusion/exclusion rules
 ├── sources/                # ReVanced tool source definitions
 ├── src/                    # Core Python build logic
-├── arch-config.json        # Architecture build matrix
-├── patch-config.json       # App build configuration
+├── arch-config.json        # Architecture build matrix (optional)
+├── patch-config.json       # App build configuration (apps, patch system, channels)
+├── patch-config.schema.json # Editor autocomplete/validation for patch-config.json
 └── requirements.txt        # Project dependencies
 
 ```
@@ -103,30 +104,62 @@ This builder is highly configurable. You can adjust the following files to custo
 
 ### 1. App Selection (`patch-config.json`)
 
-Define which applications the pipeline should attempt to build.
+Each entry picks an app and the **patch system** (`source`, a file in `sources/`) to build it with. Everything else is optional:
 
 ```json
 {
+  "$schema": "./patch-config.schema.json",
+  "defaults": {
+    "patches_channel": "stable",
+    "experimental": false
+  },
   "patch_list": [
     { "app_name": "youtube", "source": "morphe" },
-    { "app_name": "youtube-music", "source": "morphe" },
-    { "app_name": "X", "source": "crimera" }
+    { "app_name": "youtube-music", "source": "morphe", "patches_channel": "prerelease" },
+    { "app_name": "reddit", "source": "morphe", "experimental": true, "arches": ["arm64-v8a"] },
+    { "app_name": "instagram", "source": "piko", "exclude_patches": ["Hide ads"] },
+    { "app_name": "tiktok", "source": "icysymmetra", "enabled": false }
   ]
 }
-
 ```
+
+| Field | Default | What it does |
+| :--- | :--- | :--- |
+| `app_name` | required | App config name in `apps/<platform>/<app_name>.json`. |
+| `source` | required | Patch system to use: `sources/<source>.json` (e.g. `morphe`, `piko`, `revanced`). |
+| `enabled` | `true` | `false` skips the app without deleting its entry. |
+| `patches_channel` | `source` | Which patches release to use: `stable`, `prerelease`, `dev`, `source`, or an exact tag like `v1.4.0`. |
+| `cli_channel` | `source` | Same channels, for the patcher CLI. |
+| `experimental` | `false` | Morphe only: also consider app versions the patches mark as *experimental*, so you get newer app versions sooner. |
+| `force` | `false` | Patch the newest store version even if the patches don't list it as compatible (`--force`). May break the app. |
+| `version` | `""` | Pin the app version. Empty picks the newest compatible one. |
+| `arches` | from `arch-config.json`, else `["universal"]` | Any of `arm64-v8a`, `armeabi-v7a`, `universal`. |
+| `include_patches` / `exclude_patches` | `[]` | Patch names to enable/disable, added to `patches/<app>-<source>.txt`. |
+
+**Channels:**
+* `stable`: newest normal (non-prerelease) release.
+* `prerelease`: newest release of any kind, so you get pre-releases as soon as they are published.
+* `dev`: newest release whose tag contains `dev`.
+* `source`: keep the `tag` written in `sources/<source>.json` (the behaviour before these options existed).
+
+Settings in `defaults` apply to every entry, and entries can override them. That lets you switch every app to pre-releases in one place and keep a few on stable. Channels apply to GitHub, GitLab and Codeberg sources; bundle sources (`bundle_url`) ignore them.
+
+Changing a channel, `experimental`, `force` or the patch lists makes the next daily run rebuild that app. Other apps are left alone.
+
+**Check your config** before pushing (also runs at the start of every daily build):
+
+```bash
+python scripts/validate_config.py
+```
+
+Editors that support JSON Schema (VS Code, JetBrains) autocomplete and check `patch-config.json` through its `$schema` line.
 
 ### 2. Architecture Matrix (`arch-config.json`)
 
-Specify which CPU architectures to target for each application.
+Optional. Sets architectures per app when the entry in `patch-config.json` has no `arches` field.
 
 ```json
 [
-  {
-    "app_name": "youtube",
-    "source": "morphe",
-    "arches": ["arm64-v8a", "armeabi-v7a", "universal"]
-  },
   {
     "app_name": "youtube-music",
     "source": "morphe",
@@ -219,6 +252,17 @@ python -m src
 
 ```
 
+5. **Override settings for one build (Optional):**
+```bash
+export PATCHES_CHANNEL="prerelease"  # stable | prerelease | dev | <tag>
+export CLI_CHANNEL="stable"
+export EXPERIMENTAL="true"
+export FORCE_PATCH="false"
+export APP_VERSION="20.12.46"        # pin a version
+python -m src
+
+```
+
 
 
 ---
@@ -235,10 +279,11 @@ python -m src
 
 * **Trigger:** Manually via the GitHub Actions "Run workflow" button.
 * **Capabilities:**
-* Target specific apps.
-* Target specific architectures.
-* Force specific APK versions.
-* Option to update the public release or just build artifacts.
+  * Target specific apps.
+  * Target specific architectures (or `configured` to use the app's configured arches).
+  * Force specific APK versions.
+  * Override the patches channel (`stable` / `prerelease` / `dev`) and the experimental setting for a single run.
+  * Option to update the public release or just build artifacts.
 
 
 

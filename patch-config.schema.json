@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "title": "Morphe AutoBuilds patch-config.json",
+  "description": "Which apps to build, with which patch source, and how. See README 'Configuration Guide'.",
+  "type": "object",
+  "definitions": {
+    "channel": {
+      "type": "string",
+      "description": "Release channel: 'stable' (newest non-prerelease), 'prerelease' (newest release incl. prereleases), 'dev' (newest release whose tag contains 'dev'), 'source' (use the tag in sources/<source>.json), or an exact release tag.",
+      "anyOf": [
+        { "enum": ["stable", "prerelease", "dev", "source"] },
+        { "type": "string", "minLength": 1 }
+      ]
+    },
+    "settings": {
+      "type": "object",
+      "properties": {
+        "enabled": { "type": "boolean", "description": "false skips this app without removing it.", "default": true },
+        "patches_channel": { "$ref": "#/definitions/channel", "default": "source" },
+        "cli_channel": { "$ref": "#/definitions/channel", "default": "source" },
+        "experimental": {
+          "type": "boolean",
+          "description": "Morphe only: also pick app versions the patches mark as experimental.",
+          "default": false
+        },
+        "force": {
+          "type": "boolean",
+          "description": "Patch the newest store version even if the patches don't list it as compatible (--force).",
+          "default": false
+        },
+        "version": { "type": "string", "description": "Pin the app version. Empty = pick automatically.", "default": "" },
+        "arches": {
+          "type": "array",
+          "items": { "enum": ["arm64-v8a", "armeabi-v7a", "universal"] },
+          "minItems": 1,
+          "uniqueItems": true,
+          "description": "Architectures to build. Overrides arch-config.json."
+        },
+        "include_patches": { "type": "array", "items": { "type": "string" }, "description": "Patch names to enable." },
+        "exclude_patches": { "type": "array", "items": { "type": "string" }, "description": "Patch names to disable." }
+      }
+    }
+  },
+  "properties": {
+    "$schema": { "type": "string" },
+    "defaults": {
+      "description": "Settings applied to every entry unless the entry sets them itself.",
+      "allOf": [{ "$ref": "#/definitions/settings" }],
+      "propertyNames": {
+        "enum": ["enabled", "patches_channel", "cli_channel", "experimental", "force", "version", "arches", "include_patches", "exclude_patches"]
+      }
+    },
+    "patch_list": {
+      "type": "array",
+      "items": {
+        "allOf": [{ "$ref": "#/definitions/settings" }],
+        "required": ["app_name", "source"],
+        "properties": {
+          "app_name": { "type": "string", "description": "Name of the apps/<platform>/<app_name>.json config." },
+          "source": { "type": "string", "description": "Patch source (patch system): name of sources/<source>.json." }
+        },
+        "propertyNames": {
+          "enum": ["app_name", "source", "enabled", "patches_channel", "cli_channel", "experimental", "force", "version", "arches", "include_patches", "exclude_patches"]
+        }
+      }
+    }
+  },
+  "required": ["patch_list"],
+  "additionalProperties": false
+}

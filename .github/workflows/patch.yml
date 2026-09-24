@@ -84,6 +84,10 @@ jobs:
           pip install -r requirements.txt
           pip install requests beautifulsoup4
 
+      - name: Validate patch-config.json
+        run: |
+          python scripts/validate_config.py
+
       - name: Run Incremental Update Check
         id: check
         env:
@@ -129,7 +133,7 @@ jobs:
           MATRIX='${{ needs.check-updates.outputs.build_matrix }}'
           if [ -z "$MATRIX" ] || [ "$MATRIX" = "null" ]; then
             echo "Empty matrix from check; falling back to full patch-config.json"
-            MATRIX=$(jq -c '.patch_list' patch-config.json)
+            MATRIX=$(jq -c '[.patch_list[] | select(.enabled != false) | {app_name, source}] | unique' patch-config.json)
           fi
           echo "matrix=$MATRIX" >> "$GITHUB_OUTPUT"
           echo "Matrix: $MATRIX" | head -c 1000

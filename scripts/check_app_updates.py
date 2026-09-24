@@ -41,7 +41,6 @@ logging.basicConfig(
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 PATCH_CONFIG = REPO_ROOT / "patch-config.json"
-ARCH_CONFIG = REPO_ROOT / "arch-config.json"
 SOURCES_DIR = REPO_ROOT / "sources"
 APPS_DIR = REPO_ROOT / "apps"
 
@@ -83,22 +82,6 @@ def run_gh(args: List[str], timeout: int = 120) -> Tuple[int, str, str]:
         return 127, "", "gh CLI not found"
     except Exception as e:
         return 1, "", f"{e}"
-
-
-def load_patch_config() -> List[dict]:
-    with PATCH_CONFIG.open("r", encoding="utf-8") as f:
-        return json.load(f).get("patch_list", [])
-
-
-def load_arch_config() -> Dict[Tuple[str, str], List[str]]:
-    if not ARCH_CONFIG.exists():
-        return {}
-    with ARCH_CONFIG.open("r", encoding="utf-8") as f:
-        data = json.load(f)
-    return {
-        (e["app_name"], e["source"]): e.get("arches", ["universal"])
-        for e in data
-    }
 
 
 def load_app_config_version(app_name: str) -> str:
@@ -187,6 +170,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from src import utils as provider_utils
+from src import build_config
 from record_build import extract_version_from_filename
 
 _repo_sig_cache: Dict[Tuple[str, str, str, str], str] = {}
@@ -389,7 +373,7 @@ def _fetch_gitlab_signature(project: str, tag: str) -> str:
 
     data = provider_utils.fetch_json(api)
     if isinstance(data, list):
-        data = data[0] if data else {}
+        data = provider_utils.pick_release_from_list(data, tag)
     tag_name = data.get("tag_name") or "?"
     published = data.get("released_at") or data.get("created_at") or "?"
     return f"{tag_name}@{published}"
@@ -406,6 +390,8 @@ def _fetch_codeberg_signature(user: str, repo: str, tag: str) -> str:
         api = f"{base}/tags/{quote(tag, safe='')}"
 
     data = provider_utils.fetch_json(api)
+    if isinstance(data, list):
+        data = provider_utils.pick_release_from_list(data, tag)
     tag_name = data.get("tag_name") or "?"
     published = data.get("published_at") or "?"
     return f"{tag_name}@{published}"
@@ -447,14 +433,38 @@ def _fetch_bundle_signature(bundle_url: str) -> str:
     return f"bundle:{body}" if body else f"bundle:{bundle_url}@empty"
 
 
-_source_sig_cache: Dict[str, str] = {}
+_source_sig_cache: Dict[Tuple[str, str, str], str] = {}
 
 
-def get_source_signature(source: str) -> str:
+def _load_source_entries(source: str, patches_channel: str, cli_channel: str):
+    """sources/<source>.json with the entry's release channels applied, or an
+    error-sentinel string."""
+    src_file = SOURCES_DIR / f"{source}.json"
+    if not src_file.exists():
+        for f in SOURCES_DIR.glob("*.json"):
+            if f.stem.lower() == source.lower():
+                src_file = f
+                break
+    if not src_file.exists():
+        return None
+    try:
+        with src_file.open("r", encoding="utf-8") as f:
+            data = json.load(f)
+    except Exception:
+        return None
+    if isinstance(data, list):
+        data = build_config.apply_channels(data, patches_channel, cli_channel)
+    return data
+
+
+def get_source_signature(source: str,
+                         patches_channel: str = build_config.SOURCE_CHANNEL,
+                         cli_channel: str = build_config.SOURCE_CHANNEL) -> str:
     """Combine release signatures of every repo declared in sources/<source>.json
-    into a single deterministic string."""
-    if source in _source_sig_cache:
-        return _source_sig_cache[source]
+    (on the configured release channels) into a single deterministic string."""
+    ckey = (source, patches_channel, cli_channel)
+    if ckey in _source_sig_cache:
+        return _source_sig_cache[ckey]
 
     src_file = SOURCES_DIR / f"{source}.json"
     if not src_file.exists():
@@ -465,7 +475,7 @@ def get_source_signature(source: str) -> str:
                 break
     if not src_file.exists():
         sig = f"missing-source:{source}"
-        _source_sig_cache[source] = sig
+        _source_sig_cache[ckey] = sig
         return sig
 
     try:
@@ -473,12 +483,15 @@ def get_source_signature(source: str) -> str:
             data = json.load(f)
     except Exception as e:
         sig = f"unparseable:{e}"
-        _source_sig_cache[source] = sig
+        _source_sig_cache[ckey] = sig
         return sig
+
+    if isinstance(data, list):
+        data = build_config.apply_channels(data, patches_channel, cli_channel)
 
     if isinstance(data, dict) and "bundle_url" in data:
         sig = _fetch_bundle_signature(data["bundle_url"])
-        _source_sig_cache[source] = sig
+        _source_sig_cache[ckey] = sig
         return sig
 
     parts: List[str] = []
@@ -512,14 +525,14 @@ def get_source_signature(source: str) -> str:
             # else: metadata-only entry (no repo) -> intentionally skipped.
 
     sig = ";".join(parts) if parts else f"empty:{source}"
-    _source_sig_cache[source] = sig
+    _source_sig_cache[ckey] = sig
     return sig
 
 
 # ---------------------------------------------------------------------------
 # Recommended version: what the builder will actually ship
 # ---------------------------------------------------------------------------
-_recommended_version_cache: Dict[Tuple[str, str], str] = {}
+_recommended_version_cache: Dict[tuple, str] = {}
 
 
 def _download_release_asset_json(asset_url: str) -> Optional[dict]:
@@ -535,7 +548,8 @@ def _download_release_asset_json(asset_url: str) -> Optional[dict]:
         return None
 
 
-def _pick_recommended_target(patches_json: dict, package_name: str) -> str:
+def _pick_recommended_target(patches_json: dict, package_name: str,
+                             include_experimental: bool = False) -> str:
     """Given a parsed patches-list.json and a package, return the highest
     non-experimental supported version (i.e. the one the builder ships).
 
@@ -574,12 +588,14 @@ def _pick_recommended_target(patches_json: dict, package_name: str) -> str:
                 if tgt.get("isExperimental") is False:
                     stable.append(ver)
 
+    if include_experimental and any_kind:
+        return provider_utils.get_highest_version(any_kind) or ""
     if stable:
         return provider_utils.get_highest_version(stable) or ""
     return ""
 
 
-def fetch_recommended_version(app_name: str, source: str) -> str:
+def fetch_recommended_version(app_name: str, source: str, settings: Optional[dict] = None) -> str:
     """Return the version the builder is expected to ship for (app, source),
     derived from the patch set's patches-list (highest isExperimental:false
     target for the app's package).
@@ -593,7 +609,11 @@ def fetch_recommended_version(app_name: str, source: str) -> str:
     non-github source, etc.). In that case the caller falls back to the legacy
     store-latest probe so we don't regress detection.
     """
-    ckey = (app_name, source)
+    settings = settings or build_config.merge_entry({"app_name": app_name, "source": source}, {})
+    patches_channel = settings["patches_channel"]
+    cli_channel = settings["cli_channel"]
+    experimental = settings["experimental"]
+    ckey = (app_name, source, patches_channel, cli_channel, experimental)
     if ckey in _recommended_version_cache:
         return _recommended_version_cache[ckey]
 
@@ -602,23 +622,12 @@ def fetch_recommended_version(app_name: str, source: str) -> str:
     config, _platform = load_app_config(app_name)
     package = (config or {}).get("package") or ""
 
-    src_file = SOURCES_DIR / f"{source}.json"
-    if not src_file.exists():
-        for f in SOURCES_DIR.glob("*.json"):
-            if f.stem.lower() == source.lower():
-                src_file = f
-                break
-
     # Only github sources expose a downloadable patches-list asset we can parse
     # here. Bundle sources already get a content-based signature; their
     # recommended version is whatever the bundle pins, so we leave them to the
     # store-latest fallback. GitLab/Codeberg likewise fall through.
-    if package and src_file.exists():
-        try:
-            with src_file.open("r", encoding="utf-8") as f:
-                src_data = json.load(f)
-        except Exception:
-            src_data = None
+    if package:
+        src_data = _load_source_entries(source, patches_channel, cli_channel)
 
         if isinstance(src_data, list):
             for entry in src_data:
@@ -650,7 +659,7 @@ def fetch_recommended_version(app_name: str, source: str) -> str:
                 pj = _download_release_asset_json(patch_asset_url)
                 if pj is None:
                     continue
-                resolved = _pick_recommended_target(pj, package)
+                resolved = _pick_recommended_target(pj, package, experimental)
                 if resolved:
                     break
 
@@ -727,19 +736,27 @@ def fetch_existing_apk_names() -> List[str]:
 # ---------------------------------------------------------------------------
 # Matrix planning
 # ---------------------------------------------------------------------------
+_settings_by_pair: Dict[Tuple[str, str], dict] = {}
+
+
+def get_settings(app: str, src: str) -> dict:
+    """Per-(app, source) settings from patch-config.json (first entry wins)."""
+    if not _settings_by_pair:
+        for e in build_config.iter_entries(include_disabled=True):
+            _settings_by_pair.setdefault((e["app_name"], e["source"]), e)
+    return _settings_by_pair.get((app, src)) or build_config.merge_entry(
+        {"app_name": app, "source": src}, {})
+
+
 def build_full_matrix() -> List[dict]:
-    """Expand patch-config + arch-config into the full per-arch matrix."""
-    patch_list = load_patch_config()
-    arch_map = load_arch_config()
+    """Expand patch-config (+ arch-config) into the full per-arch matrix,
+    skipping entries with "enabled": false."""
     matrix: List[dict] = []
     seen = set()
-    for entry in patch_list:
-        app = entry.get("app_name")
-        src = entry.get("source")
-        if not app or not src:
-            continue
-        arches = arch_map.get((app, src), ["universal"])
-        for arch in arches:
+    for entry in build_config.iter_entries(path=PATCH_CONFIG):
+        app = entry["app_name"]
+        src = entry["source"]
+        for arch in entry["arches"]:
             key = (app, src, arch)
             if key in seen:
                 continue
@@ -818,8 +835,12 @@ def plan_incremental(full_matrix: List[dict], old_manifest: Optional[dict],
         arch = entry["arch"]
         mkey = make_manifest_key(app, src, arch)
 
-        cur_app_ver = load_app_config_version(app)            # '' if 'latest'
-        cur_src_sig = get_source_signature(src)
+        settings = get_settings(app, src)
+        # '' if 'latest'. A version pinned in patch-config wins over apps/*.json.
+        cur_app_ver = settings["version"] or load_app_config_version(app)
+        cur_src_sig = get_source_signature(
+            src, settings["patches_channel"], settings["cli_channel"]
+        ) + build_config.build_options_signature(settings)
         old = old_entries.get(mkey)
         old_src_sig = (old or {}).get("source_sig", "")
         if old and old_src_sig and _is_unreliable_source_sig(cur_src_sig):
@@ -892,7 +913,7 @@ def plan_incremental(full_matrix: List[dict], old_manifest: Optional[dict],
             # support for a newer app version, the SOURCE SIGNATURE changes
             # (line 850-851 above), which already triggers the rebuild.
             if not cur_app_ver and old_built_ver:
-                target_ver = fetch_recommended_version(app, src)
+                target_ver = fetch_recommended_version(app, src, settings)
                 if target_ver and _is_newer_version(target_ver, old_built_ver):
                     reasons.append(
                         f"new-version: built {old_built_ver!r} -> patch {target_ver!r}"
