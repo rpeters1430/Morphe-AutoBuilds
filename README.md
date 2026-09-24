@@ -2,10 +2,10 @@
 
 # 🔧 Morphe Non-Root Builder
 
-[![Daily Build](https://img.shields.io/github/actions/workflow/status/RookieEnough/Revanced-AutoBuilds/patch.yml?label=Daily%20Build&style=for-the-badge&color=2ea44f)](https://github.com/RookieEnough/Revanced-AutoBuilds/actions/workflows/patch.yml)
-[![Latest Release](https://img.shields.io/github/v/release/RookieEnough/Revanced-AutoBuilds?style=for-the-badge&label=Latest%20Release&color=0366d6)](https://github.com/RookieEnough/Revanced-AutoBuilds/releases/latest)
+[![Daily Build](https://img.shields.io/github/actions/workflow/status/rpeters1430/Morphe-AutoBuilds/patch.yml?label=Daily%20Build&style=for-the-badge&color=2ea44f)](https://github.com/rpeters1430/Morphe-AutoBuilds/actions/workflows/patch.yml)
+[![Latest Release](https://img.shields.io/github/v/release/rpeters1430/Morphe-AutoBuilds?style=for-the-badge&label=Latest%20Release&color=0366d6)](https://github.com/rpeters1430/Morphe-AutoBuilds/releases/latest)
 [![Python Version](https://img.shields.io/badge/Python-3.11%2B-blue?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
-[![License](https://img.shields.io/github/license/RookieEnough/Revanced-AutoBuilds?style=for-the-badge&color=orange)](LICENSE)
+[![License](https://img.shields.io/github/license/rpeters1430/Morphe-AutoBuilds?style=for-the-badge&color=orange)](LICENSE)
 
 
 <p align="center">
@@ -17,9 +17,9 @@
 A sophisticated, automated pipeline that builds ready-to-install Morphe applications for <strong>non-rooted Android devices</strong>. This system automatically fetches the latest Morphe tools, downloads base APKs from multiple sources, applies patches, and publishes optimized APKs with architecture-specific builds.
 </p>
 
-[![View Latest Release](https://img.shields.io/badge/View%20Latest%20Release-0A0A0A?style=flat&logo=github&logoColor=white)](https://github.com/RookieEnough/Revanced-AutoBuilds/releases/latest)
-[![Report Bug](https://img.shields.io/badge/Report%20Bug-0A0A0A?style=flat&logo=github&logoColor=white)](https://github.com/RookieEnough/Revanced-AutoBuilds/issues)
-[![Request Feature](https://img.shields.io/badge/Request%20Feature-0A0A0A?style=flat&logo=github&logoColor=white)](https://github.com/RookieEnough/Revanced-AutoBuilds/issues)
+[![View Latest Release](https://img.shields.io/badge/View%20Latest%20Release-0A0A0A?style=flat&logo=github&logoColor=white)](https://github.com/rpeters1430/Morphe-AutoBuilds/releases/latest)
+[![Report Bug](https://img.shields.io/badge/Report%20Bug-0A0A0A?style=flat&logo=github&logoColor=white)](https://github.com/rpeters1430/Morphe-AutoBuilds/issues)
+[![Request Feature](https://img.shields.io/badge/Request%20Feature-0A0A0A?style=flat&logo=github&logoColor=white)](https://github.com/rpeters1430/Morphe-AutoBuilds/issues)
 
 
 </div>
@@ -36,7 +36,7 @@ A sophisticated, automated pipeline that builds ready-to-install Morphe applicat
 | :--- | :--- | :--- |
 | 🌐 **Interactive Web Portal** | Search apps, filter by arch, scan QR codes on mobile | [**Open App Catalog**](https://rpeters1430.github.io/Morphe-AutoBuilds/) |
 | 📦 **GitHub Releases** | Raw release files and assets | [**Download Latest Release**](https://github.com/rpeters1430/Morphe-AutoBuilds/releases/latest) |
-| 🔄 **Obtainium Feed** | Auto-update directly in Obtainium on Android | [**apps.json Feed**](https://rpeters1430.github.io/Morphe-AutoBuilds/apps.json) |
+| 🔄 **Obtainium Feed** | Every app in one Obtainium import file ([how to use](#-auto-updates-with-obtainium)) | [**apps.json Feed**](https://rpeters1430.github.io/Morphe-AutoBuilds/apps.json) |
 
 ---
 
@@ -62,16 +62,38 @@ python morphe.py
 
 ---
 
+### 🔄 Auto-Updates with Obtainium
+
+Every app ships in the same `latest` release, so each Obtainium entry needs a filter that picks out its own APK. The catalog sets this up for you:
+
+* **One app:** open the [App Catalog](https://rpeters1430.github.io/Morphe-AutoBuilds/) on your phone and tap **+ Obtainium** on the app's card.
+* **Every app:** download [`apps.json`](https://rpeters1430.github.io/Morphe-AutoBuilds/apps.json), then in Obtainium go to **Import/Export → Obtainium Import** and pick the file.
+
+Each entry comes with these Obtainium settings:
+
+| Setting | Value | Why |
+| :--- | :--- | :--- |
+| Filter APKs by regular expression | `^<app>-(arm64-v8a\|armeabi-v7a\|universal)-.*\.apk$` | Only offers that app's APKs (e.g. YouTube never matches `youtube-music-…`). |
+| Use latest asset upload as release date | on | The release tag is always `latest`, so the upload date of the app's own APK marks a new build. |
+| Use release date as version string | on | Lets Obtainium spot an update when only that app was rebuilt. |
+
+> **Added an app before these settings existed?** If Obtainium lists other apps' APKs (e.g. Gboard or Instagram under YouTube) or never sees updates, delete the entry and add it again from the catalog, or set the three settings above by hand in the app's settings in Obtainium.
+
+---
+
 ### 📱 Supported Apps & Architectures
 
-| Application | arm64-v8a | armeabi-v7a | Universal |
-| :--- | :---: | :---: | :---: |
-| **YouTube** | ✅ | ✅ | ✅ |
-| **YouTube Music** | ✅ | ✅ | ❌ |
-| **Reddit** | ❌ | ❌ | ✅ |
-| **Twitter (X)** | ✅ | ❌ | ❌ |
-| **TikTok** | ❌ | ❌ | ✅ |
-| **Spotify** | ❌ | ❌ | ✅ |
+Around 100 apps are configured in [`patch-config.json`](patch-config.json); the [App Catalog](https://rpeters1430.github.io/Morphe-AutoBuilds/) lists them all with their current downloads. Apps build as `universal` unless [`arch-config.json`](arch-config.json) asks for specific architectures. Some popular ones:
+
+| Application | Patches | arm64-v8a | armeabi-v7a | Universal |
+| :--- | :--- | :---: | :---: | :---: |
+| **YouTube** | Morphe | ❌ | ❌ | ✅ |
+| **YouTube Music** | Morphe | ✅ | ✅ | ❌ |
+| **Reddit** | Morphe | ❌ | ❌ | ✅ |
+| **X (Twitter)** | Piko | ❌ | ❌ | ✅ |
+| **Instagram** | Piko | ✅ | ❌ | ❌ |
+| **Google Photos** | Rookie | ✅ | ✅ | ❌ |
+| **TikTok** | IcySymmetra | ❌ | ❌ | ✅ |
 
 *( Legend: ✅ = Available / ❌ = Not configured )*
 
@@ -94,7 +116,7 @@ This repository utilizes a robust Python-based pipeline to ensure high reliabili
 ## 🛠️ Repository Structure
 
 ```text
-revanced-nonroot/
+Morphe-AutoBuilds/
 ├── .github/workflows/      # GitHub Actions automation
 │   ├── patch.yml           # Daily automated builds (06:00 UTC)
 │   └── manual-patch.yml    # Manual trigger workflow
@@ -255,8 +277,8 @@ If you prefer to build the APKs on your own machine, follow these steps.
 
 1. **Clone the repository:**
 ```bash
-git clone https://github.com/RookieEnough/morphe-AutoBuilds.git
-cd morphe-nonroot
+git clone https://github.com/rpeters1430/Morphe-AutoBuilds.git
+cd Morphe-AutoBuilds
 
 ```
 
