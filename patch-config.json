@@ -31,7 +31,7 @@
     {
       "app_name": "instagram",
       "source": "piko",
-      "patches_channel": "prerelease",
+      "patches_channel": "prerelease"
     },
     {
       "app_name": "pinterest",
