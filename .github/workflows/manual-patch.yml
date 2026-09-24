@@ -61,7 +61,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       trawl:
-        image: ghcr.io/germondai/trawl:latest
+        image: ghcr.io/germondai/trawl:latest@sha256:c25aefa0f204d0496db9e5e530ff826ffe06f471228c5236e95862e815a9c865
         ports:
           - 8191:8191
         options: --shm-size=1gb
