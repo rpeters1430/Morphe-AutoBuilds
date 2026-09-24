@@ -160,7 +160,27 @@ Each entry picks an app and the **patch system** (`source`, a file in `sources/`
 | `force` | `false` | Patch the newest store version even if the patches don't list it as compatible (`--force`). May break the app. |
 | `version` | `""` | Pin the app version. Empty picks the newest compatible one. |
 | `arches` | from `arch-config.json`, else `["universal"]` | Any of `arm64-v8a`, `armeabi-v7a`, `universal`. |
-| `include_patches` / `exclude_patches` | `[]` | Patch names to enable/disable, added to `patches/<app>-<source>.txt`. |
+| `include_patches` / `exclude_patches` | `[]` | Patch names to enable/disable, added to `patches/<app>-<source>.txt`. A patch in both lists stays disabled. |
+| `exclusive` | `false` | Apply **only** the patches you enabled (`include_patches`, `patch_options`, `+` rules); every other patch is off (`--exclusive`). |
+| `continue_on_error` | `false` | Skip a patch that fails to apply instead of aborting the build (`--continue-on-error`). The APK is built without that patch. |
+| `patch_options` | `{}` | Option values per patch, e.g. `{"Change package name": {"packageName": "com.example"}}`. The patch is enabled and each value is passed as `-Okey=value`. |
+
+Example of a hand-picked patch set with options:
+
+```json
+{
+  "app_name": "youtube",
+  "source": "morphe",
+  "exclusive": true,
+  "include_patches": ["Hide ads", "SponsorBlock", "Return YouTube Dislike"],
+  "patch_options": {
+    "Custom branding": { "appName": "YouTube Morphe" }
+  },
+  "continue_on_error": true
+}
+```
+
+Patch names must match the source exactly. `python morphe.py` → Patch Editor can browse the upstream patch list for the Morphe and ReVanced sources.
 
 **Channels:**
 * `stable`: newest normal (non-prerelease) release.
@@ -170,7 +190,7 @@ Each entry picks an app and the **patch system** (`source`, a file in `sources/`
 
 Settings in `defaults` apply to every entry, and entries can override them. That lets you switch every app to pre-releases in one place and keep a few on stable. Channels apply to GitHub, GitLab and Codeberg sources; bundle sources (`bundle_url`) ignore them.
 
-Changing a channel, `experimental`, `force` or the patch lists makes the next daily run rebuild that app. Other apps are left alone.
+Changing a channel, `experimental`, `force`, `exclusive`, `continue_on_error`, `patch_options` or the patch lists makes the next daily run rebuild that app. Other apps are left alone.
 
 **Check your config** before pushing (also runs at the start of every daily build):
 
@@ -254,7 +274,6 @@ cd morphe-nonroot
 2. **Install dependencies:**
 ```bash
 pip install -r requirements.txt
-pip install requests beautifulsoup4
 
 ```
 
@@ -285,6 +304,10 @@ export CLI_CHANNEL="stable"
 export EXPERIMENTAL="true"
 export FORCE_PATCH="false"
 export APP_VERSION="20.12.46"        # pin a version
+export CONTINUE_ON_ERROR="true"      # skip patches that fail
+export EXCLUSIVE="false"
+export INCLUDE_PATCHES="Hide ads, SponsorBlock"   # added to the configured lists
+export EXCLUDE_PATCHES="Custom branding"
 python -m src
 
 ```
@@ -298,18 +321,30 @@ python -m src
 ### Daily Automated Build (`patch.yml`)
 
 * **Schedule:** Runs daily at 06:00 UTC.
-* **Function:** Iterates through all configured apps and architectures.
-* **Output:** Updates the single "Latest" release tag.
+* **Function:** Rebuilds only the apps whose patches, CLI, settings or pinned version changed since the last release (incremental).
+* **Run workflow inputs:**
+  * `force_full_rebuild`: rebuild every app.
+  * `apps`: rebuild just these apps, e.g. `youtube, reddit`. Everything else in the release is left as it is.
+* **Output:** Updates the single "Latest" release tag. The run summary shows the build plan, what was released, and tips for any app that failed.
 
 ### Manual Build (`manual-patch.yml`)
 
 * **Trigger:** Manually via the GitHub Actions "Run workflow" button.
 * **Capabilities:**
-  * Target specific apps.
-  * Target specific architectures (or `configured` to use the app's configured arches).
+  * Target specific apps. Leave `source` empty to use the one in `patch-config.json`.
+  * Target specific architectures (`configured`, the default, uses the app's configured arches).
   * Force specific APK versions.
-  * Override the patches channel (`stable` / `prerelease` / `dev`) and the experimental setting for a single run.
+  * Override for a single run: patches channel or an exact `patches_tag`, CLI channel, `experimental`, `force`, `continue_on_error`.
+  * Add patches to enable or disable for this run (`include_patches` / `exclude_patches`, comma-separated).
   * Option to update the public release or just build artifacts.
+
+Builds and manual patches share one concurrency group, so they never edit the release at the same time. Only one run waits in the queue: starting another while one is waiting replaces the waiting one.
+
+### App Catalog (`deploy-portal.yml`)
+
+Publishes the web catalog and the Obtainium feed from `docs/` to GitHub Pages. It refreshes after every build, on releases, and when the config changes.
+
+**One-time setup:** open **Settings → Pages** and set **Build and deployment → Source** to **GitHub Actions**. Until then the workflow stops with a message saying so. (Alternatively, add a `PAGES_ENABLEMENT_TOKEN` secret, a fine-grained token with Administration and Pages write access to this repo, and the workflow turns Pages on itself.)
 
 
 

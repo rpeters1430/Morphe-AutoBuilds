@@ -111,15 +111,15 @@ def trigger_manual_patch(console: Console) -> None:
 
     arch = questionary.select(
         "Select target architecture:",
-        choices=["universal", "arm64-v8a", "armeabi-v7a", "configured"],
-        default="universal",
+        choices=["configured", "universal", "arm64-v8a", "armeabi-v7a"],
+        default="configured",
     ).ask()
     if not arch:
         return
 
     patches_channel = questionary.select(
         "Select patches release channel:",
-        choices=["default", "stable", "prerelease", "dev"],
+        choices=["default", "stable", "prerelease", "dev", "source"],
         default="default",
     ).ask()
     if not patches_channel:
@@ -133,8 +133,21 @@ def trigger_manual_patch(console: Console) -> None:
     if not experimental:
         return
 
+    continue_on_error = questionary.select(
+        "Skip patches that fail instead of aborting the build?",
+        choices=["default", "true", "false"],
+        default="default",
+    ).ask()
+    if not continue_on_error:
+        return
+
     version = questionary.text("Specific version (leave empty for latest compatible):").ask()
     if version is None:
+        return
+
+    include = questionary.text("Extra patches to enable (comma-separated, optional):").ask()
+    exclude = questionary.text("Extra patches to disable (comma-separated, optional):").ask()
+    if include is None or exclude is None:
         return
 
     replace_release = questionary.confirm("Replace APK in existing release?", default=True).ask()
@@ -146,10 +159,15 @@ def trigger_manual_patch(console: Console) -> None:
         "-f", f"architecture={arch}",
         "-f", f"patches_channel={patches_channel}",
         "-f", f"experimental={experimental}",
+        "-f", f"continue_on_error={continue_on_error}",
         "-f", f"replace_in_release={'true' if replace_release else 'false'}",
     ]
     if version.strip():
         cmd.extend(["-f", f"version={version.strip()}"])
+    if include.strip():
+        cmd.extend(["-f", f"include_patches={include.strip()}"])
+    if exclude.strip():
+        cmd.extend(["-f", f"exclude_patches={exclude.strip()}"])
 
     console.print(f"\n[cyan]Dispatching workflow on GitHub Actions for {app_name}...[/cyan]")
     try:
@@ -182,6 +200,12 @@ def trigger_full_rebuild(console: Console) -> None:
         default=False,
     ).ask()
 
+    only_apps = questionary.text(
+        "Only rebuild these apps (comma-separated, empty = everything that changed):"
+    ).ask()
+    if only_apps is None:
+        return
+
     confirm = questionary.confirm(
         "Are you sure you want to trigger 'Auto Build and Release Morphe'?",
         default=True,
@@ -193,6 +217,8 @@ def trigger_full_rebuild(console: Console) -> None:
         "gh", "workflow", "run", "patch.yml",
         "-f", f"force_full_rebuild={'true' if force else 'false'}",
     ]
+    if only_apps.strip():
+        cmd.extend(["-f", f"apps={only_apps.strip()}"])
     console.print("\n[cyan]Dispatching patch.yml workflow...[/cyan]")
     try:
         subprocess.run(cmd, capture_output=True, text=True, check=True)

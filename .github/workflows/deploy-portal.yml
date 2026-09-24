@@ -1,6 +1,17 @@
 name: Deploy App Catalog to GitHub Pages
 
+# One-time setup: Settings -> Pages -> Build and deployment -> Source: "GitHub Actions".
+# (Or add a PAGES_ENABLEMENT_TOKEN secret: a fine-grained PAT with
+# Administration + Pages write on this repo, and this workflow enables Pages itself.)
+
 on:
+  # Releases made by the build workflows use GITHUB_TOKEN, and events created
+  # with GITHUB_TOKEN don't start other workflows. Refresh after each build instead.
+  workflow_run:
+    workflows:
+      - Auto Build and Release Morphe
+      - Manual Patch and Update
+    types: [completed]
   release:
     types: [published, edited]
   workflow_dispatch:
@@ -12,9 +23,11 @@ on:
       - 'patch-config.json'
       - 'apps/**'
       - 'sources/**'
+      - 'scripts/generate_portal_data.py'
+      - '.github/workflows/deploy-portal.yml'
 
 permissions:
-  contents: write
+  contents: read
   pages: write
   id-token: write
 
@@ -24,13 +37,46 @@ concurrency:
 
 jobs:
   deploy-portal:
+    # A cancelled or skipped build changed nothing worth republishing.
+    if: >-
+      github.event_name != 'workflow_run' ||
+      github.event.workflow_run.conclusion == 'success' ||
+      github.event.workflow_run.conclusion == 'failure'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Checkout Repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Check GitHub Pages Is Enabled
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HAS_ENABLEMENT_TOKEN: ${{ secrets.PAGES_ENABLEMENT_TOKEN != '' }}
+        run: |
+          if build_type=$(gh api "repos/${GITHUB_REPOSITORY}/pages" --jq .build_type 2>api_error.txt); then
+            if [ "$build_type" != "workflow" ]; then
+              echo "::error title=GitHub Pages source is '${build_type}'::Set Settings -> Pages -> Build and deployment -> Source to 'GitHub Actions', then re-run this workflow."
+              exit 1
+            fi
+            echo "GitHub Pages is enabled (source: GitHub Actions)."
+          elif ! grep -q "HTTP 404" api_error.txt; then
+            echo "::warning::Could not read the Pages settings ($(cat api_error.txt)); trying to deploy anyway."
+          elif [ "$HAS_ENABLEMENT_TOKEN" = "true" ]; then
+            echo "GitHub Pages is not enabled yet; configure-pages will enable it with PAGES_ENABLEMENT_TOKEN."
+          else
+            {
+              echo "### ❌ GitHub Pages is not enabled for this repository"
+              echo ""
+              echo "1. Open **Settings → Pages** (https://github.com/${GITHUB_REPOSITORY}/settings/pages)"
+              echo "2. Under **Build and deployment → Source**, choose **GitHub Actions**"
+              echo "3. Re-run this workflow"
+            } >> "$GITHUB_STEP_SUMMARY"
+            echo "::error title=GitHub Pages is not enabled::Open Settings -> Pages and set Source to 'GitHub Actions', then re-run this workflow. See the run summary for the link."
+            exit 1
+          fi
 
       - name: Setup Python
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
@@ -45,6 +91,9 @@ jobs:
 
       - name: Setup GitHub Pages
         uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6
+        with:
+          enablement: ${{ secrets.PAGES_ENABLEMENT_TOKEN != '' }}
+          token: ${{ secrets.PAGES_ENABLEMENT_TOKEN || github.token }}
 
       - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5

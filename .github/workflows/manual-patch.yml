@@ -12,25 +12,25 @@ on:
         type: string
         default: 'youtube'
       source:
-        description: 'Source name (from sources/ folder)'
-        required: true
+        description: 'Patch source (from sources/ folder; empty = the one set in patch-config.json)'
+        required: false
         type: string
-        default: 'revanced'
+        default: ''
       version:
-        description: 'Specific version (leave empty for latest)'
+        description: 'Specific app version (empty = newest compatible)'
         required: false
         type: string
         default: ''
       architecture:
-        description: 'Architecture to build'
+        description: 'Architecture to build (configured = arches from patch-config.json)'
         required: false
         type: choice
         options:
+          - configured
           - arm64-v8a
           - armeabi-v7a
           - universal
-          - configured
-        default: 'universal'
+        default: 'configured'
       patches_channel:
         description: 'Patches release channel (default = as set in patch-config.json)'
         required: false
@@ -40,9 +40,26 @@ on:
           - stable
           - prerelease
           - dev
+          - source
+        default: 'default'
+      patches_tag:
+        description: 'Exact patches release tag (overrides patches_channel, e.g. v1.2.0-dev.3)'
+        required: false
+        type: string
+        default: ''
+      cli_channel:
+        description: 'CLI release channel (default = as set in patch-config.json)'
+        required: false
+        type: choice
+        options:
+          - default
+          - stable
+          - prerelease
+          - dev
+          - source
         default: 'default'
       experimental:
-        description: 'Allow experimental app versions (Morphe only; default = as set in patch-config.json)'
+        description: 'Allow experimental app versions (Morphe only)'
         required: false
         type: choice
         options:
@@ -50,15 +67,48 @@ on:
           - 'true'
           - 'false'
         default: 'default'
+      force:
+        description: 'Patch the newest store version even if not listed as compatible (--force)'
+        required: false
+        type: choice
+        options:
+          - default
+          - 'true'
+          - 'false'
+        default: 'default'
+      continue_on_error:
+        description: 'Skip patches that fail instead of aborting (--continue-on-error)'
+        required: false
+        type: choice
+        options:
+          - default
+          - 'true'
+          - 'false'
+        default: 'default'
+      include_patches:
+        description: 'Extra patches to enable (comma-separated names)'
+        required: false
+        type: string
+        default: ''
+      exclude_patches:
+        description: 'Extra patches to disable (comma-separated names)'
+        required: false
+        type: string
+        default: ''
       replace_in_release:
         description: 'Replace APK in existing release'
         required: true
         type: boolean
         default: true
 
+concurrency:
+  group: morphe-release
+  cancel-in-progress: false
+
 jobs:
   manual-patch:
     runs-on: ubuntu-latest
+    timeout-minutes: 60
     services:
       trawl:
         image: ghcr.io/germondai/trawl:latest@sha256:c25aefa0f204d0496db9e5e530ff826ffe06f471228c5236e95862e815a9c865
@@ -72,39 +122,40 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       
-      - name: Set Specific Version (if provided)
-        if: ${{ inputs.version != '' }}
+      - name: Resolve Source
+        id: resolve
+        env:
+          APP_NAME: ${{ inputs.app_name }}
+          SOURCE_INPUT: ${{ inputs.source }}
         run: |
-          # Update app config with specific version
-          for dir in apps/apkmirror apps/apkpure apps/uptodown; do
-            config_file="$dir/${{ inputs.app_name }}.json"
-            if [ -f "$config_file" ]; then
-              echo "Updating $config_file with version ${{ inputs.version }}"
-              # Update JSON with specific version
-              python -c "
-              import json, sys, os
-              with open('$config_file', 'r') as f:
-                  config = json.load(f)
-              config['version'] = '${{ inputs.version }}'
-              with open('$config_file', 'w') as f:
-                  json.dump(config, f, indent=2)
-              "
-              echo "Updated: $config_file"
-              break
-            fi
-          done
-      
+          source="$SOURCE_INPUT"
+          if [ -z "$source" ]; then
+            source=$(jq -r --arg app "$APP_NAME" \
+              'first(.patch_list[] | select(.app_name == $app) | .source) // empty' patch-config.json)
+          fi
+          if [ -z "$source" ]; then
+            echo "::error::'$APP_NAME' is not in patch-config.json; pass a source explicitly"
+            exit 1
+          fi
+          if [ ! -f "sources/$source.json" ]; then
+            echo "::error::sources/$source.json does not exist"
+            exit 1
+          fi
+          echo "Using source: $source"
+          echo "source=$source" >> "$GITHUB_OUTPUT"
+
       - name: Install Python
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
         with:
-          python-version: 3.14
+          python-version: '3.14'
+          cache: pip
+          cache-dependency-path: requirements.txt
       
       - name: Install Dependencies
         run: |
           pip install -r requirements.txt
-          pip install requests beautifulsoup4
       
-      - name: Setup Java 21
+      - name: Setup Java
         uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6
         with:
           distribution: 'temurin'
@@ -113,15 +164,20 @@ jobs:
       - name: Build APK
         env:
           APP_NAME: ${{ inputs.app_name }}
-          SOURCE: ${{ inputs.source }}
+          SOURCE: ${{ steps.resolve.outputs.source }}
           ARCH: ${{ inputs.architecture != 'configured' && inputs.architecture || '' }}
-          PATCHES_CHANNEL: ${{ inputs.patches_channel }}
+          PATCHES_CHANNEL: ${{ inputs.patches_tag || inputs.patches_channel }}
+          CLI_CHANNEL: ${{ inputs.cli_channel }}
           EXPERIMENTAL: ${{ inputs.experimental }}
+          FORCE_PATCH: ${{ inputs.force }}
+          CONTINUE_ON_ERROR: ${{ inputs.continue_on_error }}
+          INCLUDE_PATCHES: ${{ inputs.include_patches }}
+          EXCLUDE_PATCHES: ${{ inputs.exclude_patches }}
           APP_VERSION: ${{ inputs.version }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TRAWL_URL: http://localhost:8191
         run: |
-          echo "🔧 Building ${{ inputs.app_name }} with ${{ inputs.source }} for ${{ inputs.architecture }} architecture..."
+          echo "🔧 Building $APP_NAME with $SOURCE (${{ inputs.architecture }})..."
           python -m src
       
       - name: Find Built APK
@@ -207,7 +263,7 @@ jobs:
           **Last Update:** $(date)
           **Updated App:** ${{ inputs.app_name }}
           **Architecture:** ${{ inputs.architecture }}
-          **Source:** ${{ inputs.source }}
+          **Source:** ${{ steps.resolve.outputs.source }}
           
           Auto-updates daily at 6 AM UTC.
           EOF
@@ -262,21 +318,3 @@ jobs:
             echo "  - $release_url/download/$apk"
           done
       
-      - name: Cleanup Version Override
-        if: ${{ inputs.version != '' && always() }}
-        run: |
-          # Reset version to empty in configs
-          for dir in apps/apkmirror apps/apkpure apps/uptodown; do
-            config_file="$dir/${{ inputs.app_name }}.json"
-            if [ -f "$config_file" ]; then
-              echo "Resetting version in $config_file"
-              python -c "
-              import json, sys, os
-              with open('$config_file', 'r') as f:
-                  config = json.load(f)
-              config['version'] = ''
-              with open('$config_file', 'w') as f:
-                  json.dump(config, f, indent=2)
-              "
-            fi
-          done
