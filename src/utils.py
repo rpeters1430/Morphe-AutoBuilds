@@ -248,6 +248,7 @@ def get_supported_versions(
     if '--include-experimental' in cmd and output and 'unknown option' in output.lower():
         logging.warning("This Morphe CLI doesn't support --include-experimental; listing stable versions only")
         cmd.remove('--include-experimental')
+        include_experimental = False  # so the list-patches fallback doesn't pass it either
         output = run_process(cmd, capture=True, silent=True, check=False)
 
     if not output:
