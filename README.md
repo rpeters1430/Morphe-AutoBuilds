@@ -36,15 +36,41 @@ A sophisticated, automated pipeline that builds ready-to-install Morphe applicat
 
 ---
 
-## ⚡ Quick Downloads
+## ⚡ Quick Downloads & App Catalog
 
 > **Note:** All APKs are automatically rebuilt daily at 06:00 UTC to ensure you have the latest features and security patches.
 
 ### 📥 Download Links
 
-| Mirror | Description | Link |
+| Destination | Description | Link |
 | :--- | :--- | :--- |
-| **GitHub Releases** | Primary source. Contains all builds. | [**Download Latest Release**](https://RookieEnough/morphe-AutoBuilds/releases/latest) |
+| 🌐 **Interactive Web Portal** | Search apps, filter by arch, scan QR codes on mobile | [**Open App Catalog**](https://rpeters1430.github.io/Morphe-AutoBuilds/) |
+| 📦 **GitHub Releases** | Raw release files and assets | [**Download Latest Release**](https://github.com/rpeters1430/Morphe-AutoBuilds/releases/latest) |
+| 🔄 **Obtainium Feed** | Auto-update directly in Obtainium on Android | [**apps.json Feed**](https://rpeters1430.github.io/Morphe-AutoBuilds/apps.json) |
+
+---
+
+## 🛠️ Interactive Maintainer Suite (`morphe.py`)
+
+No need to hand-edit JSON configs or memorize GitHub Actions commands! Launch the interactive terminal UI:
+
+```powershell
+# On Windows (PowerShell):
+.\run.ps1
+
+# Or with Python directly:
+python morphe.py
+```
+
+**Key Maintainer Features:**
+- **📱 App Manager:** Add, edit, disable, or remove apps with auto-complete from `apps/` and `sources/`.
+- **🧩 Patch Editor:** Interactively toggle patch inclusions (`+`) and exclusions (`-`) for any app.
+- **🚀 CI Dispatcher:** Trigger single-app or full builds on GitHub Actions and watch live streaming logs in your terminal.
+- **🔍 Config & Health Validator:** Validate JSON schemas and check that all sources, packages, and keystores are healthy.
+- **🔬 Dry-Runner:** Inspect app configuration and source readiness without compiling.
+- **🌐 Portal Generator:** Build and preview the GitHub Pages web catalog locally with a single click.
+
+---
 
 ### 📱 Supported Apps & Architectures
 

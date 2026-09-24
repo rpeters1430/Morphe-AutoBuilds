@@ -3,3 +3,5 @@ PyGithub
 beautifulsoup4
 curl-cffi
 requests
+rich
+questionary

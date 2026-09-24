@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Morphe App Catalog • Automated Non-Root APKs</title>
+  <meta name="description" content="Discover, download, and auto-update ready-to-install Morphe and ReVanced patched applications." />
+  <link rel="icon" href="https://raw.githubusercontent.com/walkxcode/dashboard-icons/main/svg/android.svg" />
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#ecfeff',
+              100: '#cffafe',
+              400: '#22d3ee',
+              500: '#06b6d4',
+              600: '#0891b2',
+              900: '#164e63',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- QRCode.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <!-- Preloaded Data for offline and local file:// usage -->
+  <script src="data.js"></script>
+
+  <style>
+    @keyframes pulse-subtle {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+    .animate-pulse-subtle { animation: pulse-subtle 3s infinite; }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans selection:bg-cyan-500 selection:text-white">
+
+  <!-- Top Announcement / MicroG Banner -->
+  <div class="bg-gradient-to-r from-cyan-900/60 via-slate-900 to-indigo-900/60 border-b border-cyan-800/40 text-xs sm:text-sm py-2.5 px-4 text-center">
+    <div class="max-w-7xl mx-auto flex items-center justify-center gap-2 flex-wrap">
+      <span class="inline-flex items-center gap-1 font-semibold text-cyan-400">
+        <i data-lucide="info" class="w-4 h-4"></i> Non-Root Note:
+      </span>
+      <span class="text-slate-300">Using YouTube or YouTube Music? You must install MicroG / GmsCore first.</span>
+      <a href="https://github.com/ReVanced/GmsCore/releases/latest" target="_blank" rel="noopener" class="inline-flex items-center gap-1 text-cyan-300 hover:text-cyan-200 underline font-medium">
+        Get MicroG APK <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+      </a>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="border-b border-slate-800 bg-slate-900/70 backdrop-blur-md sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/20">
+          <i data-lucide="smartphone" class="w-6 h-6 text-white"></i>
+        </div>
+        <div>
+          <span class="font-bold text-lg tracking-tight bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">Morphe Catalog</span>
+          <span class="text-xs text-slate-400 block -mt-1">Automated Patched APKs</span>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <button id="obtainium-guide-btn" class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-950/60 text-emerald-300 border border-emerald-700/50 hover:bg-emerald-900/60 transition">
+          <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Auto-Updates Guide
+        </button>
+        <a id="repo-link" href="https://github.com/rpeters1430/Morphe-AutoBuilds" target="_blank" rel="noopener" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 transition border border-slate-700">
+          <i data-lucide="github" class="w-4 h-4"></i> GitHub
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="relative pt-12 pb-8 px-4 sm:px-6 max-w-7xl mx-auto w-full text-center">
+    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium bg-cyan-950/60 text-cyan-300 border border-cyan-800/50 mb-4 animate-pulse-subtle">
+      <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
+      Daily Automated Multi-Architecture Builds
+    </div>
+    <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight text-white max-w-3xl mx-auto">
+      Clean, optimized apps for <span class="bg-gradient-to-r from-cyan-400 via-sky-400 to-indigo-400 bg-clip-text text-transparent">non-rooted Android</span>
+    </h1>
+    <p class="mt-3 text-slate-400 text-sm sm:text-base max-w-2xl mx-auto">
+      Search and download pre-patched APKs with architecture-specific builds. Scan QR codes for direct mobile downloads or import into Obtainium for automatic in-app updates.
+    </p>
+
+    <!-- Search and Controls Bar -->
+    <div class="mt-8 max-w-3xl mx-auto space-y-4">
+      <div class="relative">
+        <i data-lucide="search" class="w-5 h-5 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2"></i>
+        <input
+          id="search-input"
+          type="text"
+          placeholder="Search apps (e.g., YouTube, Spotify, Reddit, Camera)..."
+          class="w-full bg-slate-900/90 border border-slate-700 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 text-slate-100 pl-12 pr-10 py-3.5 rounded-2xl shadow-inner text-sm outline-none transition"
+        />
+        <button id="clear-search" class="hidden absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white p-1">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- Categories & Architecture Filter -->
+      <div class="flex flex-wrap items-center justify-between gap-3 text-xs">
+        <div id="category-chips" class="flex flex-wrap items-center gap-1.5">
+          <button data-cat="all" class="chip active px-3 py-1.5 rounded-xl font-medium bg-cyan-600 text-white shadow-sm transition">All</button>
+          <button data-cat="Video & Streaming" class="chip px-3 py-1.5 rounded-xl font-medium bg-slate-800/80 hover:bg-slate-700 text-slate-300 transition">Video</button>
+          <button data-cat="Music & Audio" class="chip px-3 py-1.5 rounded-xl font-medium bg-slate-800/80 hover:bg-slate-700 text-slate-300 transition">Music</button>
+          <button data-cat="Social & Community" class="chip px-3 py-1.5 rounded-xl font-medium bg-slate-800/80 hover:bg-slate-700 text-slate-300 transition">Social</button>
+          <button data-cat="Productivity" class="chip px-3 py-1.5 rounded-xl font-medium bg-slate-800/80 hover:bg-slate-700 text-slate-300 transition">Productivity</button>
+        </div>
+
+        <div class="flex items-center gap-2 ml-auto">
+          <label class="text-slate-400">Architecture:</label>
+          <select id="arch-filter" class="bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded-lg px-2.5 py-1.5 outline-none focus:border-cyan-500">
+            <option value="all">All Arches</option>
+            <option value="arm64-v8a">arm64-v8a (64-bit)</option>
+            <option value="armeabi-v7a">armeabi-v7a (32-bit)</option>
+            <option value="universal">Universal</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- App Cards Section -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full flex-grow">
+    <div class="flex items-center justify-between mb-4">
+      <div id="results-count" class="text-xs text-slate-400 font-medium">Loading applications...</div>
+      <div class="text-xs text-slate-400">
+        Source: <span id="source-tag" class="text-cyan-400 font-mono">latest release</span>
+      </div>
+    </div>
+
+    <!-- Grid -->
+    <div id="apps-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <!-- Cards dynamically injected here -->
+    </div>
+
+    <!-- Empty State -->
+    <div id="empty-state" class="hidden text-center py-16">
+      <div class="w-16 h-16 rounded-full bg-slate-800/80 mx-auto flex items-center justify-center mb-4 text-slate-400">
+        <i data-lucide="package-search" class="w-8 h-8"></i>
+      </div>
+      <h3 class="text-lg font-bold text-slate-200">No applications match your filter</h3>
+      <p class="text-sm text-slate-400 mt-1">Try clearing search filters or changing the category.</p>
+    </div>
+  </main>
+
+  <!-- QR Code Modal -->
+  <div id="qr-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-700 rounded-3xl p-6 max-w-sm w-full text-center relative shadow-2xl">
+      <button id="close-qr-modal" class="absolute right-4 top-4 text-slate-400 hover:text-white p-1 rounded-lg">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <div class="w-12 h-12 rounded-2xl bg-cyan-950 border border-cyan-800 flex items-center justify-center mx-auto mb-3 text-cyan-400">
+        <i data-lucide="qr-code" class="w-6 h-6"></i>
+      </div>
+      <h3 id="qr-title" class="font-bold text-lg text-white">Scan to Download</h3>
+      <p id="qr-subtitle" class="text-xs text-slate-400 mt-1 mb-4">Scan with your Android camera to download directly.</p>
+
+      <div class="bg-white p-4 rounded-2xl inline-block shadow-inner mx-auto mb-4" id="qrcode-container"></div>
+
+      <div class="flex items-center gap-2">
+        <a id="qr-direct-link" href="#" target="_blank" download class="flex-1 py-2 px-3 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-medium text-xs transition inline-flex items-center justify-center gap-1.5">
+          <i data-lucide="download" class="w-3.5 h-3.5"></i> Direct Download
+        </a>
+        <button id="copy-qr-link" class="py-2 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium text-xs transition inline-flex items-center justify-center gap-1.5 border border-slate-700">
+          <i data-lucide="copy" class="w-3.5 h-3.5"></i> Copy Link
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Obtainium Auto-Update Modal -->
+  <div id="obtainium-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-700 rounded-3xl p-6 max-w-lg w-full relative shadow-2xl max-h-[90vh] overflow-y-auto">
+      <button id="close-obtainium-modal" class="absolute right-4 top-4 text-slate-400 hover:text-white p-1 rounded-lg">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <div class="flex items-center gap-3 mb-4">
+        <div class="w-10 h-10 rounded-xl bg-emerald-950 border border-emerald-800 flex items-center justify-center text-emerald-400">
+          <i data-lucide="refresh-cw" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h3 class="font-bold text-lg text-white">Obtainium In-App Auto Updates</h3>
+          <p class="text-xs text-slate-400">Automate updates for all apps on your Android phone</p>
+        </div>
+      </div>
+
+      <div class="space-y-4 text-sm text-slate-300">
+        <p>
+          <a href="https://github.com/ImranR98/Obtainium" target="_blank" class="text-cyan-400 underline font-semibold">Obtainium</a> is an open-source Android app that installs and automatically updates apps directly from GitHub releases without needing Play Store.
+        </p>
+
+        <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4 space-y-2">
+          <h4 class="font-semibold text-white text-xs uppercase tracking-wider text-slate-400">Option 1: Add This Entire Repo Feed</h4>
+          <p class="text-xs text-slate-300">Copy our bulk Obtainium export link and import into Obtainium settings:</p>
+          <div class="flex items-center gap-2">
+            <input id="obtainium-feed-url" readonly type="text" class="w-full bg-slate-900 border border-slate-700 text-xs text-slate-300 rounded-lg p-2 font-mono" />
+            <button id="copy-feed-btn" class="px-3 py-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg text-xs font-semibold whitespace-nowrap">
+              Copy URL
+            </button>
+          </div>
+        </div>
+
+        <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4 space-y-2">
+          <h4 class="font-semibold text-white text-xs uppercase tracking-wider text-slate-400">Option 2: 1-Click per App</h4>
+          <p class="text-xs text-slate-300">
+            Click the <span class="text-emerald-400 font-semibold">+ Obtainium</span> button on any app card on this page when browsing on your Android device!
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="fixed bottom-6 right-6 z-50 bg-cyan-600 text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow-lg transform translate-y-20 opacity-0 transition duration-300 flex items-center gap-2">
+    <i data-lucide="check" class="w-4 h-4"></i>
+    <span id="toast-message">Copied to clipboard!</span>
+  </div>
+
+  <!-- Footer -->
+  <footer class="border-t border-slate-800 py-8 text-center text-xs text-slate-500 mt-12 bg-slate-950">
+    <p>Morphe Non-Root APK Builder • Automated pipelines powered by GitHub Actions</p>
+    <p class="mt-1">All APKs are signed with the public keystore for direct installation.</p>
+  </footer>
+
+  <!-- Application Logic -->
+  <script>
+    let allApps = [];
+    let activeCategory = 'all';
+    let activeArch = 'all';
+    let searchQuery = '';
+
+    const appsGrid = document.getElementById('apps-grid');
+    const emptyState = document.getElementById('empty-state');
+    const resultsCount = document.getElementById('results-count');
+    const searchInput = document.getElementById('search-input');
+    const clearSearch = document.getElementById('clear-search');
+    const archFilter = document.getElementById('arch-filter');
+    const categoryChips = document.getElementById('category-chips');
+    const toast = document.getElementById('toast');
+    const toastMessage = document.getElementById('toast-message');
+
+    // QR Modal Elements
+    const qrModal = document.getElementById('qr-modal');
+    const closeQrModal = document.getElementById('close-qr-modal');
+    const qrTitle = document.getElementById('qr-title');
+    const qrcodeContainer = document.getElementById('qrcode-container');
+    const qrDirectLink = document.getElementById('qr-direct-link');
+    const copyQrLink = document.getElementById('copy-qr-link');
+
+    // Obtainium Modal
+    const obtainiumModal = document.getElementById('obtainium-modal');
+    const obtainiumGuideBtn = document.getElementById('obtainium-guide-btn');
+    const closeObtainiumModal = document.getElementById('close-obtainium-modal');
+    const obtainiumFeedUrl = document.getElementById('obtainium-feed-url');
+    const copyFeedBtn = document.getElementById('copy-feed-btn');
+
+    function showToast(msg) {
+      toastMessage.textContent = msg;
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      setTimeout(() => {
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 2500);
+    }
+
+    async function loadData() {
+      // 1. Check preloaded script data (works under file:// and offline)
+      if (window.PORTAL_DATA && window.PORTAL_DATA.apps && window.PORTAL_DATA.apps.length > 0) {
+        allApps = window.PORTAL_DATA.apps;
+        document.getElementById('source-tag').textContent = window.PORTAL_DATA.repository || 'latest release';
+        const baseUrl = window.location.protocol.startsWith('http')
+          ? window.location.origin + window.location.pathname.replace('index.html', '')
+          : 'https://rpeters1430.github.io/Morphe-AutoBuilds/';
+        obtainiumFeedUrl.value = baseUrl + 'apps.json';
+        render();
+      }
+
+      // 2. If served over HTTP/HTTPS, attempt fresh fetch
+      if (window.location.protocol.startsWith('http')) {
+        try {
+          const res = await fetch('data.json?t=' + Date.now());
+          if (res.ok) {
+            const data = await res.json();
+            if (data.apps && data.apps.length > 0) {
+              allApps = data.apps;
+              document.getElementById('source-tag').textContent = data.repository || 'latest release';
+              render();
+            }
+          }
+        } catch (e) {
+          console.warn('Network fetch failed, relying on preloaded data', e);
+        }
+      }
+
+      if (allApps.length === 0) {
+        resultsCount.textContent = 'Unable to load applications catalog. Please run python scripts/generate_portal_data.py';
+      }
+    }
+
+    function filterApps() {
+      return allApps.filter(app => {
+        // Enabled filter
+        if (app.enabled === false) return false;
+
+        // Category filter
+        if (activeCategory !== 'all' && app.category !== activeCategory) {
+          return false;
+        }
+
+        // Search filter
+        if (searchQuery) {
+          const q = searchQuery.toLowerCase();
+          const matchName = app.name.toLowerCase().includes(q);
+          const matchSlug = app.slug.toLowerCase().includes(q);
+          const matchSource = app.source.toLowerCase().includes(q);
+          const matchPkg = (app.package || '').toLowerCase().includes(q);
+          if (!matchName && !matchSlug && !matchSource && !matchPkg) {
+            return false;
+          }
+        }
+
+        // Arch filter
+        if (activeArch !== 'all') {
+          const hasArch = app.downloads && app.downloads.some(d => d.arch === activeArch || d.arch === 'universal');
+          if (!hasArch) return false;
+        }
+
+        return true;
+      });
+    }
+
+    function render() {
+      const filtered = filterApps();
+      resultsCount.textContent = `Showing ${filtered.length} of ${allApps.length} applications`;
+
+      if (filtered.length === 0) {
+        appsGrid.innerHTML = '';
+        emptyState.classList.remove('hidden');
+        return;
+      }
+
+      emptyState.classList.add('hidden');
+
+      appsGrid.innerHTML = filtered.map(app => {
+        const iconSrc = app.icon || 'https://raw.githubusercontent.com/walkxcode/dashboard-icons/main/svg/android.svg';
+        const sourceBadgeColor = app.source === 'morphe' ? 'bg-cyan-950/80 text-cyan-300 border-cyan-800' :
+                                 app.source === 'revanced' ? 'bg-blue-950/80 text-blue-300 border-blue-800' :
+                                 'bg-purple-950/80 text-purple-300 border-purple-800';
+
+        const downloadButtons = (app.downloads || []).map(dl => {
+          const archLabel = dl.arch === 'arm64-v8a' ? '64-bit' :
+                            dl.arch === 'armeabi-v7a' ? '32-bit' : 'Universal';
+          return `
+            <div class="flex items-center gap-1.5 w-full">
+              <a href="${dl.download_url}" target="_blank" download class="flex-1 py-2 px-3 rounded-xl bg-slate-800 hover:bg-cyan-600 hover:text-white text-slate-200 text-xs font-semibold transition border border-slate-700/60 inline-flex items-center justify-between group">
+                <span class="inline-flex items-center gap-1.5">
+                  <i data-lucide="download" class="w-3.5 h-3.5 text-cyan-400 group-hover:text-white"></i>
+                  ${archLabel}
+                </span>
+                <span class="text-[10px] text-slate-400 group-hover:text-cyan-100 font-mono">${dl.size}</span>
+              </a>
+              <button onclick="openQrModal('${app.name}', '${dl.download_url}')" title="Scan QR Code to download" class="p-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-400 hover:text-cyan-400 border border-slate-700/60 transition">
+                <i data-lucide="qr-code" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+          `;
+        }).join('');
+
+        const obtainiumDeepLink = `obtainium://app/${encodeURIComponent(JSON.stringify(app.obtainium_config))}`;
+
+        return `
+          <div class="bg-slate-900/80 border border-slate-800/90 rounded-2xl p-5 hover:border-slate-700 transition shadow-lg flex flex-col justify-between">
+            <div>
+              <div class="flex items-start justify-between gap-3 mb-3">
+                <div class="flex items-center gap-3">
+                  <img src="${iconSrc}" alt="${app.name}" class="w-12 h-12 rounded-xl object-contain bg-slate-950/60 p-1.5 border border-slate-800" onerror="this.src='https://raw.githubusercontent.com/walkxcode/dashboard-icons/main/svg/android.svg'" />
+                  <div>
+                    <h3 class="font-bold text-base text-white tracking-tight">${app.name}</h3>
+                    <span class="text-[11px] text-slate-400 font-mono block truncate max-w-[180px]">${app.package || app.slug}</span>
+                  </div>
+                </div>
+                <span class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold border ${sourceBadgeColor}">
+                  ${app.source}
+                </span>
+              </div>
+
+              <div class="flex items-center gap-2 mb-4">
+                <span class="px-2 py-0.5 rounded-md text-[10px] font-medium bg-slate-800 text-slate-400 border border-slate-700/60">
+                  ${app.category}
+                </span>
+                <span class="text-[10px] text-slate-500">Channel: ${app.channel}</span>
+              </div>
+            </div>
+
+            <div class="space-y-2 pt-2 border-t border-slate-800/80">
+              <div class="text-[11px] font-semibold text-slate-400 mb-1.5">Direct Downloads</div>
+              <div class="space-y-1.5">
+                ${downloadButtons}
+              </div>
+
+              <div class="pt-2 flex items-center justify-between text-xs">
+                <a href="${obtainiumDeepLink}" class="inline-flex items-center gap-1 text-[11px] font-medium text-emerald-400 hover:text-emerald-300">
+                  <i data-lucide="plus-circle" class="w-3 h-3"></i> Add to Obtainium
+                </a>
+                <button onclick="copyAppLink('${app.slug}')" class="inline-flex items-center gap-1 text-[11px] text-slate-400 hover:text-slate-200">
+                  <i data-lucide="share-2" class="w-3 h-3"></i> Share
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      lucide.createIcons();
+    }
+
+    // QR Code Modal
+    window.openQrModal = function(appName, url) {
+      qrTitle.textContent = appName;
+      qrDirectLink.href = url;
+      copyQrLink.onclick = () => {
+        navigator.clipboard.writeText(url);
+        showToast('Download link copied!');
+      };
+
+      qrcodeContainer.innerHTML = '';
+      new QRCode(qrcodeContainer, {
+        text: url,
+        width: 190,
+        height: 190,
+        colorDark: "#000000",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.M
+      });
+
+      qrModal.classList.remove('hidden');
+      qrModal.classList.add('flex');
+    };
+
+    closeQrModal.onclick = () => {
+      qrModal.classList.add('hidden');
+      qrModal.classList.remove('flex');
+    };
+
+    window.copyAppLink = function(slug) {
+      const shareUrl = `${window.location.origin}${window.location.pathname}?app=${slug}`;
+      navigator.clipboard.writeText(shareUrl);
+      showToast('App link copied to clipboard!');
+    };
+
+    // Obtainium Modal events
+    obtainiumGuideBtn.onclick = () => {
+      obtainiumModal.classList.remove('hidden');
+      obtainiumModal.classList.add('flex');
+    };
+    closeObtainiumModal.onclick = () => {
+      obtainiumModal.classList.add('hidden');
+      obtainiumModal.classList.remove('flex');
+    };
+    copyFeedBtn.onclick = () => {
+      navigator.clipboard.writeText(obtainiumFeedUrl.value);
+      showToast('Obtainium feed URL copied!');
+    };
+
+    // Filters event listeners
+    searchInput.addEventListener('input', (e) => {
+      searchQuery = e.target.value.trim();
+      clearSearch.classList.toggle('hidden', !searchQuery);
+      render();
+    });
+
+    clearSearch.addEventListener('click', () => {
+      searchInput.value = '';
+      searchQuery = '';
+      clearSearch.classList.add('hidden');
+      render();
+    });
+
+    archFilter.addEventListener('change', (e) => {
+      activeArch = e.target.value;
+      render();
+    });
+
+    categoryChips.addEventListener('click', (e) => {
+      if (e.target.tagName === 'BUTTON') {
+        categoryChips.querySelectorAll('button').forEach(btn => {
+          btn.classList.remove('active', 'bg-cyan-600', 'text-white');
+          btn.classList.add('bg-slate-800/80', 'text-slate-300');
+        });
+        e.target.classList.add('active', 'bg-cyan-600', 'text-white');
+        e.target.classList.remove('bg-slate-800/80', 'text-slate-300');
+        activeCategory = e.target.dataset.cat;
+        render();
+      }
+    });
+
+    // Check URL parameters for direct app anchor (e.g. ?app=youtube)
+    window.addEventListener('DOMContentLoaded', () => {
+      loadData().then(() => {
+        const params = new URLSearchParams(window.location.search);
+        const appParam = params.get('app');
+        if (appParam) {
+          searchInput.value = appParam;
+          searchQuery = appParam;
+          clearSearch.classList.remove('hidden');
+          render();
+        }
+      });
+      lucide.createIcons();
+    });
+  </script>
+</body>
+</html>

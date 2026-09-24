@@ -1,0 +1,598 @@
+{
+  "apps": [
+    {
+      "id": "com.zhiliaoapp.musically",
+      "name": "Tiktok",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "tiktok.*\\.apk"
+    },
+    {
+      "id": "com.google.android.youtube",
+      "name": "Youtube",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "youtube.*\\.apk"
+    },
+    {
+      "id": "com.google.android.apps.youtube.music",
+      "name": "Youtube Music",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "youtube-music.*\\.apk"
+    },
+    {
+      "id": "com.reddit.frontpage",
+      "name": "Reddit",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "reddit.*\\.apk"
+    },
+    {
+      "id": "com.instagram.android",
+      "name": "Instagram",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "instagram.*\\.apk"
+    },
+    {
+      "id": "com.pinterest",
+      "name": "Pinterest",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "pinterest.*\\.apk"
+    },
+    {
+      "id": "com.soundcloud.android",
+      "name": "Soundcloud",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "soundcloud.*\\.apk"
+    },
+    {
+      "id": "com.lyfta",
+      "name": "Lyfta",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "lyfta.*\\.apk"
+    },
+    {
+      "id": "com.intsig.camscanner",
+      "name": "Camscanner",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "camscanner.*\\.apk"
+    },
+    {
+      "id": "com.sbs.diet",
+      "name": "Macrofactor",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "macrofactor.*\\.apk"
+    },
+    {
+      "id": "com.sbs.train",
+      "name": "Macrofactor Workout",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "macrofactor-workout.*\\.apk"
+    },
+    {
+      "id": "com.mirinae.mirinae",
+      "name": "Mirinae",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "mirinae.*\\.apk"
+    },
+    {
+      "id": "bitpit.launcher",
+      "name": "Niagara",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "niagara.*\\.apk"
+    },
+    {
+      "id": "com.adobe.lrmobile",
+      "name": "Lightroom",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "lightroom.*\\.apk"
+    },
+    {
+      "id": "ru.iiec.pydroid3",
+      "name": "Pydroid",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "pydroid.*\\.apk"
+    },
+    {
+      "id": "com.snorelab.app",
+      "name": "Snorelab",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "snorelab.*\\.apk"
+    },
+    {
+      "id": "cz.ackee.ventusky",
+      "name": "Ventusky",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "ventusky.*\\.apk"
+    },
+    {
+      "id": "com.xodo.pdf.reader",
+      "name": "Xodo",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "xodo.*\\.apk"
+    },
+    {
+      "id": "videoeditor.videorecorder.screenrecorder",
+      "name": "Xrecorder",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "xrecorder.*\\.apk"
+    },
+    {
+      "id": "com.google.android.apps.photos",
+      "name": "Google Photos",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "google-photos.*\\.apk"
+    },
+    {
+      "id": "com.disney.disneyplus",
+      "name": "Disney Plus",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "disney-plus.*\\.apk"
+    },
+    {
+      "id": "com.duolingo",
+      "name": "Duolingo",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "duolingo.*\\.apk"
+    },
+    {
+      "id": "com.google.android.apps.magazines",
+      "name": "Google News",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "google-news.*\\.apk"
+    },
+    {
+      "id": "com.facebook.orca",
+      "name": "Messenger",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "messenger.*\\.apk"
+    },
+    {
+      "id": "com.microblink.photomath",
+      "name": "Photomath",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "photomath.*\\.apk"
+    },
+    {
+      "id": "jp.pxv.android",
+      "name": "Pixiv",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "pixiv.*\\.apk"
+    },
+    {
+      "id": "com.amazon.avod.thirdpartyclient",
+      "name": "Prime Video",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "prime-video.*\\.apk"
+    },
+    {
+      "id": "ch.protonmail.android",
+      "name": "Proton Mail",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "proton-mail.*\\.apk"
+    },
+    {
+      "id": "ch.protonvpn.android",
+      "name": "Proton Vpn",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "proton-vpn.*\\.apk"
+    },
+    {
+      "id": "com.zombodroid.MemeGenerator",
+      "name": "Meme",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "meme.*\\.apk"
+    },
+    {
+      "id": "all.in.one.calculator",
+      "name": "Aiocal",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "aiocal.*\\.apk"
+    },
+    {
+      "id": "com.mobilefootie.wc2010",
+      "name": "Fotmob",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "fotmob.*\\.apk"
+    },
+    {
+      "id": "com.hellochinese",
+      "name": "Hellochinese",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "hellochinese.*\\.apk"
+    },
+    {
+      "id": "nom.vrd",
+      "name": "Nomone",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "nomone.*\\.apk"
+    },
+    {
+      "id": "com.wallpaperscraft.wallpaper",
+      "name": "Wallcraft",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "wallcraft.*\\.apk"
+    },
+    {
+      "id": "com.busuu.android.enc",
+      "name": "Bussu",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "bussu.*\\.apk"
+    },
+    {
+      "id": "com.pryshedko.mtisland",
+      "name": "Number",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "number.*\\.apk"
+    },
+    {
+      "id": "com.pandora.android",
+      "name": "Pandora",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "pandora.*\\.apk"
+    },
+    {
+      "id": "com.getmimo",
+      "name": "Mimo",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "mimo.*\\.apk"
+    },
+    {
+      "id": "cn.ommiao.iconpacker",
+      "name": "Icon Packer",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "icon-packer.*\\.apk"
+    },
+    {
+      "id": "com.rarlab.rar",
+      "name": "Rar",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "rar.*\\.apk"
+    },
+    {
+      "id": "com.strava",
+      "name": "Strava",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "strava.*\\.apk"
+    },
+    {
+      "id": "com.tumblr",
+      "name": "Tumblr",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "tumblr.*\\.apk"
+    },
+    {
+      "id": "com.instagram.barcelona",
+      "name": "Threads",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "threads.*\\.apk"
+    },
+    {
+      "id": "com.crunchyroll.crunchyroid",
+      "name": "Crunchyroll",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "crunchyroll.*\\.apk"
+    },
+    {
+      "id": "net.dinglisch.android.taskerm",
+      "name": "Tasker",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "tasker.*\\.apk"
+    },
+    {
+      "id": "ginlemon.iconpackstudio",
+      "name": "Icon Pack Studio",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "icon-pack-studio.*\\.apk"
+    },
+    {
+      "id": "org.totschnig.myexpenses",
+      "name": "My Expenses",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "my-expenses.*\\.apk"
+    },
+    {
+      "id": "com.avocards",
+      "name": "Avocards",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "avocards.*\\.apk"
+    },
+    {
+      "id": "me.mycake",
+      "name": "Cake",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "cake.*\\.apk"
+    },
+    {
+      "id": "kr.eggbun.eggconvo",
+      "name": "Eggbun",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "eggbun.*\\.apk"
+    },
+    {
+      "id": "org.languageapp.lingory",
+      "name": "Lingory",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "lingory.*\\.apk"
+    },
+    {
+      "id": "net.teuida.teuida",
+      "name": "Teuida",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "teuida.*\\.apk"
+    },
+    {
+      "id": "com.sofascore.results",
+      "name": "Sofascore",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "sofascore.*\\.apk"
+    },
+    {
+      "id": "app.ttmikstories.android",
+      "name": "Ttmik Stories",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "ttmik-stories.*\\.apk"
+    },
+    {
+      "id": "com.windyty.android",
+      "name": "Windy",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "windy.*\\.apk"
+    },
+    {
+      "id": "com.calistree.calistree",
+      "name": "Calistree",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "calistree.*\\.apk"
+    },
+    {
+      "id": "com.merriamwebster",
+      "name": "Webster",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "webster.*\\.apk"
+    },
+    {
+      "id": "fr.chargeprice.app",
+      "name": "Chargeprice",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "chargeprice.*\\.apk"
+    },
+    {
+      "id": "cz.seznam.mapy",
+      "name": "Mapy",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "mapy.*\\.apk"
+    },
+    {
+      "id": "org.telegram.messenger.web",
+      "name": "Telegram",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "telegram.*\\.apk"
+    },
+    {
+      "id": "fr.tramb.park4night",
+      "name": "Park4Night",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "park4night.*\\.apk"
+    },
+    {
+      "id": "de.komoot.android",
+      "name": "Komoot",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "komoot.*\\.apk"
+    },
+    {
+      "id": "com.hevy",
+      "name": "Hevy",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "hevy.*\\.apk"
+    },
+    {
+      "id": "com.groundspeak.geocaching.intro",
+      "name": "Geocaching",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "geocaching.*\\.apk"
+    },
+    {
+      "id": "com.teslacoilsw.launcher",
+      "name": "Nova",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "nova.*\\.apk"
+    },
+    {
+      "id": "com.wixsite.ut_app.utalarm",
+      "name": "Earphone",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "earphone.*\\.apk"
+    },
+    {
+      "id": "com.flatastic.app",
+      "name": "Flatastic",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "flatastic.*\\.apk"
+    },
+    {
+      "id": "com.netbiscuits.kicker",
+      "name": "Kicker",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "kicker.*\\.apk"
+    },
+    {
+      "id": "com.ticktick.task",
+      "name": "Ticktick",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "ticktick.*\\.apk"
+    },
+    {
+      "id": "in.cricketexchange.app.cricketexchange",
+      "name": "Crex",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "crex.*\\.apk"
+    },
+    {
+      "id": "com.cv.docscanner",
+      "name": "Documentscanner",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "documentscanner.*\\.apk"
+    },
+    {
+      "id": "com.eyecon.global",
+      "name": "Eyecon",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "eyecon.*\\.apk"
+    },
+    {
+      "id": "com.overlook.android.fing",
+      "name": "Fing",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "fing.*\\.apk"
+    },
+    {
+      "id": "com.lumina.wallpapers",
+      "name": "Lumina",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "lumina.*\\.apk"
+    },
+    {
+      "id": "com.markOne.ss_app",
+      "name": "Mark",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "mark.*\\.apk"
+    },
+    {
+      "id": "com.celestron.skybox",
+      "name": "Starsense",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "starsense.*\\.apk"
+    },
+    {
+      "id": "com.solid.teleprompter",
+      "name": "Prompter",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "prompter.*\\.apk"
+    },
+    {
+      "id": "com.arlosoft.macrodroid",
+      "name": "Macrodroid",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "macrodroid.*\\.apk"
+    },
+    {
+      "id": "com.bytesong.missionalarm",
+      "name": "Alarmo",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "alarmo.*\\.apk"
+    },
+    {
+      "id": "com.frontrow.vlog",
+      "name": "Vn",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "vn.*\\.apk"
+    },
+    {
+      "id": "com.Splitwise.SplitwiseMobile",
+      "name": "Splitwise",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "splitwise.*\\.apk"
+    },
+    {
+      "id": "tv.trakt.trakt",
+      "name": "Trakt",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "trakt.*\\.apk"
+    },
+    {
+      "id": "com.letterboxd.letterboxd",
+      "name": "Letterboxd",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "letterboxd.*\\.apk"
+    },
+    {
+      "id": "com.kakao.talk",
+      "name": "Kakaotalk",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "kakaotalk.*\\.apk"
+    },
+    {
+      "id": "com.mladinska.mkplus",
+      "name": "Mladinska",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "mladinska.*\\.apk"
+    },
+    {
+      "id": "nextapp.fx",
+      "name": "Fxfile",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "fxfile.*\\.apk"
+    },
+    {
+      "id": "com.myfitnesspal.android",
+      "name": "Myfitnesspal",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "myfitnesspal.*\\.apk"
+    },
+    {
+      "id": "ginlemon.flowerfree",
+      "name": "Smart_Launcher",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "smart_launcher.*\\.apk"
+    },
+    {
+      "id": "com.bambuna.podcastaddict",
+      "name": "Podcast",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "podcast.*\\.apk"
+    },
+    {
+      "id": "pl.solidexplorer2",
+      "name": "Solid",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "solid.*\\.apk"
+    },
+    {
+      "id": "cn.wps.moffice_eng",
+      "name": "Wps Office",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "wps-office.*\\.apk"
+    },
+    {
+      "id": "jp.ne.ibis.ibispaintx.app",
+      "name": "Ibs_Paint",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "ibs_paint.*\\.apk"
+    },
+    {
+      "id": "com.application.pokecardex",
+      "name": "Pokecardex",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "pokecardex.*\\.apk"
+    },
+    {
+      "id": "com.xiaoji.egggame",
+      "name": "Gamehub",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "gamehub.*\\.apk"
+    },
+    {
+      "id": "com.google.android.dialer",
+      "name": "Dialer",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "dialer.*\\.apk"
+    },
+    {
+      "id": "com.windscribe.vpn",
+      "name": "Windscribe",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "windscribe.*\\.apk"
+    },
+    {
+      "id": "com.twitter.android",
+      "name": "X New",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "x-new.*\\.apk"
+    },
+    {
+      "id": "com.google.android.inputmethod.latin",
+      "name": "Gboard",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "apkFilter": "gboard.*\\.apk"
+    }
+  ]
+}
