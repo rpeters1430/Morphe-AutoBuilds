@@ -2,597 +2,696 @@
   "apps": [
     {
       "id": "com.zhiliaoapp.musically",
-      "name": "Tiktok",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "tiktok.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Tiktok",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^tiktok-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "com.google.android.youtube",
-      "name": "Youtube",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "youtube.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Youtube",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^youtube-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "com.google.android.apps.youtube.music",
-      "name": "Youtube Music",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "youtube-music.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Youtube Music",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^youtube-music-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "com.reddit.frontpage",
-      "name": "Reddit",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "reddit.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Reddit",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^reddit-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "com.instagram.android",
-      "name": "Instagram",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "instagram.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Instagram",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^instagram-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "com.pinterest",
-      "name": "Pinterest",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "pinterest.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Pinterest",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^pinterest-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "com.soundcloud.android",
-      "name": "Soundcloud",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "soundcloud.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Soundcloud",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^soundcloud-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "com.lyfta",
-      "name": "Lyfta",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "lyfta.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Lyfta",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^lyfta-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "com.intsig.camscanner",
-      "name": "Camscanner",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "camscanner.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Camscanner",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^camscanner-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "com.sbs.diet",
-      "name": "Macrofactor",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "macrofactor.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Macrofactor",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^macrofactor-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "com.sbs.train",
-      "name": "Macrofactor Workout",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "macrofactor-workout.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Macrofactor Workout",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^macrofactor-workout-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "com.mirinae.mirinae",
-      "name": "Mirinae",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "mirinae.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Mirinae",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^mirinae-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "bitpit.launcher",
-      "name": "Niagara",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "niagara.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Niagara",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^niagara-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "com.adobe.lrmobile",
-      "name": "Lightroom",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "lightroom.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Lightroom",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^lightroom-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "ru.iiec.pydroid3",
-      "name": "Pydroid",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "pydroid.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Pydroid",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^pydroid-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "com.snorelab.app",
-      "name": "Snorelab",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "snorelab.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Snorelab",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^snorelab-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "cz.ackee.ventusky",
-      "name": "Ventusky",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "ventusky.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Ventusky",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^ventusky-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "com.xodo.pdf.reader",
-      "name": "Xodo",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "xodo.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Xodo",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^xodo-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "videoeditor.videorecorder.screenrecorder",
-      "name": "Xrecorder",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "xrecorder.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Xrecorder",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^xrecorder-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "com.google.android.apps.photos",
-      "name": "Google Photos",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "google-photos.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Google Photos",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^google-photos-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "com.disney.disneyplus",
-      "name": "Disney Plus",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "disney-plus.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Disney Plus",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^disney-plus-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "com.duolingo",
-      "name": "Duolingo",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "duolingo.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Duolingo",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^duolingo-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "com.google.android.apps.magazines",
-      "name": "Google News",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "google-news.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Google News",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^google-news-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "com.facebook.orca",
-      "name": "Messenger",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "messenger.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Messenger",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^messenger-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "com.microblink.photomath",
-      "name": "Photomath",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "photomath.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Photomath",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^photomath-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "jp.pxv.android",
-      "name": "Pixiv",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "pixiv.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Pixiv",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^pixiv-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "com.amazon.avod.thirdpartyclient",
-      "name": "Prime Video",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "prime-video.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Prime Video",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^prime-video-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "ch.protonmail.android",
-      "name": "Proton Mail",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "proton-mail.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Proton Mail",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^proton-mail-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "ch.protonvpn.android",
-      "name": "Proton Vpn",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "proton-vpn.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Proton Vpn",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^proton-vpn-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "com.zombodroid.MemeGenerator",
-      "name": "Meme",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "meme.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Meme",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^meme-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "all.in.one.calculator",
-      "name": "Aiocal",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "aiocal.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Aiocal",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^aiocal-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "com.mobilefootie.wc2010",
-      "name": "Fotmob",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "fotmob.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Fotmob",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^fotmob-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "com.hellochinese",
-      "name": "Hellochinese",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "hellochinese.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Hellochinese",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^hellochinese-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "nom.vrd",
-      "name": "Nomone",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "nomone.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Nomone",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^nomone-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "com.wallpaperscraft.wallpaper",
-      "name": "Wallcraft",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "wallcraft.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Wallcraft",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^wallcraft-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "com.busuu.android.enc",
-      "name": "Bussu",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "bussu.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Bussu",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^bussu-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "com.pryshedko.mtisland",
-      "name": "Number",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "number.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Number",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^number-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "com.pandora.android",
-      "name": "Pandora",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "pandora.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Pandora",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^pandora-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "com.getmimo",
-      "name": "Mimo",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "mimo.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Mimo",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^mimo-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "cn.ommiao.iconpacker",
-      "name": "Icon Packer",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "icon-packer.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Icon Packer",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^icon-packer-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "com.rarlab.rar",
-      "name": "Rar",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "rar.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Rar",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^rar-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "com.strava",
-      "name": "Strava",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "strava.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Strava",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^strava-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "com.tumblr",
-      "name": "Tumblr",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "tumblr.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Tumblr",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^tumblr-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "com.instagram.barcelona",
-      "name": "Threads",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "threads.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Threads",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^threads-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "com.crunchyroll.crunchyroid",
-      "name": "Crunchyroll",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "crunchyroll.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Crunchyroll",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^crunchyroll-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "net.dinglisch.android.taskerm",
-      "name": "Tasker",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "tasker.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Tasker",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^tasker-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "ginlemon.iconpackstudio",
-      "name": "Icon Pack Studio",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "icon-pack-studio.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Icon Pack Studio",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^icon-pack-studio-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "org.totschnig.myexpenses",
-      "name": "My Expenses",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "my-expenses.*\\.apk"
+      "author": "rpeters1430",
+      "name": "My Expenses",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^my-expenses-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "com.avocards",
-      "name": "Avocards",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "avocards.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Avocards",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^avocards-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "me.mycake",
-      "name": "Cake",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "cake.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Cake",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^cake-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "kr.eggbun.eggconvo",
-      "name": "Eggbun",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "eggbun.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Eggbun",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^eggbun-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "org.languageapp.lingory",
-      "name": "Lingory",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "lingory.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Lingory",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^lingory-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "net.teuida.teuida",
-      "name": "Teuida",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "teuida.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Teuida",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^teuida-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "com.sofascore.results",
-      "name": "Sofascore",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "sofascore.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Sofascore",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^sofascore-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "app.ttmikstories.android",
-      "name": "Ttmik Stories",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "ttmik-stories.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Ttmik Stories",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^ttmik-stories-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "com.windyty.android",
-      "name": "Windy",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "windy.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Windy",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^windy-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "com.calistree.calistree",
-      "name": "Calistree",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "calistree.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Calistree",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^calistree-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "com.merriamwebster",
-      "name": "Webster",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "webster.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Webster",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^webster-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "fr.chargeprice.app",
-      "name": "Chargeprice",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "chargeprice.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Chargeprice",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^chargeprice-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "cz.seznam.mapy",
-      "name": "Mapy",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "mapy.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Mapy",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^mapy-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "org.telegram.messenger.web",
-      "name": "Telegram",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "telegram.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Telegram",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^telegram-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "fr.tramb.park4night",
-      "name": "Park4Night",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "park4night.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Park4Night",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^park4night-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "de.komoot.android",
-      "name": "Komoot",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "komoot.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Komoot",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^komoot-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "com.hevy",
-      "name": "Hevy",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "hevy.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Hevy",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^hevy-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "com.groundspeak.geocaching.intro",
-      "name": "Geocaching",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "geocaching.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Geocaching",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^geocaching-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "com.teslacoilsw.launcher",
-      "name": "Nova",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "nova.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Nova",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^nova-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "com.wixsite.ut_app.utalarm",
-      "name": "Earphone",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "earphone.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Earphone",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^earphone-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "com.flatastic.app",
-      "name": "Flatastic",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "flatastic.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Flatastic",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^flatastic-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "com.netbiscuits.kicker",
-      "name": "Kicker",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "kicker.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Kicker",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^kicker-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "com.ticktick.task",
-      "name": "Ticktick",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "ticktick.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Ticktick",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^ticktick-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "in.cricketexchange.app.cricketexchange",
-      "name": "Crex",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "crex.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Crex",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^crex-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "com.cv.docscanner",
-      "name": "Documentscanner",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "documentscanner.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Documentscanner",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^documentscanner-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "com.eyecon.global",
-      "name": "Eyecon",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "eyecon.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Eyecon",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^eyecon-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "com.overlook.android.fing",
-      "name": "Fing",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "fing.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Fing",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^fing-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "com.lumina.wallpapers",
-      "name": "Lumina",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "lumina.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Lumina",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^lumina-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "com.markOne.ss_app",
-      "name": "Mark",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "mark.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Mark",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^mark-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "com.celestron.skybox",
-      "name": "Starsense",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "starsense.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Starsense",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^starsense-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "com.solid.teleprompter",
-      "name": "Prompter",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "prompter.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Prompter",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^prompter-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "com.arlosoft.macrodroid",
-      "name": "Macrodroid",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "macrodroid.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Macrodroid",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^macrodroid-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "com.bytesong.missionalarm",
-      "name": "Alarmo",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "alarmo.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Alarmo",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^alarmo-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "com.frontrow.vlog",
-      "name": "Vn",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "vn.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Vn",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^vn-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "com.Splitwise.SplitwiseMobile",
-      "name": "Splitwise",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "splitwise.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Splitwise",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^splitwise-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "tv.trakt.trakt",
-      "name": "Trakt",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "trakt.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Trakt",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^trakt-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "com.letterboxd.letterboxd",
-      "name": "Letterboxd",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "letterboxd.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Letterboxd",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^letterboxd-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "com.kakao.talk",
-      "name": "Kakaotalk",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "kakaotalk.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Kakaotalk",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^kakaotalk-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "com.mladinska.mkplus",
-      "name": "Mladinska",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "mladinska.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Mladinska",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^mladinska-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "nextapp.fx",
-      "name": "Fxfile",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "fxfile.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Fxfile",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^fxfile-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "com.myfitnesspal.android",
-      "name": "Myfitnesspal",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "myfitnesspal.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Myfitnesspal",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^myfitnesspal-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "ginlemon.flowerfree",
-      "name": "Smart_Launcher",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "smart_launcher.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Smart_Launcher",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^smart_launcher-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "com.bambuna.podcastaddict",
-      "name": "Podcast",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "podcast.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Podcast",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^podcast-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "pl.solidexplorer2",
-      "name": "Solid",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "solid.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Solid",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^solid-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "cn.wps.moffice_eng",
-      "name": "Wps Office",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "wps-office.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Wps Office",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^wps-office-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "jp.ne.ibis.ibispaintx.app",
-      "name": "Ibs_Paint",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "ibs_paint.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Ibs_Paint",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^ibs_paint-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "com.application.pokecardex",
-      "name": "Pokecardex",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "pokecardex.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Pokecardex",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^pokecardex-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "com.xiaoji.egggame",
-      "name": "Gamehub",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "gamehub.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Gamehub",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^gamehub-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "com.google.android.dialer",
-      "name": "Dialer",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "dialer.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Dialer",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^dialer-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "com.windscribe.vpn",
-      "name": "Windscribe",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "windscribe.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Windscribe",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^windscribe-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "com.twitter.android",
-      "name": "X New",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "x-new.*\\.apk"
+      "author": "rpeters1430",
+      "name": "X New",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^x-new-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
       "id": "com.google.android.inputmethod.latin",
-      "name": "Gboard",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
-      "apkFilter": "gboard.*\\.apk"
+      "author": "rpeters1430",
+      "name": "Gboard",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^gboard-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     }
   ]
 }

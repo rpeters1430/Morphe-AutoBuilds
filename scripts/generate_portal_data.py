@@ -209,14 +209,22 @@ def generate_portal_assets(console=None) -> None:
         arch_alt = "|".join(build_config.VALID_ARCHES)
         apk_filter = f"^{_regex_literal(app_name)}-({arch_alt})-.*\\.apk$"
 
-        # Deep link for Obtainium
-        # obtainium://app/{"id":"...","url":"..."}
+        # Obtainium app JSON, used for both the deep link
+        # (obtainium://app/{...}) and the bulk import feed. Obtainium only reads
+        # filters from additionalSettings, which must be a JSON-encoded string.
+        # Every app shares the one 'latest' release, so its tag can't tell
+        # versions apart; the newest matching asset's upload date does.
         obtainium_config = {
             "id": pkg,
             "url": f"https://github.com/{repo_slug}",
             "author": repo_slug.split("/")[0],
             "name": display_name,
-            "filter": apk_filter,
+            "additionalSettings": json.dumps({
+                "apkFilterRegEx": apk_filter,
+                "invertAPKFilter": False,
+                "useLatestAssetDateAsReleaseDate": True,
+                "releaseDateAsVersion": True,
+            }),
         }
 
         app_entry = {
@@ -233,13 +241,8 @@ def generate_portal_assets(console=None) -> None:
         }
         apps_portal_data.append(app_entry)
 
-        # Feed item for Obtainium bulk export
-        obtainium_apps.append({
-            "id": pkg,
-            "name": display_name,
-            "url": f"https://github.com/{repo_slug}",
-            "apkFilter": apk_filter,
-        })
+        # Feed item for Obtainium bulk import
+        obtainium_apps.append(obtainium_config)
 
     payload = {
         "repository": repo_slug,

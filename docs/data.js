@@ -1,7 +1,7 @@
 window.PORTAL_DATA = {
   "repository": "rpeters1430/Morphe-AutoBuilds",
   "release_tag": "latest",
-  "last_updated": "2026-09-24T07:12:07Z",
+  "last_updated": "Recent",
   "total_apps": 99,
   "apps": [
     {
@@ -12,7 +12,7 @@ window.PORTAL_DATA = {
       "category": "Social & Community",
       "icon": "https://raw.githubusercontent.com/walkxcode/dashboard-icons/main/svg/tiktok.svg",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "tiktok-universal.apk",
@@ -26,7 +26,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Tiktok",
-        "filter": "tiktok.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^tiktok-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -40,10 +40,10 @@ window.PORTAL_DATA = {
       "channel": "prerelease",
       "downloads": [
         {
-          "filename": "youtube-universal-morphe-v21.16.256.apk",
+          "filename": "youtube-universal.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/youtube-universal-morphe-v21.16.256.apk",
-          "size": "122.7 MB"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/youtube-universal.apk",
+          "size": "Auto"
         }
       ],
       "obtainium_config": {
@@ -51,7 +51,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Youtube",
-        "filter": "youtube.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^youtube-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -65,9 +65,15 @@ window.PORTAL_DATA = {
       "channel": "prerelease",
       "downloads": [
         {
-          "filename": "youtube-music-universal.apk",
-          "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/youtube-music-universal.apk",
+          "filename": "youtube-music-arm64-v8a.apk",
+          "arch": "arm64-v8a",
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/youtube-music-arm64-v8a.apk",
+          "size": "Auto"
+        },
+        {
+          "filename": "youtube-music-armeabi-v7a.apk",
+          "arch": "armeabi-v7a",
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/youtube-music-armeabi-v7a.apk",
           "size": "Auto"
         }
       ],
@@ -76,7 +82,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Youtube Music",
-        "filter": "youtube-music.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^youtube-music-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -87,7 +93,7 @@ window.PORTAL_DATA = {
       "category": "Social & Community",
       "icon": "https://raw.githubusercontent.com/walkxcode/dashboard-icons/main/svg/reddit.svg",
       "enabled": true,
-      "channel": "default",
+      "channel": "prerelease",
       "downloads": [
         {
           "filename": "reddit-universal.apk",
@@ -101,7 +107,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Reddit",
-        "filter": "reddit.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^reddit-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -112,12 +118,12 @@ window.PORTAL_DATA = {
       "category": "Social & Community",
       "icon": "https://raw.githubusercontent.com/walkxcode/dashboard-icons/main/svg/instagram.svg",
       "enabled": true,
-      "channel": "default",
+      "channel": "prerelease",
       "downloads": [
         {
-          "filename": "instagram-universal.apk",
-          "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/instagram-universal.apk",
+          "filename": "instagram-arm64-v8a.apk",
+          "arch": "arm64-v8a",
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/instagram-arm64-v8a.apk",
           "size": "Auto"
         }
       ],
@@ -126,7 +132,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Instagram",
-        "filter": "instagram.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^instagram-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -137,7 +143,7 @@ window.PORTAL_DATA = {
       "category": "Social & Community",
       "icon": "https://raw.githubusercontent.com/walkxcode/dashboard-icons/main/svg/pinterest.svg",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "pinterest-universal.apk",
@@ -151,7 +157,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Pinterest",
-        "filter": "pinterest.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^pinterest-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -162,7 +168,7 @@ window.PORTAL_DATA = {
       "category": "Music & Audio",
       "icon": "https://raw.githubusercontent.com/walkxcode/dashboard-icons/main/svg/soundcloud.svg",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "soundcloud-universal.apk",
@@ -176,7 +182,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Soundcloud",
-        "filter": "soundcloud.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^soundcloud-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -187,7 +193,7 @@ window.PORTAL_DATA = {
       "category": "Health & Fitness",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "lyfta-universal.apk",
@@ -201,7 +207,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Lyfta",
-        "filter": "lyfta.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^lyfta-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -212,7 +218,7 @@ window.PORTAL_DATA = {
       "category": "Productivity",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "camscanner-universal.apk",
@@ -226,7 +232,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Camscanner",
-        "filter": "camscanner.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^camscanner-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -237,7 +243,7 @@ window.PORTAL_DATA = {
       "category": "Health & Fitness",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "macrofactor-universal.apk",
@@ -251,7 +257,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Macrofactor",
-        "filter": "macrofactor.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^macrofactor-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -262,7 +268,7 @@ window.PORTAL_DATA = {
       "category": "Utilities & Tools",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "macrofactor-workout-universal.apk",
@@ -276,7 +282,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Macrofactor Workout",
-        "filter": "macrofactor-workout.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^macrofactor-workout-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -287,7 +293,7 @@ window.PORTAL_DATA = {
       "category": "Utilities & Tools",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "mirinae-universal.apk",
@@ -301,7 +307,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Mirinae",
-        "filter": "mirinae.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^mirinae-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -312,7 +318,7 @@ window.PORTAL_DATA = {
       "category": "Utilities & Tools",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "niagara-universal.apk",
@@ -326,7 +332,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Niagara",
-        "filter": "niagara.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^niagara-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -337,7 +343,7 @@ window.PORTAL_DATA = {
       "category": "Photography",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "lightroom-universal.apk",
@@ -351,7 +357,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Lightroom",
-        "filter": "lightroom.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^lightroom-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -362,7 +368,7 @@ window.PORTAL_DATA = {
       "category": "Utilities & Tools",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "pydroid-universal.apk",
@@ -376,7 +382,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Pydroid",
-        "filter": "pydroid.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^pydroid-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -387,7 +393,7 @@ window.PORTAL_DATA = {
       "category": "Health & Fitness",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "snorelab-universal.apk",
@@ -401,7 +407,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Snorelab",
-        "filter": "snorelab.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^snorelab-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -412,7 +418,7 @@ window.PORTAL_DATA = {
       "category": "Weather",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "ventusky-universal.apk",
@@ -426,7 +432,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Ventusky",
-        "filter": "ventusky.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^ventusky-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -437,7 +443,7 @@ window.PORTAL_DATA = {
       "category": "Productivity",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "xodo-universal.apk",
@@ -451,7 +457,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Xodo",
-        "filter": "xodo.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^xodo-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -462,7 +468,7 @@ window.PORTAL_DATA = {
       "category": "Utilities & Tools",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "xrecorder-universal.apk",
@@ -476,7 +482,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Xrecorder",
-        "filter": "xrecorder.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^xrecorder-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -487,12 +493,18 @@ window.PORTAL_DATA = {
       "category": "Photography",
       "icon": "https://raw.githubusercontent.com/walkxcode/dashboard-icons/main/svg/google-photos.svg",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
-          "filename": "google-photos-universal.apk",
-          "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/google-photos-universal.apk",
+          "filename": "google-photos-arm64-v8a.apk",
+          "arch": "arm64-v8a",
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/google-photos-arm64-v8a.apk",
+          "size": "Auto"
+        },
+        {
+          "filename": "google-photos-armeabi-v7a.apk",
+          "arch": "armeabi-v7a",
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/google-photos-armeabi-v7a.apk",
           "size": "Auto"
         }
       ],
@@ -501,7 +513,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Google Photos",
-        "filter": "google-photos.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^google-photos-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -512,7 +524,7 @@ window.PORTAL_DATA = {
       "category": "Utilities & Tools",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "disney-plus-universal.apk",
@@ -526,7 +538,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Disney Plus",
-        "filter": "disney-plus.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^disney-plus-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -537,7 +549,7 @@ window.PORTAL_DATA = {
       "category": "Education",
       "icon": "https://raw.githubusercontent.com/walkxcode/dashboard-icons/main/svg/duolingo.svg",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "duolingo-universal.apk",
@@ -551,7 +563,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Duolingo",
-        "filter": "duolingo.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^duolingo-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -562,7 +574,7 @@ window.PORTAL_DATA = {
       "category": "Utilities & Tools",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "google-news-universal.apk",
@@ -576,7 +588,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Google News",
-        "filter": "google-news.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^google-news-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -587,7 +599,7 @@ window.PORTAL_DATA = {
       "category": "Communication",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "messenger-universal.apk",
@@ -601,7 +613,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Messenger",
-        "filter": "messenger.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^messenger-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -612,7 +624,7 @@ window.PORTAL_DATA = {
       "category": "Education",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "photomath-universal.apk",
@@ -626,7 +638,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Photomath",
-        "filter": "photomath.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^photomath-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -637,7 +649,7 @@ window.PORTAL_DATA = {
       "category": "Art & Design",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "pixiv-universal.apk",
@@ -651,7 +663,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Pixiv",
-        "filter": "pixiv.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^pixiv-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -662,7 +674,7 @@ window.PORTAL_DATA = {
       "category": "Utilities & Tools",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "prime-video-universal.apk",
@@ -676,7 +688,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Prime Video",
-        "filter": "prime-video.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^prime-video-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -687,7 +699,7 @@ window.PORTAL_DATA = {
       "category": "Communication",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "proton-mail-universal.apk",
@@ -701,7 +713,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Proton Mail",
-        "filter": "proton-mail.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^proton-mail-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -712,7 +724,7 @@ window.PORTAL_DATA = {
       "category": "Utilities & Tools",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "proton-vpn-universal.apk",
@@ -726,7 +738,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Proton Vpn",
-        "filter": "proton-vpn.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^proton-vpn-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -737,7 +749,7 @@ window.PORTAL_DATA = {
       "category": "Utilities & Tools",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "meme-universal.apk",
@@ -751,7 +763,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Meme",
-        "filter": "meme.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^meme-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -762,7 +774,7 @@ window.PORTAL_DATA = {
       "category": "Utilities & Tools",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "aiocal-universal.apk",
@@ -776,7 +788,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Aiocal",
-        "filter": "aiocal.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^aiocal-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -787,7 +799,7 @@ window.PORTAL_DATA = {
       "category": "Utilities & Tools",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "fotmob-universal.apk",
@@ -801,7 +813,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Fotmob",
-        "filter": "fotmob.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^fotmob-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -812,7 +824,7 @@ window.PORTAL_DATA = {
       "category": "Education",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "hellochinese-universal.apk",
@@ -826,7 +838,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Hellochinese",
-        "filter": "hellochinese.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^hellochinese-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -837,7 +849,7 @@ window.PORTAL_DATA = {
       "category": "Utilities & Tools",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "nomone-universal.apk",
@@ -851,7 +863,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Nomone",
-        "filter": "nomone.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^nomone-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -862,7 +874,7 @@ window.PORTAL_DATA = {
       "category": "Utilities & Tools",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "wallcraft-universal.apk",
@@ -876,7 +888,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Wallcraft",
-        "filter": "wallcraft.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^wallcraft-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -887,7 +899,7 @@ window.PORTAL_DATA = {
       "category": "Utilities & Tools",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "bussu-universal.apk",
@@ -901,7 +913,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Bussu",
-        "filter": "bussu.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^bussu-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -912,7 +924,7 @@ window.PORTAL_DATA = {
       "category": "Utilities & Tools",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "number-universal.apk",
@@ -926,7 +938,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Number",
-        "filter": "number.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^number-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -937,7 +949,7 @@ window.PORTAL_DATA = {
       "category": "Music & Audio",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "pandora-universal.apk",
@@ -951,7 +963,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Pandora",
-        "filter": "pandora.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^pandora-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -962,7 +974,7 @@ window.PORTAL_DATA = {
       "category": "Education",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "mimo-universal.apk",
@@ -976,7 +988,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Mimo",
-        "filter": "mimo.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^mimo-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -987,7 +999,7 @@ window.PORTAL_DATA = {
       "category": "Utilities & Tools",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "icon-packer-universal.apk",
@@ -1001,7 +1013,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Icon Packer",
-        "filter": "icon-packer.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^icon-packer-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -1012,7 +1024,7 @@ window.PORTAL_DATA = {
       "category": "Productivity",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "rar-universal.apk",
@@ -1026,7 +1038,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Rar",
-        "filter": "rar.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^rar-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -1037,7 +1049,7 @@ window.PORTAL_DATA = {
       "category": "Health & Fitness",
       "icon": "https://raw.githubusercontent.com/walkxcode/dashboard-icons/main/svg/strava.svg",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "strava-universal.apk",
@@ -1051,7 +1063,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Strava",
-        "filter": "strava.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^strava-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -1062,7 +1074,7 @@ window.PORTAL_DATA = {
       "category": "Social & Community",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "tumblr-universal.apk",
@@ -1076,7 +1088,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Tumblr",
-        "filter": "tumblr.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^tumblr-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -1087,7 +1099,7 @@ window.PORTAL_DATA = {
       "category": "Social & Community",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "threads-universal.apk",
@@ -1101,7 +1113,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Threads",
-        "filter": "threads.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^threads-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -1112,7 +1124,7 @@ window.PORTAL_DATA = {
       "category": "Utilities & Tools",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "crunchyroll-universal.apk",
@@ -1126,7 +1138,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Crunchyroll",
-        "filter": "crunchyroll.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^crunchyroll-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -1137,7 +1149,7 @@ window.PORTAL_DATA = {
       "category": "Productivity",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "tasker-universal.apk",
@@ -1151,7 +1163,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Tasker",
-        "filter": "tasker.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^tasker-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -1162,7 +1174,7 @@ window.PORTAL_DATA = {
       "category": "Utilities & Tools",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "icon-pack-studio-universal.apk",
@@ -1176,7 +1188,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Icon Pack Studio",
-        "filter": "icon-pack-studio.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^icon-pack-studio-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -1187,7 +1199,7 @@ window.PORTAL_DATA = {
       "category": "Utilities & Tools",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "my-expenses-universal.apk",
@@ -1201,7 +1213,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "My Expenses",
-        "filter": "my-expenses.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^my-expenses-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -1212,7 +1224,7 @@ window.PORTAL_DATA = {
       "category": "Utilities & Tools",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "avocards-universal.apk",
@@ -1226,7 +1238,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Avocards",
-        "filter": "avocards.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^avocards-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -1237,7 +1249,7 @@ window.PORTAL_DATA = {
       "category": "Utilities & Tools",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "cake-universal.apk",
@@ -1251,7 +1263,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Cake",
-        "filter": "cake.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^cake-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -1262,7 +1274,7 @@ window.PORTAL_DATA = {
       "category": "Utilities & Tools",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "eggbun-universal.apk",
@@ -1276,7 +1288,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Eggbun",
-        "filter": "eggbun.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^eggbun-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -1287,7 +1299,7 @@ window.PORTAL_DATA = {
       "category": "Utilities & Tools",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "lingory-universal.apk",
@@ -1301,7 +1313,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Lingory",
-        "filter": "lingory.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^lingory-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -1312,7 +1324,7 @@ window.PORTAL_DATA = {
       "category": "Utilities & Tools",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "teuida-universal.apk",
@@ -1326,7 +1338,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Teuida",
-        "filter": "teuida.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^teuida-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -1337,7 +1349,7 @@ window.PORTAL_DATA = {
       "category": "Utilities & Tools",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "sofascore-universal.apk",
@@ -1351,7 +1363,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Sofascore",
-        "filter": "sofascore.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^sofascore-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -1362,7 +1374,7 @@ window.PORTAL_DATA = {
       "category": "Utilities & Tools",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "ttmik-stories-universal.apk",
@@ -1376,7 +1388,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Ttmik Stories",
-        "filter": "ttmik-stories.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^ttmik-stories-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -1387,7 +1399,7 @@ window.PORTAL_DATA = {
       "category": "Weather",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "windy-universal.apk",
@@ -1401,7 +1413,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Windy",
-        "filter": "windy.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^windy-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -1412,7 +1424,7 @@ window.PORTAL_DATA = {
       "category": "Utilities & Tools",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "calistree-universal.apk",
@@ -1426,7 +1438,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Calistree",
-        "filter": "calistree.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^calistree-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -1437,7 +1449,7 @@ window.PORTAL_DATA = {
       "category": "Utilities & Tools",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "webster-universal.apk",
@@ -1451,7 +1463,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Webster",
-        "filter": "webster.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^webster-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -1462,7 +1474,7 @@ window.PORTAL_DATA = {
       "category": "Utilities & Tools",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "chargeprice-universal.apk",
@@ -1476,7 +1488,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Chargeprice",
-        "filter": "chargeprice.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^chargeprice-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -1487,7 +1499,7 @@ window.PORTAL_DATA = {
       "category": "Utilities & Tools",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "mapy-universal.apk",
@@ -1501,7 +1513,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Mapy",
-        "filter": "mapy.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^mapy-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -1512,7 +1524,7 @@ window.PORTAL_DATA = {
       "category": "Communication",
       "icon": "https://raw.githubusercontent.com/walkxcode/dashboard-icons/main/svg/telegram.svg",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "telegram-universal.apk",
@@ -1526,7 +1538,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Telegram",
-        "filter": "telegram.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^telegram-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -1537,7 +1549,7 @@ window.PORTAL_DATA = {
       "category": "Utilities & Tools",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "park4night-universal.apk",
@@ -1551,7 +1563,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Park4Night",
-        "filter": "park4night.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^park4night-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -1562,7 +1574,7 @@ window.PORTAL_DATA = {
       "category": "Utilities & Tools",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "komoot-universal.apk",
@@ -1576,7 +1588,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Komoot",
-        "filter": "komoot.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^komoot-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -1587,7 +1599,7 @@ window.PORTAL_DATA = {
       "category": "Utilities & Tools",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "hevy-universal.apk",
@@ -1601,7 +1613,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Hevy",
-        "filter": "hevy.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^hevy-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -1612,7 +1624,7 @@ window.PORTAL_DATA = {
       "category": "Utilities & Tools",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "geocaching-universal.apk",
@@ -1626,7 +1638,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Geocaching",
-        "filter": "geocaching.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^geocaching-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -1637,7 +1649,7 @@ window.PORTAL_DATA = {
       "category": "Utilities & Tools",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "nova-universal.apk",
@@ -1651,7 +1663,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Nova",
-        "filter": "nova.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^nova-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -1662,7 +1674,7 @@ window.PORTAL_DATA = {
       "category": "Utilities & Tools",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "earphone-universal.apk",
@@ -1676,7 +1688,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Earphone",
-        "filter": "earphone.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^earphone-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -1687,7 +1699,7 @@ window.PORTAL_DATA = {
       "category": "Utilities & Tools",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "flatastic-universal.apk",
@@ -1701,7 +1713,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Flatastic",
-        "filter": "flatastic.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^flatastic-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -1712,7 +1724,7 @@ window.PORTAL_DATA = {
       "category": "Utilities & Tools",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "kicker-universal.apk",
@@ -1726,7 +1738,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Kicker",
-        "filter": "kicker.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^kicker-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -1737,7 +1749,7 @@ window.PORTAL_DATA = {
       "category": "Utilities & Tools",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "ticktick-universal.apk",
@@ -1751,7 +1763,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Ticktick",
-        "filter": "ticktick.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^ticktick-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -1762,7 +1774,7 @@ window.PORTAL_DATA = {
       "category": "Utilities & Tools",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "crex-universal.apk",
@@ -1776,7 +1788,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Crex",
-        "filter": "crex.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^crex-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -1787,7 +1799,7 @@ window.PORTAL_DATA = {
       "category": "Utilities & Tools",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "documentscanner-universal.apk",
@@ -1801,7 +1813,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Documentscanner",
-        "filter": "documentscanner.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^documentscanner-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -1812,7 +1824,7 @@ window.PORTAL_DATA = {
       "category": "Utilities & Tools",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "eyecon-universal.apk",
@@ -1826,7 +1838,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Eyecon",
-        "filter": "eyecon.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^eyecon-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -1837,7 +1849,7 @@ window.PORTAL_DATA = {
       "category": "Utilities & Tools",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "fing-universal.apk",
@@ -1851,7 +1863,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Fing",
-        "filter": "fing.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^fing-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -1862,7 +1874,7 @@ window.PORTAL_DATA = {
       "category": "Utilities & Tools",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "lumina-universal.apk",
@@ -1876,7 +1888,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Lumina",
-        "filter": "lumina.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^lumina-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -1887,7 +1899,7 @@ window.PORTAL_DATA = {
       "category": "Utilities & Tools",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "mark-universal.apk",
@@ -1901,7 +1913,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Mark",
-        "filter": "mark.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^mark-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -1912,7 +1924,7 @@ window.PORTAL_DATA = {
       "category": "Utilities & Tools",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "starsense-universal.apk",
@@ -1926,7 +1938,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Starsense",
-        "filter": "starsense.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^starsense-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -1937,7 +1949,7 @@ window.PORTAL_DATA = {
       "category": "Utilities & Tools",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "prompter-universal.apk",
@@ -1951,7 +1963,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Prompter",
-        "filter": "prompter.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^prompter-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -1962,7 +1974,7 @@ window.PORTAL_DATA = {
       "category": "Utilities & Tools",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "macrodroid-universal.apk",
@@ -1976,7 +1988,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Macrodroid",
-        "filter": "macrodroid.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^macrodroid-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -1987,7 +1999,7 @@ window.PORTAL_DATA = {
       "category": "Utilities & Tools",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "alarmo-universal.apk",
@@ -2001,7 +2013,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Alarmo",
-        "filter": "alarmo.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^alarmo-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -2012,7 +2024,7 @@ window.PORTAL_DATA = {
       "category": "Utilities & Tools",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "vn-universal.apk",
@@ -2026,7 +2038,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Vn",
-        "filter": "vn.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^vn-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -2037,7 +2049,7 @@ window.PORTAL_DATA = {
       "category": "Utilities & Tools",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "splitwise-universal.apk",
@@ -2051,7 +2063,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Splitwise",
-        "filter": "splitwise.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^splitwise-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -2062,7 +2074,7 @@ window.PORTAL_DATA = {
       "category": "Utilities & Tools",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "trakt-universal.apk",
@@ -2076,7 +2088,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Trakt",
-        "filter": "trakt.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^trakt-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -2087,7 +2099,7 @@ window.PORTAL_DATA = {
       "category": "Utilities & Tools",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "letterboxd-universal.apk",
@@ -2101,7 +2113,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Letterboxd",
-        "filter": "letterboxd.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^letterboxd-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -2112,7 +2124,7 @@ window.PORTAL_DATA = {
       "category": "Utilities & Tools",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "kakaotalk-universal.apk",
@@ -2126,7 +2138,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Kakaotalk",
-        "filter": "kakaotalk.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^kakaotalk-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -2137,7 +2149,7 @@ window.PORTAL_DATA = {
       "category": "Utilities & Tools",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "mladinska-universal.apk",
@@ -2151,7 +2163,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Mladinska",
-        "filter": "mladinska.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^mladinska-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -2162,7 +2174,7 @@ window.PORTAL_DATA = {
       "category": "Utilities & Tools",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "fxfile-universal.apk",
@@ -2176,7 +2188,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Fxfile",
-        "filter": "fxfile.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^fxfile-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -2187,7 +2199,7 @@ window.PORTAL_DATA = {
       "category": "Utilities & Tools",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "myfitnesspal-universal.apk",
@@ -2201,7 +2213,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Myfitnesspal",
-        "filter": "myfitnesspal.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^myfitnesspal-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -2212,7 +2224,7 @@ window.PORTAL_DATA = {
       "category": "Utilities & Tools",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "smart_launcher-universal.apk",
@@ -2226,7 +2238,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Smart_Launcher",
-        "filter": "smart_launcher.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^smart_launcher-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -2237,7 +2249,7 @@ window.PORTAL_DATA = {
       "category": "Utilities & Tools",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "podcast-universal.apk",
@@ -2251,7 +2263,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Podcast",
-        "filter": "podcast.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^podcast-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -2262,7 +2274,7 @@ window.PORTAL_DATA = {
       "category": "Productivity",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "solid-universal.apk",
@@ -2276,7 +2288,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Solid",
-        "filter": "solid.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^solid-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -2287,7 +2299,7 @@ window.PORTAL_DATA = {
       "category": "Utilities & Tools",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "wps-office-universal.apk",
@@ -2301,7 +2313,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Wps Office",
-        "filter": "wps-office.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^wps-office-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -2312,7 +2324,7 @@ window.PORTAL_DATA = {
       "category": "Utilities & Tools",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "ibs_paint-universal.apk",
@@ -2326,7 +2338,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Ibs_Paint",
-        "filter": "ibs_paint.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^ibs_paint-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -2337,12 +2349,18 @@ window.PORTAL_DATA = {
       "category": "Utilities & Tools",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
-          "filename": "pokecardex-universal.apk",
-          "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/pokecardex-universal.apk",
+          "filename": "pokecardex-arm64-v8a.apk",
+          "arch": "arm64-v8a",
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/pokecardex-arm64-v8a.apk",
+          "size": "Auto"
+        },
+        {
+          "filename": "pokecardex-armeabi-v7a.apk",
+          "arch": "armeabi-v7a",
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/pokecardex-armeabi-v7a.apk",
           "size": "Auto"
         }
       ],
@@ -2351,7 +2369,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Pokecardex",
-        "filter": "pokecardex.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^pokecardex-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -2362,7 +2380,7 @@ window.PORTAL_DATA = {
       "category": "Utilities & Tools",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "gamehub-universal.apk",
@@ -2376,7 +2394,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Gamehub",
-        "filter": "gamehub.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^gamehub-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -2387,7 +2405,7 @@ window.PORTAL_DATA = {
       "category": "Utilities & Tools",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "dialer-universal.apk",
@@ -2401,7 +2419,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Dialer",
-        "filter": "dialer.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^dialer-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -2412,7 +2430,7 @@ window.PORTAL_DATA = {
       "category": "Utilities & Tools",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "windscribe-universal.apk",
@@ -2426,7 +2444,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Windscribe",
-        "filter": "windscribe.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^windscribe-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -2437,7 +2455,7 @@ window.PORTAL_DATA = {
       "category": "Utilities & Tools",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "x-new-universal.apk",
@@ -2451,7 +2469,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "X New",
-        "filter": "x-new.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^x-new-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     },
     {
@@ -2462,7 +2480,7 @@ window.PORTAL_DATA = {
       "category": "Utilities & Tools",
       "icon": "",
       "enabled": true,
-      "channel": "default",
+      "channel": "source",
       "downloads": [
         {
           "filename": "gboard-universal.apk",
@@ -2476,7 +2494,7 @@ window.PORTAL_DATA = {
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Gboard",
-        "filter": "gboard.*\\.apk"
+        "additionalSettings": "{\"apkFilterRegEx\": \"^gboard-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     }
   ]
