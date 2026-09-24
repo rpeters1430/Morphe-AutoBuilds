@@ -1,0 +1,89 @@
+
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:best-practices"
+  ],
+  "forkProcessing": "enabled",
+  "timezone": "America/Los_Angeles",
+  "schedule": [
+    "at any time"
+  ],
+  "automergeSchedule": [
+    "* 12-15 * * *"
+  ],
+  "platformAutomerge": false,
+  "dependencyDashboard": true,
+  "assignees": [
+    "rpeters1430"
+  ],
+  "assignAutomerge": true,
+  "labels": [
+    "dependencies",
+    "renovate"
+  ],
+  "prConcurrentLimit": 0,
+  "prHourlyLimit": 0,
+  "prCreation": "immediate",
+  "minimumReleaseAge": "0 days",
+  "separateMajorMinor": true,
+  "packageRules": [
+    {
+      "description": "Group updates that need manual review",
+      "matchPackageNames": [
+        "*"
+      ],
+      "groupName": "Dependency updates requiring review",
+      "groupSlug": "dependencies-requiring-review",
+      "groupSingleUpdates": true,
+      "automerge": false
+    },
+    {
+      "description": "Automerge stable minor and patch releases",
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
+      "matchCurrentVersion": "/^[1-9]\\d*\\./",
+      "groupName": "Routine dependency updates",
+      "groupSlug": "routine-dependencies",
+      "groupSingleUpdates": true,
+      "automerge": true,
+      "automergeType": "pr"
+    },
+    {
+      "description": "Automerge GitHub Actions digest updates",
+      "matchManagers": [
+        "github-actions"
+      ],
+      "matchUpdateTypes": [
+        "digest"
+      ],
+      "groupName": "GitHub Actions digest updates",
+      "groupSlug": "github-actions-digests",
+      "groupSingleUpdates": true,
+      "automerge": true,
+      "automergeType": "pr"
+    },
+    {
+      "description": "Review Docker changes separately",
+      "matchDatasources": [
+        "docker"
+      ],
+      "groupName": "Docker image updates",
+      "groupSlug": "docker-updates",
+      "groupSingleUpdates": true,
+      "automerge": false
+    },
+    {
+      "description": "Review all major updates separately",
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "groupName": "Major dependency updates",
+      "groupSlug": "major-updates",
+      "groupSingleUpdates": true,
+      "automerge": false
+    }
+  ]
+}
