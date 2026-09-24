@@ -1,7 +1,7 @@
 window.PORTAL_DATA = {
   "repository": "rpeters1430/Morphe-AutoBuilds",
   "release_tag": "latest",
-  "last_updated": "Recent",
+  "last_updated": "2026-09-24T07:12:07Z",
   "total_apps": 99,
   "apps": [
     {
@@ -15,10 +15,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "tiktok-universal.apk",
+          "filename": "tiktok-universal-morphe-patches-v46.2.3.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/tiktok-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/tiktok-universal-morphe-patches-v46.2.3.apk",
+          "size": "561.2 MB"
         }
       ],
       "obtainium_config": {
@@ -40,10 +40,10 @@ window.PORTAL_DATA = {
       "channel": "prerelease",
       "downloads": [
         {
-          "filename": "youtube-universal.apk",
+          "filename": "youtube-universal-morphe-v21.38.123.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/youtube-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/youtube-universal-morphe-v21.38.123.apk",
+          "size": "133.8 MB"
         }
       ],
       "obtainium_config": {
@@ -65,16 +65,16 @@ window.PORTAL_DATA = {
       "channel": "prerelease",
       "downloads": [
         {
-          "filename": "youtube-music-arm64-v8a.apk",
+          "filename": "youtube-music-arm64-v8a-morphe-v9.38.51.apk",
           "arch": "arm64-v8a",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/youtube-music-arm64-v8a.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/youtube-music-arm64-v8a-morphe-v9.38.51.apk",
+          "size": "75.9 MB"
         },
         {
-          "filename": "youtube-music-armeabi-v7a.apk",
+          "filename": "youtube-music-armeabi-v7a-morphe-v9.38.51.apk",
           "arch": "armeabi-v7a",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/youtube-music-armeabi-v7a.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/youtube-music-armeabi-v7a-morphe-v9.38.51.apk",
+          "size": "64.2 MB"
         }
       ],
       "obtainium_config": {
@@ -96,10 +96,10 @@ window.PORTAL_DATA = {
       "channel": "prerelease",
       "downloads": [
         {
-          "filename": "reddit-universal.apk",
+          "filename": "reddit-universal-morphe-v2026.38.0.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/reddit-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/reddit-universal-morphe-v2026.38.0.apk",
+          "size": "90.0 MB"
         }
       ],
       "obtainium_config": {
@@ -121,10 +121,10 @@ window.PORTAL_DATA = {
       "channel": "prerelease",
       "downloads": [
         {
-          "filename": "instagram-arm64-v8a.apk",
+          "filename": "instagram-arm64-v8a-piko-patches-v439.0.0.37.89.apk",
           "arch": "arm64-v8a",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/instagram-arm64-v8a.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/instagram-arm64-v8a-piko-patches-v439.0.0.37.89.apk",
+          "size": "139.0 MB"
         }
       ],
       "obtainium_config": {
@@ -146,10 +146,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "pinterest-universal.apk",
+          "filename": "pinterest-universal-morphe-patches-v14.14.0.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/pinterest-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/pinterest-universal-morphe-patches-v14.14.0.apk",
+          "size": "78.2 MB"
         }
       ],
       "obtainium_config": {
@@ -171,10 +171,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "soundcloud-universal.apk",
+          "filename": "soundcloud-universal-morphe-patches-v2026.08.26-release.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/soundcloud-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/soundcloud-universal-morphe-patches-v2026.08.26-release.apk",
+          "size": "35.1 MB"
         }
       ],
       "obtainium_config": {
@@ -196,10 +196,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "lyfta-universal.apk",
+          "filename": "lyfta-universal-morphe-patches-v1.551.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/lyfta-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/lyfta-universal-morphe-patches-v1.551.apk",
+          "size": "23.3 MB"
         }
       ],
       "obtainium_config": {
@@ -221,10 +221,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "camscanner-universal.apk",
+          "filename": "camscanner-universal-morphe-patches-v7.26.5.2609160000.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/camscanner-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/camscanner-universal-morphe-patches-v7.26.5.2609160000.apk",
+          "size": "230.6 MB"
         }
       ],
       "obtainium_config": {
@@ -246,10 +246,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "macrofactor-universal.apk",
+          "filename": "macrofactor-universal-morphe-patches-v5.7.9.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/macrofactor-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/macrofactor-universal-morphe-patches-v5.7.9.apk",
+          "size": "111.0 MB"
         }
       ],
       "obtainium_config": {
@@ -321,10 +321,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "niagara-universal.apk",
+          "filename": "niagara-universal-morphe-patches-v1.16.7.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/niagara-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/niagara-universal-morphe-patches-v1.16.7.apk",
+          "size": "13.4 MB"
         }
       ],
       "obtainium_config": {
@@ -346,10 +346,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "lightroom-universal.apk",
+          "filename": "lightroom-universal-morphe-patches-v11.5.22.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/lightroom-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/lightroom-universal-morphe-patches-v11.5.22.apk",
+          "size": "91.5 MB"
         }
       ],
       "obtainium_config": {
@@ -371,10 +371,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "pydroid-universal.apk",
+          "filename": "pydroid-universal-morphe-patches-v8.3_arm64.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/pydroid-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/pydroid-universal-morphe-patches-v8.3_arm64.apk",
+          "size": "72.9 MB"
         }
       ],
       "obtainium_config": {
@@ -396,10 +396,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "snorelab-universal.apk",
+          "filename": "snorelab-universal-morphe-patches-v2.24.03.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/snorelab-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/snorelab-universal-morphe-patches-v2.24.03.apk",
+          "size": "43.3 MB"
         }
       ],
       "obtainium_config": {
@@ -421,10 +421,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "ventusky-universal.apk",
+          "filename": "ventusky-universal-morphe-patches-v53.1.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/ventusky-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/ventusky-universal-morphe-patches-v53.1.apk",
+          "size": "49.7 MB"
         }
       ],
       "obtainium_config": {
@@ -446,10 +446,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "xodo-universal.apk",
+          "filename": "xodo-universal-morphe-patches-v11.0.0.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/xodo-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/xodo-universal-morphe-patches-v11.0.0.apk",
+          "size": "20.2 MB"
         }
       ],
       "obtainium_config": {
@@ -471,10 +471,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "xrecorder-universal.apk",
+          "filename": "xrecorder-universal-morphe-patches-v2.5.4.4.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/xrecorder-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/xrecorder-universal-morphe-patches-v2.5.4.4.apk",
+          "size": "33.3 MB"
         }
       ],
       "obtainium_config": {
@@ -496,16 +496,16 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "google-photos-arm64-v8a.apk",
+          "filename": "google-photos-arm64-v8a-morphe-patches-v7.92.0.977185651.apk",
           "arch": "arm64-v8a",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/google-photos-arm64-v8a.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/google-photos-arm64-v8a-morphe-patches-v7.92.0.977185651.apk",
+          "size": "86.4 MB"
         },
         {
-          "filename": "google-photos-armeabi-v7a.apk",
+          "filename": "google-photos-armeabi-v7a-morphe-patches-v7.80.0.929302933.apk",
           "arch": "armeabi-v7a",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/google-photos-armeabi-v7a.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/google-photos-armeabi-v7a-morphe-patches-v7.80.0.929302933.apk",
+          "size": "80.5 MB"
         }
       ],
       "obtainium_config": {
@@ -552,10 +552,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "duolingo-universal.apk",
+          "filename": "duolingo-universal-morphe-patches-v6.95.4.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/duolingo-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/duolingo-universal-morphe-patches-v6.95.4.apk",
+          "size": "158.8 MB"
         }
       ],
       "obtainium_config": {
@@ -577,10 +577,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "google-news-universal.apk",
+          "filename": "google-news-universal-morphe-patches-v5.108.0.644447823.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/google-news-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/google-news-universal-morphe-patches-v5.108.0.644447823.apk",
+          "size": "16.8 MB"
         }
       ],
       "obtainium_config": {
@@ -602,10 +602,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "messenger-universal.apk",
+          "filename": "messenger-universal-morphe-patches-v573.0.0.44.88.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/messenger-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/messenger-universal-morphe-patches-v573.0.0.44.88.apk",
+          "size": "150.0 MB"
         }
       ],
       "obtainium_config": {
@@ -627,10 +627,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "photomath-universal.apk",
+          "filename": "photomath-universal-morphe-patches-v8.48.0.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/photomath-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/photomath-universal-morphe-patches-v8.48.0.apk",
+          "size": "15.2 MB"
         }
       ],
       "obtainium_config": {
@@ -652,10 +652,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "pixiv-universal.apk",
+          "filename": "pixiv-universal-morphe-patches-v6.196.0.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/pixiv-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/pixiv-universal-morphe-patches-v6.196.0.apk",
+          "size": "33.4 MB"
         }
       ],
       "obtainium_config": {
@@ -677,10 +677,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "prime-video-universal.apk",
+          "filename": "prime-video-universal-morphe-patches-v3.0.452.1047.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/prime-video-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/prime-video-universal-morphe-patches-v3.0.452.1047.apk",
+          "size": "103.0 MB"
         }
       ],
       "obtainium_config": {
@@ -702,10 +702,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "proton-mail-universal.apk",
+          "filename": "proton-mail-universal-morphe-patches-v7.11.8.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/proton-mail-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/proton-mail-universal-morphe-patches-v7.11.8.apk",
+          "size": "99.0 MB"
         }
       ],
       "obtainium_config": {
@@ -727,10 +727,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "proton-vpn-universal.apk",
+          "filename": "proton-vpn-universal-morphe-patches-v5.19.43.0.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/proton-vpn-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/proton-vpn-universal-morphe-patches-v5.19.43.0.apk",
+          "size": "40.8 MB"
         }
       ],
       "obtainium_config": {
@@ -752,10 +752,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "meme-universal.apk",
+          "filename": "meme-universal-morphe-patches-v4.6826.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/meme-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/meme-universal-morphe-patches-v4.6826.apk",
+          "size": "96.6 MB"
         }
       ],
       "obtainium_config": {
@@ -777,10 +777,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "aiocal-universal.apk",
+          "filename": "aiocal-universal-morphe-patches-v3.4.0.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/aiocal-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/aiocal-universal-morphe-patches-v3.4.0.apk",
+          "size": "62.8 MB"
         }
       ],
       "obtainium_config": {
@@ -802,10 +802,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "fotmob-universal.apk",
+          "filename": "fotmob-universal-morphe-patches-v236.17398.20260827.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/fotmob-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/fotmob-universal-morphe-patches-v236.17398.20260827.apk",
+          "size": "30.4 MB"
         }
       ],
       "obtainium_config": {
@@ -827,10 +827,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "hellochinese-universal.apk",
+          "filename": "hellochinese-universal-morphe-patches-v7.11.0.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/hellochinese-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/hellochinese-universal-morphe-patches-v7.11.0.apk",
+          "size": "59.5 MB"
         }
       ],
       "obtainium_config": {
@@ -877,10 +877,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "wallcraft-universal.apk",
+          "filename": "wallcraft-universal-morphe-patches-v3.61.01.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/wallcraft-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/wallcraft-universal-morphe-patches-v3.61.01.apk",
+          "size": "91.3 MB"
         }
       ],
       "obtainium_config": {
@@ -902,10 +902,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "bussu-universal.apk",
+          "filename": "bussu-universal-morphe-patches-v32.30.0.1575420.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/bussu-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/bussu-universal-morphe-patches-v32.30.0.1575420.apk",
+          "size": "61.9 MB"
         }
       ],
       "obtainium_config": {
@@ -952,10 +952,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "pandora-universal.apk",
+          "filename": "pandora-universal-morphe-patches-v2609.1.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/pandora-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/pandora-universal-morphe-patches-v2609.1.apk",
+          "size": "61.0 MB"
         }
       ],
       "obtainium_config": {
@@ -977,10 +977,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "mimo-universal.apk",
+          "filename": "mimo-universal-morphe-patches-v9.30.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/mimo-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/mimo-universal-morphe-patches-v9.30.apk",
+          "size": "91.0 MB"
         }
       ],
       "obtainium_config": {
@@ -1027,10 +1027,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "rar-universal.apk",
+          "filename": "rar-universal-morphe-patches-v7.23.build134.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/rar-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/rar-universal-morphe-patches-v7.23.build134.apk",
+          "size": "3.5 MB"
         }
       ],
       "obtainium_config": {
@@ -1052,10 +1052,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "strava-universal.apk",
+          "filename": "strava-universal-morphe-patches-v482.12.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/strava-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/strava-universal-morphe-patches-v482.12.apk",
+          "size": "173.2 MB"
         }
       ],
       "obtainium_config": {
@@ -1077,10 +1077,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "tumblr-universal.apk",
+          "filename": "tumblr-universal-morphe-patches-v11.4.2.14.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/tumblr-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/tumblr-universal-morphe-patches-v11.4.2.14.apk",
+          "size": "16.2 MB"
         }
       ],
       "obtainium_config": {
@@ -1102,10 +1102,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "threads-universal.apk",
+          "filename": "threads-universal-morphe-patches-v448.0.0.24.85.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/threads-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/threads-universal-morphe-patches-v448.0.0.24.85.apk",
+          "size": "112.8 MB"
         }
       ],
       "obtainium_config": {
@@ -1127,10 +1127,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "crunchyroll-universal.apk",
+          "filename": "crunchyroll-universal-morphe-patches-v2.6.0.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/crunchyroll-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/crunchyroll-universal-morphe-patches-v2.6.0.apk",
+          "size": "90.7 MB"
         }
       ],
       "obtainium_config": {
@@ -1152,10 +1152,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "tasker-universal.apk",
+          "filename": "tasker-universal-dropped-v6.6.20.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/tasker-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/tasker-universal-dropped-v6.6.20.apk",
+          "size": "30.8 MB"
         }
       ],
       "obtainium_config": {
@@ -1177,10 +1177,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "icon-pack-studio-universal.apk",
+          "filename": "icon-pack-studio-universal-morphe-patches-v2.2.build.016.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/icon-pack-studio-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/icon-pack-studio-universal-morphe-patches-v2.2.build.016.apk",
+          "size": "52.9 MB"
         }
       ],
       "obtainium_config": {
@@ -1202,10 +1202,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "my-expenses-universal.apk",
+          "filename": "my-expenses-universal-morphe-patches-v4.1.1.2.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/my-expenses-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/my-expenses-universal-morphe-patches-v4.1.1.2.apk",
+          "size": "8.8 MB"
         }
       ],
       "obtainium_config": {
@@ -1227,10 +1227,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "avocards-universal.apk",
+          "filename": "avocards-universal-morphe-patches-v3.0.18.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/avocards-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/avocards-universal-morphe-patches-v3.0.18.apk",
+          "size": "16.1 MB"
         }
       ],
       "obtainium_config": {
@@ -1252,10 +1252,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "cake-universal.apk",
+          "filename": "cake-universal-morphe-patches-v6.9.2.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/cake-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/cake-universal-morphe-patches-v6.9.2.apk",
+          "size": "33.9 MB"
         }
       ],
       "obtainium_config": {
@@ -1302,10 +1302,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "lingory-universal.apk",
+          "filename": "lingory-universal-morphe-patches-v1.2.75.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/lingory-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/lingory-universal-morphe-patches-v1.2.75.apk",
+          "size": "49.6 MB"
         }
       ],
       "obtainium_config": {
@@ -1327,10 +1327,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "teuida-universal.apk",
+          "filename": "teuida-universal-morphe-patches-v1.12.8.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/teuida-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/teuida-universal-morphe-patches-v1.12.8.apk",
+          "size": "78.2 MB"
         }
       ],
       "obtainium_config": {
@@ -1352,10 +1352,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "sofascore-universal.apk",
+          "filename": "sofascore-universal-morphe-patches-v26.08.18.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/sofascore-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/sofascore-universal-morphe-patches-v26.08.18.apk",
+          "size": "34.7 MB"
         }
       ],
       "obtainium_config": {
@@ -1377,10 +1377,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "ttmik-stories-universal.apk",
+          "filename": "ttmik-stories-universal-morphe-patches-v1.16.0.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/ttmik-stories-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/ttmik-stories-universal-morphe-patches-v1.16.0.apk",
+          "size": "103.8 MB"
         }
       ],
       "obtainium_config": {
@@ -1402,10 +1402,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "windy-universal.apk",
+          "filename": "windy-universal-morphe-patches-v51.0.1.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/windy-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/windy-universal-morphe-patches-v51.0.1.apk",
+          "size": "42.1 MB"
         }
       ],
       "obtainium_config": {
@@ -1452,10 +1452,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "webster-universal.apk",
+          "filename": "webster-universal-morphe-patches-v5.6.2.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/webster-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/webster-universal-morphe-patches-v5.6.2.apk",
+          "size": "132.4 MB"
         }
       ],
       "obtainium_config": {
@@ -1502,10 +1502,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "mapy-universal.apk",
+          "filename": "mapy-universal-morphe-patches-v26.5.0.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/mapy-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/mapy-universal-morphe-patches-v26.5.0.apk",
+          "size": "39.1 MB"
         }
       ],
       "obtainium_config": {
@@ -1527,10 +1527,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "telegram-universal.apk",
+          "filename": "telegram-universal-paresh-v12.10.4.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/telegram-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/telegram-universal-paresh-v12.10.4.apk",
+          "size": "62.9 MB"
         }
       ],
       "obtainium_config": {
@@ -1552,10 +1552,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "park4night-universal.apk",
+          "filename": "park4night-universal-morphe-patches-v7.1.11.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/park4night-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/park4night-universal-morphe-patches-v7.1.11.apk",
+          "size": "19.0 MB"
         }
       ],
       "obtainium_config": {
@@ -1577,10 +1577,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "komoot-universal.apk",
+          "filename": "komoot-universal-morphe-patches-v2026.26.7.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/komoot-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/komoot-universal-morphe-patches-v2026.26.7.apk",
+          "size": "95.6 MB"
         }
       ],
       "obtainium_config": {
@@ -1602,10 +1602,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "hevy-universal.apk",
+          "filename": "hevy-universal-morphe-patches-v3.1.14.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/hevy-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/hevy-universal-morphe-patches-v3.1.14.apk",
+          "size": "179.9 MB"
         }
       ],
       "obtainium_config": {
@@ -1627,10 +1627,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "geocaching-universal.apk",
+          "filename": "geocaching-universal-morphe-patches-v10.19.0.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/geocaching-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/geocaching-universal-morphe-patches-v10.19.0.apk",
+          "size": "36.4 MB"
         }
       ],
       "obtainium_config": {
@@ -1652,10 +1652,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "nova-universal.apk",
+          "filename": "nova-universal-morphe-patches-v8.8.8.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/nova-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/nova-universal-morphe-patches-v8.8.8.apk",
+          "size": "35.4 MB"
         }
       ],
       "obtainium_config": {
@@ -1677,10 +1677,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "earphone-universal.apk",
+          "filename": "earphone-universal-revanced-patches-v2.2.6.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/earphone-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/earphone-universal-revanced-patches-v2.2.6.apk",
+          "size": "48.8 MB"
         }
       ],
       "obtainium_config": {
@@ -1727,10 +1727,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "kicker-universal.apk",
+          "filename": "kicker-universal-revanced-patches-v6.7.2.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/kicker-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/kicker-universal-revanced-patches-v6.7.2.apk",
+          "size": "21.1 MB"
         }
       ],
       "obtainium_config": {
@@ -1777,10 +1777,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "crex-universal.apk",
+          "filename": "crex-universal-paresh-v26.09.13.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/crex-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/crex-universal-paresh-v26.09.13.apk",
+          "size": "74.5 MB"
         }
       ],
       "obtainium_config": {
@@ -1802,10 +1802,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "documentscanner-universal.apk",
+          "filename": "documentscanner-universal-paresh-v6.8.18.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/documentscanner-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/documentscanner-universal-paresh-v6.8.18.apk",
+          "size": "117.4 MB"
         }
       ],
       "obtainium_config": {
@@ -1827,10 +1827,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "eyecon-universal.apk",
+          "filename": "eyecon-universal-paresh-v4.2026.04.05.1300.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/eyecon-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/eyecon-universal-paresh-v4.2026.04.05.1300.apk",
+          "size": "59.0 MB"
         }
       ],
       "obtainium_config": {
@@ -1852,10 +1852,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "fing-universal.apk",
+          "filename": "fing-universal-paresh-v12.12.0.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/fing-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/fing-universal-paresh-v12.12.0.apk",
+          "size": "36.3 MB"
         }
       ],
       "obtainium_config": {
@@ -1952,10 +1952,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "prompter-universal.apk",
+          "filename": "prompter-universal-paresh-v6.8.2.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/prompter-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/prompter-universal-paresh-v6.8.2.apk",
+          "size": "22.9 MB"
         }
       ],
       "obtainium_config": {
@@ -1977,10 +1977,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "macrodroid-universal.apk",
+          "filename": "macrodroid-universal-paresh-v5.10.6.20190522.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/macrodroid-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/macrodroid-universal-paresh-v5.10.6.20190522.apk",
+          "size": "60.8 MB"
         }
       ],
       "obtainium_config": {
@@ -2027,10 +2027,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "vn-universal.apk",
+          "filename": "vn-universal-paresh-v2.12.0.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/vn-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/vn-universal-paresh-v2.12.0.apk",
+          "size": "291.7 MB"
         }
       ],
       "obtainium_config": {
@@ -2052,10 +2052,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "splitwise-universal.apk",
+          "filename": "splitwise-universal-revanced-patches-v26.8.3.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/splitwise-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/splitwise-universal-revanced-patches-v26.8.3.apk",
+          "size": "59.8 MB"
         }
       ],
       "obtainium_config": {
@@ -2077,10 +2077,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "trakt-universal.apk",
+          "filename": "trakt-universal-revanced-patches-v3.20.1.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/trakt-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/trakt-universal-revanced-patches-v3.20.1.apk",
+          "size": "13.9 MB"
         }
       ],
       "obtainium_config": {
@@ -2102,10 +2102,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "letterboxd-universal.apk",
+          "filename": "letterboxd-universal-morphe-patches-v3.2.10.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/letterboxd-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/letterboxd-universal-morphe-patches-v3.2.10.apk",
+          "size": "118.7 MB"
         }
       ],
       "obtainium_config": {
@@ -2127,10 +2127,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "kakaotalk-universal.apk",
+          "filename": "kakaotalk-universal-revanced-patches-v26.8.2.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/kakaotalk-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/kakaotalk-universal-revanced-patches-v26.8.2.apk",
+          "size": "170.7 MB"
         }
       ],
       "obtainium_config": {
@@ -2177,10 +2177,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "fxfile-universal.apk",
+          "filename": "fxfile-universal-dropped-v9.1.0.8.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/fxfile-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/fxfile-universal-dropped-v9.1.0.8.apk",
+          "size": "12.0 MB"
         }
       ],
       "obtainium_config": {
@@ -2202,10 +2202,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "myfitnesspal-universal.apk",
+          "filename": "myfitnesspal-universal-morphe-patches-v26.31.0.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/myfitnesspal-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/myfitnesspal-universal-morphe-patches-v26.31.0.apk",
+          "size": "43.6 MB"
         }
       ],
       "obtainium_config": {
@@ -2227,10 +2227,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "smart_launcher-universal.apk",
+          "filename": "smart_launcher-universal-morphe-patches-v6.6.build.016.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/smart_launcher-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/smart_launcher-universal-morphe-patches-v6.6.build.016.apk",
+          "size": "21.6 MB"
         }
       ],
       "obtainium_config": {
@@ -2252,10 +2252,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "podcast-universal.apk",
+          "filename": "podcast-universal-morphe-patches-v2026.10.1.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/podcast-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/podcast-universal-morphe-patches-v2026.10.1.apk",
+          "size": "21.5 MB"
         }
       ],
       "obtainium_config": {
@@ -2277,10 +2277,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "solid-universal.apk",
+          "filename": "solid-universal-morphe-patches-v3.5.20.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/solid-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/solid-universal-morphe-patches-v3.5.20.apk",
+          "size": "18.5 MB"
         }
       ],
       "obtainium_config": {
@@ -2302,10 +2302,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "wps-office-universal.apk",
+          "filename": "wps-office-universal-morphe-patches-v3.4.1.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/wps-office-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/wps-office-universal-morphe-patches-v3.4.1.apk",
+          "size": "809.8 MB"
         }
       ],
       "obtainium_config": {
@@ -2327,10 +2327,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "ibs_paint-universal.apk",
+          "filename": "ibs_paint-universal-morphe-patches-v14.1.0.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/ibs_paint-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/ibs_paint-universal-morphe-patches-v14.1.0.apk",
+          "size": "27.9 MB"
         }
       ],
       "obtainium_config": {
@@ -2352,16 +2352,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "pokecardex-arm64-v8a.apk",
-          "arch": "arm64-v8a",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/pokecardex-arm64-v8a.apk",
-          "size": "Auto"
-        },
-        {
-          "filename": "pokecardex-armeabi-v7a.apk",
+          "filename": "pokecardex-armeabi-v7a-morphe-patches-v8.7.2.apk",
           "arch": "armeabi-v7a",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/pokecardex-armeabi-v7a.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/pokecardex-armeabi-v7a-morphe-patches-v8.7.2.apk",
+          "size": "13.5 MB"
         }
       ],
       "obtainium_config": {
@@ -2383,10 +2377,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "gamehub-universal.apk",
+          "filename": "gamehub-universal-liaralabs-v6.0.9.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/gamehub-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/gamehub-universal-liaralabs-v6.0.9.apk",
+          "size": "58.2 MB"
         }
       ],
       "obtainium_config": {
@@ -2408,10 +2402,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "dialer-universal.apk",
+          "filename": "dialer-universal-revanced-patches-v239.0.980790129-publicbeta-downloadable.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/dialer-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/dialer-universal-revanced-patches-v239.0.980790129-publicbeta-downloadable.apk",
+          "size": "27.2 MB"
         }
       ],
       "obtainium_config": {
@@ -2433,10 +2427,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "windscribe-universal.apk",
+          "filename": "windscribe-universal-morphe-patches-v4.2.2328.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/windscribe-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/windscribe-universal-morphe-patches-v4.2.2328.apk",
+          "size": "54.8 MB"
         }
       ],
       "obtainium_config": {
@@ -2458,10 +2452,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "x-new-universal.apk",
+          "filename": "x-new-universal-piko-patches-v12.28.0-prod.01.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/x-new-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/x-new-universal-piko-patches-v12.28.0-prod.01.apk",
+          "size": "164.6 MB"
         }
       ],
       "obtainium_config": {
@@ -2483,10 +2477,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "gboard-universal.apk",
-          "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/gboard-universal.apk",
-          "size": "Auto"
+          "filename": "gboard-universal-morphe-patches-v18.0.3.954559732-release-arm64-v8a.apk",
+          "arch": "arm64-v8a",
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/gboard-universal-morphe-patches-v18.0.3.954559732-release-arm64-v8a.apk",
+          "size": "9.4 MB"
         }
       ],
       "obtainium_config": {
