@@ -24,15 +24,14 @@
     },
     {
       "app_name": "reddit",
-      "source": "morphe"
+      "source": "morphe",
       "patches_channel": "prerelease",
       "experimental": true
     },
     {
       "app_name": "instagram",
-      "source": "piko"
+      "source": "piko",
       "patches_channel": "prerelease",
-      "experimental": true
     },
     {
       "app_name": "pinterest",
