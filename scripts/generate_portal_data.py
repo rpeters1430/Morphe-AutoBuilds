@@ -2,6 +2,7 @@
 """Generate data.json and apps.json for the GitHub Pages download portal and Obtainium."""
 from __future__ import annotations
 
+import importlib.util
 import json
 import os
 import re
@@ -10,6 +11,13 @@ from pathlib import Path
 from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
+
+# Load by path so this runs without the builder's dependencies.
+_spec = importlib.util.spec_from_file_location("build_config", REPO_ROOT / "src" / "build_config.py")
+build_config = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(build_config)
+
+DEFAULT_REPO = "rpeters1430/Morphe-AutoBuilds"
 DOCS_DIR = REPO_ROOT / "docs"
 PATCH_CONFIG_PATH = REPO_ROOT / "patch-config.json"
 APPS_DIR = REPO_ROOT / "apps"
@@ -75,14 +83,16 @@ APP_ICONS = {
 
 def get_repo_slug() -> str:
     """Detect GitHub repo slug (e.g. rpeters1430/Morphe-AutoBuilds)."""
+    if os.getenv("GITHUB_REPOSITORY"):
+        return os.environ["GITHUB_REPOSITORY"]
     try:
         proc = subprocess.run(["gh", "repo", "view", "--json", "nameWithOwner"], capture_output=True, text=True)
         if proc.returncode == 0:
             data = json.loads(proc.stdout)
-            return data.get("nameWithOwner", "rpeters1430/Morphe-AutoBuilds")
+            return data.get("nameWithOwner", DEFAULT_REPO)
     except Exception:
         pass
-    return "rpeters1430/Morphe-AutoBuilds"
+    return DEFAULT_REPO
 
 
 def fetch_release_assets(repo_slug: str) -> tuple[dict[str, Any], str]:
@@ -99,6 +109,11 @@ def fetch_release_assets(repo_slug: str) -> tuple[dict[str, Any], str]:
     except Exception:
         pass
     return {}, ""
+
+
+def _regex_literal(text: str) -> str:
+    """re.escape without escaping '-', which is literal outside [] anyway."""
+    return re.escape(text).replace("\\-", "-")
 
 
 def parse_app_packages() -> dict[str, str]:
@@ -123,11 +138,10 @@ def generate_portal_assets(console=None) -> None:
     if console:
         console.print(f"[cyan]Generating portal metadata for repo: [bold]{repo_slug}[/bold]...[/cyan]")
 
-    # Load patch-config.json
-    with open(PATCH_CONFIG_PATH, "r", encoding="utf-8") as f:
-        patch_config = json.load(f)
-
-    patch_list = patch_config.get("patch_list", [])
+    # patch-config.json entries with defaults and arch-config.json applied
+    patch_list = build_config.iter_entries(include_disabled=True, path=PATCH_CONFIG_PATH)
+    # Longest name first so "youtube-music-..." isn't claimed by "youtube".
+    app_names = sorted({e["app_name"] for e in patch_list}, key=len, reverse=True)
     packages = parse_app_packages()
     release_data, published_at = fetch_release_assets(repo_slug)
     assets = release_data.get("assets", [])
@@ -150,13 +164,11 @@ def generate_portal_assets(console=None) -> None:
         elif "armeabi-v7a" in name:
             arch = "armeabi-v7a"
 
-        # Guess app name by matching known apps
-        matched_app = None
-        for entry in patch_list:
-            aname = entry.get("app_name", "")
-            if name.startswith(f"{aname}-"):
-                matched_app = aname
-                break
+        # Built APKs are named {app_name}-{arch}-{source name}-v{version}.apk
+        matched_app = next(
+            (a for a in app_names if name.startswith(f"{a}-{arch}-")),
+            next((a for a in app_names if name.startswith(f"{a}-")), None),
+        )
 
         if matched_app:
             assets_by_app.setdefault(matched_app, []).append({
@@ -185,14 +197,17 @@ def generate_portal_assets(console=None) -> None:
 
         # Default fallbacks if no release assets exist yet
         if not app_assets:
-            target_arches = entry.get("arches", ["universal"])
-            for t_arch in target_arches:
+            for t_arch in entry["arches"]:
                 app_assets.append({
                     "filename": f"{app_name}-{t_arch}.apk",
                     "arch": t_arch,
                     "download_url": f"https://github.com/{repo_slug}/releases/download/latest/{app_name}-{t_arch}.apk",
                     "size": "Auto",
                 })
+
+        # Only this app's APKs, not e.g. youtube-music's when app_name is youtube
+        arch_alt = "|".join(build_config.VALID_ARCHES)
+        apk_filter = f"^{_regex_literal(app_name)}-({arch_alt})-.*\\.apk$"
 
         # Deep link for Obtainium
         # obtainium://app/{"id":"...","url":"..."}
@@ -201,7 +216,7 @@ def generate_portal_assets(console=None) -> None:
             "url": f"https://github.com/{repo_slug}",
             "author": repo_slug.split("/")[0],
             "name": display_name,
-            "filter": f"{app_name}.*\\.apk",
+            "filter": apk_filter,
         }
 
         app_entry = {
@@ -212,7 +227,7 @@ def generate_portal_assets(console=None) -> None:
             "category": category,
             "icon": icon,
             "enabled": enabled,
-            "channel": entry.get("patches_channel", "default"),
+            "channel": entry["patches_channel"],
             "downloads": app_assets,
             "obtainium_config": obtainium_config,
         }
@@ -223,7 +238,7 @@ def generate_portal_assets(console=None) -> None:
             "id": pkg,
             "name": display_name,
             "url": f"https://github.com/{repo_slug}",
-            "apkFilter": f"{app_name}.*\\.apk",
+            "apkFilter": apk_filter,
         })
 
     payload = {

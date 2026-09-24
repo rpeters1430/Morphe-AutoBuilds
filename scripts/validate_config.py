@@ -34,6 +34,9 @@ FIELD_TYPES = {
     "arches": list,
     "include_patches": list,
     "exclude_patches": list,
+    "exclusive": bool,
+    "continue_on_error": bool,
+    "patch_options": dict,
 }
 DEFAULTS_FIELDS = set(FIELD_TYPES) - {"app_name", "source"}
 ROOT_FIELDS = {"defaults", "patch_list"}
@@ -59,6 +62,25 @@ def check_fields(where: str, obj: dict, allowed: set, errors: list) -> None:
                 errors.append(f"{where}: arches must be a non-empty subset of {list(build_config.VALID_ARCHES)}")
         if key in ("include_patches", "exclude_patches") and not all(isinstance(p, str) for p in value):
             errors.append(f"{where}: '{key}' must be a list of patch names")
+        if key == "patch_options":
+            for patch, opts in value.items():
+                if not isinstance(opts, dict):
+                    errors.append(f"{where}: patch_options['{patch}'] must be an object of option key -> value")
+
+
+def check_selection(where: str, entry: dict, warnings: list) -> None:
+    """Warn about patch selections that can't do what they look like."""
+    include = set(entry.get("include_patches") or []) | set(entry.get("patch_options") or {})
+    exclude = set(entry.get("exclude_patches") or [])
+    for name in sorted(include & exclude):
+        warnings.append(f"{where}: '{name}' is both enabled and excluded; it stays excluded")
+    if entry.get("exclusive") and not include:
+        rules = build_config.PATCHES_DIR / f"{entry['app_name']}-{entry['source']}.txt"
+        has_plus = rules.exists() and any(
+            line.strip().startswith("+") for line in rules.read_text(encoding="utf-8").splitlines()
+        )
+        if not has_plus:
+            warnings.append(f"{where}: exclusive is on but no patches are enabled, so nothing will be patched")
 
 
 def main() -> int:
@@ -108,6 +130,8 @@ def main() -> int:
     # Merging needs a well-formed file; skip the summary if it isn't.
     merged = [] if errors else build_config.iter_entries(include_disabled=True)
     enabled = [e for e in merged if e["enabled"]]
+    for e in enabled:
+        check_selection(f"{e['app_name']}/{e['source']}", e, warnings)
     channels = {}
     for e in enabled:
         key = (e["patches_channel"], e["cli_channel"], e["experimental"])

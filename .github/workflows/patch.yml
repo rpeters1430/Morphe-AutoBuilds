@@ -11,47 +11,21 @@ on:
         type: boolean
         required: false
         default: false
+      apps:
+        description: "Only rebuild these apps (comma-separated app_name values, empty = all that changed)"
+        type: string
+        required: false
+        default: ''
   schedule:
     - cron: '0 6 * * *'  # Daily at 6 AM UTC
 
-jobs:
-  download-tools:
-    name: Download Morphe Tools
-    runs-on: ubuntu-latest
-    if: ${{ false }}
-    outputs:
-      cache-key: ${{ steps.cache-key.outputs.cache-key }}
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-      
-      - name: Setup Python
-        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
-        with:
-          python-version: 3.14
-      
-      - name: Download Morphe Tools
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          mkdir -p tools
-          curl -L "https://github.com/revanced/revanced-cli/releases/latest/download/revanced-cli-all.jar" -o tools/revanced-cli.jar
-          curl -L "https://github.com/revanced/revanced-patches/releases/latest/download/patches.jar" -o tools/patches.jar
-          curl -L "https://github.com/revanced/revanced-integrations/releases/latest/download/app-release-unsigned.apk" -o tools/integrations.apk
-      
-      - name: Cache Tools
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
-        id: cache-tools
-        with:
-          path: tools/
-          key: revanced-tools-${{ hashFiles('patch-config.json', 'arch-config.json') }}
-      
-      - name: Generate Cache Key
-        id: cache-key
-        run: echo "cache-key=${{ steps.cache-tools.outputs.cache-key || 'no-cache' }}" >> $GITHUB_OUTPUT
+# Builds and manual patches all write to the same 'latest' release; run them
+# one at a time so they don't delete each other's assets.
+concurrency:
+  group: morphe-release
+  cancel-in-progress: false
 
+jobs:
   check-updates:
     name: Check for Updates
     runs-on: ubuntu-latest
@@ -71,6 +45,8 @@ jobs:
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
         with:
           python-version: '3.14'
+          cache: pip
+          cache-dependency-path: requirements.txt
 
       - name: Validate GitHub Auth
         env:
@@ -82,7 +58,6 @@ jobs:
       - name: Install Dependencies
         run: |
           pip install -r requirements.txt
-          pip install requests beautifulsoup4
 
       - name: Validate patch-config.json
         run: |
@@ -94,6 +69,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           FORCE_FULL_REBUILD: ${{ inputs.force_full_rebuild || 'false' }}
+          ONLY_APPS: ${{ inputs.apps || '' }}
         run: |
           python scripts/check_app_updates.py
 
@@ -103,6 +79,13 @@ jobs:
           echo "Need rebuild:    ${{ steps.check.outputs.update_count }}"
           echo "Carry over:      ${{ steps.check.outputs.carry_count }}"
           echo "Incremental:     ${{ steps.check.outputs.incremental }}"
+          {
+            echo "### 🗺️ Build plan"
+            echo ""
+            echo "| Total | Rebuild | Carry over | Incremental |"
+            echo "| ---: | ---: | ---: | :---: |"
+            echo "| ${{ steps.check.outputs.total_count }} | ${{ steps.check.outputs.update_count }} | ${{ steps.check.outputs.carry_count }} | ${{ steps.check.outputs.incremental }} |"
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload Plan Artifacts
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
@@ -142,6 +125,7 @@ jobs:
     name: Build Applications
     needs: patch-apps
     runs-on: ubuntu-latest
+    timeout-minutes: 60
     services:
       trawl:
         image: ghcr.io/germondai/trawl:latest@sha256:c25aefa0f204d0496db9e5e530ff826ffe06f471228c5236e95862e815a9c865
@@ -159,23 +143,18 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
-      - name: Restore Cached Tools
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
-        with:
-          path: tools/
-          key: revanced-tools-${{ hashFiles('patch-config.json', 'arch-config.json') }}
-
       - name: Install Python
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
         with:
-          python-version: 3.14
+          python-version: '3.14'
+          cache: pip
+          cache-dependency-path: requirements.txt
 
       - name: Install Dependencies
         run: |
           pip install -r requirements.txt
-          pip install requests beautifulsoup4
 
-      - name: Setup Java 21
+      - name: Setup Java
         uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6
         with:
           distribution: 'temurin'
@@ -210,11 +189,24 @@ jobs:
           echo "Records produced:"
           ls -la build_records/ 2>/dev/null || echo "(no records)"
 
+      - name: Report Failure
+        if: failure()
+        run: |
+          {
+            echo "### ❌ ${{ matrix.app_name }} (${{ matrix.source }}) failed"
+            echo ""
+            echo "Common fixes in \`patch-config.json\` for this entry:"
+            echo "- a patch no longer matches the app: pin an older \`version\`, or set \`continue_on_error: true\` to skip that patch"
+            echo "- no store has a compatible version: set \`force: true\` or \`experimental: true\`"
+            echo "- the app can't be built right now: set \`enabled: false\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+
       - name: Upload APK Artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: apk-${{ matrix.app_name }}-${{ matrix.source }}
           path: "*.apk"
+          retention-days: 3
 
       - name: Upload Build Records
         if: always()
@@ -457,9 +449,14 @@ jobs:
           echo "🔗 Release URL: $release_url"
           echo ""
           echo "📦 Direct Download Links:"
+          {
+            echo "### 📦 Released to [latest]($release_url)"
+            echo ""
+          } >> "$GITHUB_STEP_SUMMARY"
           for apk in ./release-apks/*.apk; do
             filename=$(basename "$apk")
             echo "- $filename: $release_url/download/$filename"
+            echo "- [$filename]($release_url/download/$filename)" >> "$GITHUB_STEP_SUMMARY"
           done
 
   cleanup:

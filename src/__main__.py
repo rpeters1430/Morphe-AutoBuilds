@@ -27,6 +27,38 @@ def _should_retry_with_older_version(output: str | None) -> bool:
         or "patching aborted" in t
     )
 
+_cli_help_cache: dict[str, str] = {}
+
+
+def _cli_supports(cli: Path, flag: str) -> bool:
+    """True if `<cli> patch --help` lists the flag. Older ReVanced CLIs lack
+    some of the options Morphe CLI has, and fail on unknown flags."""
+    key = str(cli)
+    if key not in _cli_help_cache:
+        try:
+            proc = subprocess.run(
+                ["java", "-jar", key, "patch", "--help"],
+                capture_output=True, text=True, timeout=120,
+            )
+            _cli_help_cache[key] = (proc.stdout or "") + (proc.stderr or "")
+        except Exception as e:
+            logging.debug(f"Could not read CLI help for {cli}: {e}")
+            _cli_help_cache[key] = ""
+    return flag in _cli_help_cache[key]
+
+
+def _optional_flags(cli: Path, settings: dict) -> list[str]:
+    flags = []
+    for key, flag in (("exclusive", "--exclusive"), ("continue_on_error", "--continue-on-error")):
+        if not settings.get(key):
+            continue
+        if _cli_supports(cli, flag):
+            flags.append(flag)
+        else:
+            logging.warning(f"⚠️  {cli.name} has no {flag}; ignoring '{key}'")
+    return flags
+
+
 def run_build(app_name: str, source: str, arch: str = "universal", settings: dict | None = None) -> str:
     """Build APK for specific architecture"""
     settings = settings or build_config.get_entry(app_name, source)
@@ -143,10 +175,11 @@ def run_build(app_name: str, source: str, arch: str = "universal", settings: dic
     if candidates and version in candidates:
         versions_to_try += [v for v in candidates if v != version]
 
-    include_names, exclude_names = build_config.patch_selection(settings)
-    include_patches = [arg for p in include_names for arg in ("-e", p)]
-    exclude_patches = [arg for p in exclude_names for arg in ("-d", p)]
+    patch_args = build_config.patch_cli_args(settings)
     force_args = ["--force"] if force else []
+    extra_flags = _optional_flags(cli, settings)
+    if patch_args or extra_flags:
+        logging.info(f"🧩 Patch selection: {' '.join([*extra_flags, *patch_args])}")
 
     for attempt_idx, ver in enumerate(versions_to_try):
         if attempt_idx > 0:
@@ -270,7 +303,7 @@ def run_build(app_name: str, source: str, arch: str = "universal", settings: dic
                     "java", "-jar", str(cli),
                     "patch", "--patches", str(patches),
                     "--out", str(output_apk), str(input_apk),
-                    *exclude_patches, *include_patches, *force_args
+                    *patch_args, *force_args, *extra_flags
                 ]
                 utils.run_process(morphe_cmd, capture=True, stream=True)
             else:
@@ -285,14 +318,14 @@ def run_build(app_name: str, source: str, arch: str = "universal", settings: dic
                         "java", "-jar", str(cli),
                         "patch", "-p", str(patches), "-b",
                         "--out", str(output_apk), str(input_apk),
-                        *exclude_patches, *include_patches, *force_args
+                        *patch_args, *force_args, *extra_flags
                     ], capture=True, stream=True)
                 else:
                     utils.run_process([
                         "java", "-jar", str(cli),
                         "patch", "--patches", str(patches),
                         "--out", str(output_apk), str(input_apk),
-                        *exclude_patches, *include_patches, *force_args
+                        *patch_args, *force_args, *extra_flags
                     ], capture=True, stream=True)
 
         except subprocess.CalledProcessError as e:
@@ -355,7 +388,8 @@ def main():
     logging.info(
         f"⚙️  {app_name}/{source}: patches={settings['patches_channel']} "
         f"cli={settings['cli_channel']} experimental={settings['experimental']} "
-        f"force={settings['force']} version={settings['version'] or 'auto'}"
+        f"force={settings['force']} version={settings['version'] or 'auto'} "
+        f"exclusive={settings['exclusive']} continue_on_error={settings['continue_on_error']}"
     )
 
     # An explicit ARCH (manual runs) wins over the configured arches.
@@ -373,6 +407,10 @@ def main():
     print(f"\n🎯 Built {len(built_apks)} APK(s) for {app_name}:")
     for apk in built_apks:
         print(f"  📱 {Path(apk).name}")
+
+    if not built_apks:
+        logging.error(f"❌ No APKs were built for {app_name}/{source}")
+        exit(1)
 
 if __name__ == "__main__":
     main()

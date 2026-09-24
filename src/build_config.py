@@ -28,10 +28,18 @@ Fields (per entry or in ``defaults``):
   arches           Architectures to build (overrides arch-config.json).
   include_patches  Patch names to force-enable (adds to patches/<app>-<source>.txt).
   exclude_patches  Patch names to disable (adds to patches/<app>-<source>.txt).
+  exclusive        Apply ONLY the patches in include_patches / "+" rules; every
+                   other patch is off (passes --exclusive to the CLI).
+  continue_on_error  Keep patching when a single patch fails instead of
+                   aborting the whole build (passes --continue-on-error).
+  patch_options    Per-patch option values, e.g.
+                   {"Change package name": {"packageName": "com.example"}}.
+                   The patch is enabled and each value is passed as -Okey=value.
 
 Manual runs can override a single build via env vars: PATCHES_CHANNEL,
-CLI_CHANNEL, EXPERIMENTAL, FORCE_PATCH, APP_VERSION (empty or "default" = no
-override).
+CLI_CHANNEL, EXPERIMENTAL, FORCE_PATCH, APP_VERSION, EXCLUSIVE,
+CONTINUE_ON_ERROR (empty or "default" = no override). INCLUDE_PATCHES and
+EXCLUDE_PATCHES (comma or newline separated) add to the configured lists.
 """
 import hashlib
 import json
@@ -65,7 +73,12 @@ BUILTIN_DEFAULTS = {
     "arches": None,          # None -> arch-config.json -> ["universal"]
     "include_patches": [],
     "exclude_patches": [],
+    "exclusive": False,
+    "continue_on_error": False,
+    "patch_options": {},
 }
+
+BOOL_FIELDS = ("enabled", "experimental", "force", "exclusive", "continue_on_error")
 
 _ENV_OVERRIDES = {
     "PATCHES_CHANNEL": "patches_channel",
@@ -73,6 +86,14 @@ _ENV_OVERRIDES = {
     "EXPERIMENTAL": "experimental",
     "FORCE_PATCH": "force",
     "APP_VERSION": "version",
+    "EXCLUSIVE": "exclusive",
+    "CONTINUE_ON_ERROR": "continue_on_error",
+}
+
+# Env vars whose comma/newline separated names are added to a list setting.
+_ENV_LIST_ADDITIONS = {
+    "INCLUDE_PATCHES": "include_patches",
+    "EXCLUDE_PATCHES": "exclude_patches",
 }
 
 
@@ -108,9 +129,9 @@ def merge_entry(entry: dict, defaults: dict, arch_map: dict | None = None) -> di
     merged.update({k: v for k, v in (defaults or {}).items() if v is not None})
     merged.update({k: v for k, v in entry.items() if v is not None})
 
-    merged["enabled"] = _as_bool(merged["enabled"])
-    merged["experimental"] = _as_bool(merged["experimental"])
-    merged["force"] = _as_bool(merged["force"])
+    for key in BOOL_FIELDS:
+        merged[key] = _as_bool(merged[key])
+    merged["patch_options"] = dict(merged.get("patch_options") or {})
     merged["version"] = str(merged.get("version") or "").strip()
     merged["patches_channel"] = str(merged["patches_channel"] or SOURCE_CHANNEL).strip()
     merged["cli_channel"] = str(merged["cli_channel"] or SOURCE_CHANNEL).strip()
@@ -157,9 +178,19 @@ def get_entry(app_name: str, source: str, apply_env: bool = True) -> dict:
             value = (os.getenv(env_name) or "").strip()
             if not value or value.lower() == "default":
                 continue
-            merged[key] = _as_bool(value) if key in ("experimental", "force") else value
+            merged[key] = _as_bool(value) if key in BOOL_FIELDS else value
             logging.info(f"⚙️  {env_name}={value} overrides '{key}' for {app_name}/{source}")
+        for env_name, key in _ENV_LIST_ADDITIONS.items():
+            names = split_names(os.getenv(env_name) or "")
+            if names:
+                merged[key] = list(merged.get(key) or []) + names
+                logging.info(f"⚙️  {env_name} adds {names} to '{key}' for {app_name}/{source}")
     return merged
+
+
+def split_names(value: str) -> list[str]:
+    """Patch names from a comma or newline separated string."""
+    return [n.strip() for n in value.replace("\n", ",").split(",") if n.strip()]
 
 
 def channel_to_tag(channel: str) -> str | None:
@@ -206,6 +237,13 @@ def build_options_signature(entry: dict) -> str:
         parts.append("inc=" + ",".join(sorted(entry["include_patches"])))
     if entry.get("exclude_patches"):
         parts.append("exc=" + ",".join(sorted(entry["exclude_patches"])))
+    if entry.get("exclusive"):
+        parts.append("exclusive")
+    if entry.get("continue_on_error"):
+        parts.append("coe")
+    if entry.get("patch_options"):
+        blob = json.dumps(entry["patch_options"], sort_keys=True)
+        parts.append("opts=" + hashlib.sha256(blob.encode()).hexdigest()[:12])
     rules_file = PATCHES_DIR / f"{entry.get('app_name')}-{entry.get('source')}.txt"
     if rules_file.exists():
         rules = [
@@ -232,3 +270,39 @@ def patch_selection(entry: dict) -> tuple[list[str], list[str]]:
             elif line.startswith("+"):
                 include.append(line[1:].strip())
     return include, exclude
+
+
+def option_value(value) -> str:
+    """Render a patch option value the way the CLI's -Okey=value parser expects."""
+    if isinstance(value, bool):
+        return "true" if value else "false"
+    if value is None:
+        return "null"
+    if isinstance(value, (list, dict)):
+        return json.dumps(value)
+    return str(value)
+
+
+def patch_cli_args(entry: dict) -> list[str]:
+    """-e/-d/-O arguments for the patch command.
+
+    Must come after --patches: the CLI ties every -e/-d/-O to the patch file
+    given before it. Each -O follows the -e of the patch it belongs to. A patch
+    that is both included and excluded stays excluded.
+    """
+    include, exclude = patch_selection(entry)
+    options = entry.get("patch_options") or {}
+    excluded = set(exclude)
+
+    args: list[str] = []
+    seen = set()
+    for name in [*include, *options]:
+        if name in seen or name in excluded:
+            continue
+        seen.add(name)
+        args += ["-e", name]
+        for key, value in (options.get(name) or {}).items():
+            args.append(f"-O{key}={option_value(value)}")
+    for name in dict.fromkeys(exclude):
+        args += ["-d", name]
+    return args

@@ -8,16 +8,36 @@
       "type": "string",
       "description": "Release channel: 'stable' (newest non-prerelease), 'prerelease' (newest release incl. prereleases), 'dev' (newest release whose tag contains 'dev'), 'source' (use the tag in sources/<source>.json), or an exact release tag.",
       "anyOf": [
-        { "enum": ["stable", "prerelease", "dev", "source"] },
-        { "type": "string", "minLength": 1 }
+        {
+          "enum": [
+            "stable",
+            "prerelease",
+            "dev",
+            "source"
+          ]
+        },
+        {
+          "type": "string",
+          "minLength": 1
+        }
       ]
     },
     "settings": {
       "type": "object",
       "properties": {
-        "enabled": { "type": "boolean", "description": "false skips this app without removing it.", "default": true },
-        "patches_channel": { "$ref": "#/definitions/channel", "default": "source" },
-        "cli_channel": { "$ref": "#/definitions/channel", "default": "source" },
+        "enabled": {
+          "type": "boolean",
+          "description": "false skips this app without removing it.",
+          "default": true
+        },
+        "patches_channel": {
+          "$ref": "#/definitions/channel",
+          "default": "source"
+        },
+        "cli_channel": {
+          "$ref": "#/definitions/channel",
+          "default": "source"
+        },
         "experimental": {
           "type": "boolean",
           "description": "Morphe only: also pick app versions the patches mark as experimental.",
@@ -28,43 +48,147 @@
           "description": "Patch the newest store version even if the patches don't list it as compatible (--force).",
           "default": false
         },
-        "version": { "type": "string", "description": "Pin the app version. Empty = pick automatically.", "default": "" },
+        "version": {
+          "type": "string",
+          "description": "Pin the app version. Empty = pick automatically.",
+          "default": ""
+        },
         "arches": {
           "type": "array",
-          "items": { "enum": ["arm64-v8a", "armeabi-v7a", "universal"] },
+          "items": {
+            "enum": [
+              "arm64-v8a",
+              "armeabi-v7a",
+              "universal"
+            ]
+          },
           "minItems": 1,
           "uniqueItems": true,
           "description": "Architectures to build. Overrides arch-config.json."
         },
-        "include_patches": { "type": "array", "items": { "type": "string" }, "description": "Patch names to enable." },
-        "exclude_patches": { "type": "array", "items": { "type": "string" }, "description": "Patch names to disable." }
+        "include_patches": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Patch names to enable (adds to patches/<app>-<source>.txt '+' rules)."
+        },
+        "exclude_patches": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Patch names to disable (adds to patches/<app>-<source>.txt '-' rules). Wins over include_patches."
+        },
+        "exclusive": {
+          "type": "boolean",
+          "description": "Apply ONLY the patches in include_patches / patch_options / '+' rules; all others are off (--exclusive).",
+          "default": false
+        },
+        "continue_on_error": {
+          "type": "boolean",
+          "description": "Skip a patch that fails instead of aborting the build (--continue-on-error). The APK is built without the failed patch.",
+          "default": false
+        },
+        "patch_options": {
+          "type": "object",
+          "description": "Option values per patch name. The patch is enabled and each key is passed as -Okey=value.",
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": {
+              "type": [
+                "string",
+                "number",
+                "boolean",
+                "null",
+                "array"
+              ]
+            }
+          },
+          "examples": [
+            {
+              "Change package name": {
+                "packageName": "com.example.app"
+              }
+            }
+          ]
+        }
       }
     }
   },
   "properties": {
-    "$schema": { "type": "string" },
+    "$schema": {
+      "type": "string"
+    },
     "defaults": {
       "description": "Settings applied to every entry unless the entry sets them itself.",
-      "allOf": [{ "$ref": "#/definitions/settings" }],
+      "allOf": [
+        {
+          "$ref": "#/definitions/settings"
+        }
+      ],
       "propertyNames": {
-        "enum": ["enabled", "patches_channel", "cli_channel", "experimental", "force", "version", "arches", "include_patches", "exclude_patches"]
+        "enum": [
+          "enabled",
+          "patches_channel",
+          "cli_channel",
+          "experimental",
+          "force",
+          "version",
+          "arches",
+          "include_patches",
+          "exclude_patches",
+          "exclusive",
+          "continue_on_error",
+          "patch_options"
+        ]
       }
     },
     "patch_list": {
       "type": "array",
       "items": {
-        "allOf": [{ "$ref": "#/definitions/settings" }],
-        "required": ["app_name", "source"],
+        "allOf": [
+          {
+            "$ref": "#/definitions/settings"
+          }
+        ],
+        "required": [
+          "app_name",
+          "source"
+        ],
         "properties": {
-          "app_name": { "type": "string", "description": "Name of the apps/<platform>/<app_name>.json config." },
-          "source": { "type": "string", "description": "Patch source (patch system): name of sources/<source>.json." }
+          "app_name": {
+            "type": "string",
+            "description": "Name of the apps/<platform>/<app_name>.json config."
+          },
+          "source": {
+            "type": "string",
+            "description": "Patch source (patch system): name of sources/<source>.json."
+          }
         },
         "propertyNames": {
-          "enum": ["app_name", "source", "enabled", "patches_channel", "cli_channel", "experimental", "force", "version", "arches", "include_patches", "exclude_patches"]
+          "enum": [
+            "app_name",
+            "source",
+            "enabled",
+            "patches_channel",
+            "cli_channel",
+            "experimental",
+            "force",
+            "version",
+            "arches",
+            "include_patches",
+            "exclude_patches",
+            "exclusive",
+            "continue_on_error",
+            "patch_options"
+          ]
         }
       }
     }
   },
-  "required": ["patch_list"],
+  "required": [
+    "patch_list"
+  ],
   "additionalProperties": false
 }

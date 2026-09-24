@@ -19,6 +19,9 @@ Strategy:
 Force full rebuild: env FORCE_FULL_REBUILD=true (also: any app missing from the
 old manifest is rebuilt automatically).
 
+Build only some apps: env ONLY_APPS="youtube, reddit" rebuilds just those apps
+(whether or not they changed) and leaves every other manifest entry as it was.
+
 Fail-safe: any unexpected error -> full rebuild matrix is emitted (preserves the
 previous always-build behavior so nothing breaks).
 """
@@ -49,6 +52,9 @@ RELEASE_TAG = "latest"
 
 GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN", "")
 FORCE_FULL = os.environ.get("FORCE_FULL_REBUILD", "false").lower() in ("true", "1", "yes")
+ONLY_APPS = {
+    a.strip() for a in re.split(r"[,\s]+", os.environ.get("ONLY_APPS", "")) if a.strip()
+}
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -835,6 +841,15 @@ def plan_incremental(full_matrix: List[dict], old_manifest: Optional[dict],
         arch = entry["arch"]
         mkey = make_manifest_key(app, src, arch)
 
+        if ONLY_APPS and app not in ONLY_APPS:
+            # Not requested this run: keep the previous state untouched.
+            old = old_entries.get(mkey)
+            if old:
+                new_entries[mkey] = dict(old)
+                if old.get("apk") in existing_apk_set:
+                    carry_over.append(old["apk"])
+            continue
+
         settings = get_settings(app, src)
         # '' if 'latest'. A version pinned in patch-config wins over apps/*.json.
         cur_app_ver = settings["version"] or load_app_config_version(app)
@@ -879,6 +894,8 @@ def plan_incremental(full_matrix: List[dict], old_manifest: Optional[dict],
         reasons: List[str] = []
         if FORCE_FULL:
             reasons.append("force-rebuild")
+        if ONLY_APPS:
+            reasons.append("requested")
         if not old:
             reasons.append("new-entry")
         else:
@@ -997,6 +1014,11 @@ def emit_full_rebuild(reason: str) -> None:
     """Emergency fallback: build everything (preserves the previous behavior)."""
     logging.warning(f"Falling back to FULL rebuild: {reason}")
     full = build_full_matrix()
+    if ONLY_APPS:
+        full = [e for e in full if e["app_name"] in ONLY_APPS]
+    # The build job builds every configured arch of an (app, source) itself.
+    full = [dict(t) for t in dict.fromkeys(
+        (("app_name", e["app_name"]), ("source", e["source"])) for e in full)]
     Path("build_matrix.json").write_text(json.dumps(full), encoding="utf-8")
     Path("carry_over.json").write_text(json.dumps([]), encoding="utf-8")
     # Empty manifest -> next run will treat everything as 'new-entry' until a
@@ -1015,6 +1037,13 @@ def main() -> int:
     try:
         full = build_full_matrix()
         logging.info(f"Full matrix: {len(full)} (app, source, arch) entries")
+        if ONLY_APPS:
+            configured = {e["app_name"] for e in full}
+            unknown = sorted(ONLY_APPS - configured)
+            if unknown:
+                logging.error(f"ONLY_APPS names not enabled in patch-config.json: {unknown}")
+                return 1
+            logging.info(f"ONLY_APPS -> building just {sorted(ONLY_APPS)}")
 
         if FORCE_FULL:
             logging.info("FORCE_FULL_REBUILD=true -> rebuilding everything")
