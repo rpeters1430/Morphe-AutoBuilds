@@ -967,7 +967,8 @@ def plan_incremental(full_matrix: List[dict], old_manifest: Optional[dict],
             # Preserved verbatim; refreshed by the merge step after each build.
             "built_version": old_built_ver,
         }
-        # Failure history, updated by merge_manifest.py after the build.
+        # State carried between runs (failure backoff, store tracking, manual
+        # builds); merge_manifest.py updates it after the build.
         for fkey in ("failed_sig", "failed_attempts", "last_failed_at",
                      "follows_store", "store_version_seen", "manual_build"):
             if old and fkey in old:
@@ -1029,6 +1030,7 @@ def plan_incremental(full_matrix: List[dict], old_manifest: Optional[dict],
             # Each store version triggers at most one successful rebuild
             # (store_version_seen), so a store listing the builder can't
             # actually download never loops.
+            #
             # A manual build with overrides (e.g. a pinned older version) is
             # kept until the patches or settings change, not replaced because
             # the store moved on.
