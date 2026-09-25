@@ -321,30 +321,66 @@ jobs:
             echo "📭 Release 'latest' does not exist; it will be created."
           fi
       
-      - name: Generate Release Notes
+      - name: Upload Or Create Release
         if: steps.check-apks.outputs.skip_release == 'false'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "📝 Generating release notes..."
+          echo "🚀 Publishing rebuilt assets to release..."
+
+          apk_count=$(ls -1 ./release-apks/*.apk 2>/dev/null | wc -l || echo "0")
+          if [ $apk_count -eq 0 ]; then
+            echo "❌ No APKs found to release"
+            exit 1
+          fi
+
+          echo "📦 Releasing $apk_count APK(s)..."
+
+          # Build the asset list: APKs + optional manifest.json
+          ASSETS=( ./release-apks/*.apk )
+          if [ -f ./release-apks/manifest.json ]; then
+            ASSETS+=( ./release-apks/manifest.json )
+            echo "📎 Including manifest.json"
+          fi
 
           if [ "${{ steps.check-release.outputs.release_exists }}" = "true" ]; then
-            gh release view latest --json assets --jq '.assets[].name' > current_assets.txt
+            # Upload first, then delete superseded versions: if the upload
+            # fails, the previous APKs are still there to download.
+            echo "⬆️ Uploading rebuilt assets in place..."
+            gh release upload latest "${ASSETS[@]}" --clobber
+
+            # APK names embed the version, so --clobber never replaces an older
+            # version (v2.4.0 next to the new v2.5.0). cleanup_old_apks.py deletes
+            # any release APK sharing an {app}-{arch}-{name} identity with a new
+            # APK but with a different version.
+            : > keep_apks.txt
+            for apk in ./release-apks/*.apk; do
+              [ -f "$apk" ] || continue
+              basename "$apk" >> keep_apks.txt
+            done
+            python scripts/cleanup_old_apks.py --release latest --keep-file keep_apks.txt || \
+              echo "⚠️  cleanup_old_apks.py failed; superseded APKs may remain"
           else
-            : > current_assets.txt
+            echo "🆕 Creating 'latest' release..."
+            gh release create "latest" \
+              --title "Morphe APKs - $(date +'%Y-%m-%d %H:%M')" \
+              --notes "Publishing..." \
+              "${ASSETS[@]}" \
+              --latest
           fi
 
-          for apk in ./release-apks/*.apk; do
-            [ -f "$apk" ] || continue
-            basename "$apk" >> current_assets.txt
-          done
+          echo "✅ Release publish step completed successfully!"
 
-          if [ -f ./release-apks/manifest.json ]; then
-            echo "manifest.json" >> current_assets.txt
-          fi
-
-          sort -u current_assets.txt > release_assets.txt
+      - name: Update Release Notes
+        if: steps.check-apks.outputs.skip_release == 'false'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Listed after upload + cleanup so the notes match what is actually
+          # attached (no superseded versions, nothing missing).
+          gh release view latest --json assets --jq '.assets[].name' | sort -u > release_assets.txt
 
           cat > release_notes.md << 'EOF'
           # Morphe APKs - Auto Built
@@ -380,65 +416,11 @@ jobs:
           - Manual updates available via workflow dispatch
           - Creates `latest` if missing and uploads rebuilt assets in place
           EOF
-      
-      - name: Upload Or Create Release
-        if: steps.check-apks.outputs.skip_release == 'false'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          echo "🚀 Publishing rebuilt assets to release..."
 
-          # Count APKs
-          apk_count=$(ls -1 ./release-apks/*.apk 2>/dev/null | wc -l || echo "0")
+          gh release edit latest \
+            --title "Morphe APKs - $(date +'%Y-%m-%d %H:%M')" \
+            --notes-file release_notes.md
 
-          if [ $apk_count -eq 0 ]; then
-            echo "❌ No APKs found to release"
-            exit 1
-          fi
-
-          echo "📦 Releasing $apk_count APK(s)..."
-
-          # Build the asset list: APKs + optional manifest.json
-          ASSETS=( ./release-apks/*.apk )
-          if [ -f ./release-apks/manifest.json ]; then
-            ASSETS+=( ./release-apks/manifest.json )
-            echo "📎 Including manifest.json"
-          fi
-
-          if [ "${{ steps.check-release.outputs.release_exists }}" = "true" ]; then
-            echo "⬆️ Uploading rebuilt assets in place and refreshing release metadata..."
-
-            # Delete superseded older-version APKs. The previous loop only deleted
-            # assets whose filename EXACTLY matched a new APK; since APK names
-            # embed the version, old versions (e.g. v2.4.0) never matched the new
-            # v2.5.0 and accumulated forever. cleanup_old_apks.py deletes any
-            # release APK sharing a {app}-{arch}- identity prefix with a new APK
-            # but with a different version.
-            : > keep_apks.txt
-            for apk in ./release-apks/*.apk; do
-              [ -f "$apk" ] || continue
-              basename "$apk" >> keep_apks.txt
-            done
-            python scripts/cleanup_old_apks.py --release latest --keep-file keep_apks.txt || \
-              echo "⚠️  cleanup_old_apks.py failed; continuing with exact-name cleanup"
-
-            # Upload new APKs and manifest
-            gh release upload latest "${ASSETS[@]}" --clobber
-            gh release edit latest \
-              --title "Morphe APKs - $(date +'%Y-%m-%d %H:%M')" \
-              --notes-file release_notes.md
-          else
-            echo "🆕 Creating 'latest' release..."
-            gh release create "latest" \
-              --title "Morphe APKs - $(date +'%Y-%m-%d %H:%M')" \
-              --notes-file release_notes.md \
-              "${ASSETS[@]}" \
-              --latest
-          fi
-
-          echo "✅ Release publish step completed successfully!"
-      
       - name: Display Release URL
         if: steps.check-apks.outputs.skip_release == 'false'
         env:
