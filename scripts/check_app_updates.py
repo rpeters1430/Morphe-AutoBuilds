@@ -794,19 +794,40 @@ def _strip_branch_sha(sig: str) -> str:
     return _BRANCH_SHA_RE.sub("", sig or "")
 
 
-def _recover_apk_from_release(app: str, arch: str, existing_apks: List[str]) -> str:
-    a = (app or "").lower()
-    rarch = (arch or "").lower()
-    candidates: List[str] = []
-    for n in existing_apks:
-        nl = (n or "").lower()
-        if not nl.endswith(".apk"):
-            continue
-        if not nl.startswith(f"{a}-{rarch}-"):
-            continue
-        candidates.append(n)
-    candidates.sort()
-    return candidates[-1] if candidates else ""
+def _source_output_name(source: str) -> str:
+    """The patch-set name the builder puts in APK filenames
+    ({app}-{arch}-{name}-v{version}.apk): sources/<source>.json's first entry's
+    "name" (list format) or its "name" key (bundle format). '' if unknown."""
+    data = _load_source_entries(source, build_config.SOURCE_CHANNEL,
+                                build_config.SOURCE_CHANNEL)
+    if isinstance(data, list) and data and isinstance(data[0], dict):
+        return (data[0].get("name") or "").strip()
+    if isinstance(data, dict):
+        return (data.get("name") or "bundle-patches").strip()
+    return ""
+
+
+def _version_key(apk_name: str) -> List[int]:
+    try:
+        return provider_utils.normalize_version(extract_version_from_filename(apk_name))
+    except Exception:
+        return []
+
+
+def _recover_apk_from_release(app: str, source: str, arch: str,
+                              existing_apks: List[str]) -> str:
+    """Find this entry's APK among the release assets when the manifest's
+    filename is gone (e.g. a manual run replaced it). Only APKs built with the
+    same patch set count, so another source's build of the same app is never
+    adopted, and the highest version wins (numerically, not as text)."""
+    name = _source_output_name(source).lower()
+    prefix = f"{app}-{arch}-{name}-v" if name else f"{app}-{arch}-"
+    prefix = prefix.lower()
+    candidates = [
+        n for n in existing_apks
+        if n and n.lower().endswith(".apk") and n.lower().startswith(prefix)
+    ]
+    return max(candidates, key=_version_key) if candidates else ""
 
 
 def _is_newer_version(candidate: str, reference: str) -> bool:
@@ -876,7 +897,7 @@ def plan_incremental(full_matrix: List[dict], old_manifest: Optional[dict],
         old_built_ver = (old or {}).get("built_version", "")
         if old:
             if not carried_apk or carried_apk not in existing_apk_set:
-                recovered = _recover_apk_from_release(app, arch, existing_apks)
+                recovered = _recover_apk_from_release(app, src, arch, existing_apks)
                 if recovered:
                     carried_apk = recovered
                     # Recovered filename carries its own version; re-derive it
