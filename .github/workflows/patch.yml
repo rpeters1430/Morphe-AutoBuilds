@@ -262,6 +262,32 @@ jobs:
             echo "skip_release=false" >> $GITHUB_OUTPUT
           fi
       
+      - name: Record Failed Builds
+        # Nothing built, so nothing is released, but the manifest still has to
+        # note which inputs failed; otherwise the failure backoff never starts
+        # and every failing app is retried daily.
+        if: steps.check-apks.outputs.skip_release == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ ! -f ./build-plan/new_manifest.json ]; then
+            echo "No build plan; nothing to record."
+            exit 0
+          fi
+          # A full-rebuild fallback plans an empty manifest; uploading it would
+          # wipe the existing one.
+          if [ "$(jq '.entries | length' ./build-plan/new_manifest.json)" -eq 0 ]; then
+            echo "Build plan has no manifest entries; keeping the existing manifest."
+            exit 0
+          fi
+          if ! gh release view latest >/dev/null 2>&1; then
+            echo "No 'latest' release yet; nothing to update."
+            exit 0
+          fi
+          cp ./build-plan/new_manifest.json ./new_manifest.json
+          python scripts/merge_manifest.py
+          gh release upload latest manifest.json --clobber
+
       - name: Collect All APKs
         if: steps.check-apks.outputs.skip_release == 'false'
         run: |

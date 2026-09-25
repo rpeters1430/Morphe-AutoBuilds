@@ -334,6 +334,7 @@ python -m src
 
 * **Schedule:** Runs daily at 06:00 UTC.
 * **Function:** Rebuilds only the apps whose patches, CLI, settings or pinned version changed since the last release (incremental).
+* **Failing apps:** if an app fails twice with the same patches and settings, the daily run stops retrying it and keeps its previous APK. It is tried again after 7 days, as soon as its patches or settings change, or when you name it in `apps`.
 * **Run workflow inputs:**
   * `force_full_rebuild`: rebuild every app.
   * `apps`: rebuild just these apps, e.g. `youtube, reddit`. Everything else in the release is left as it is.

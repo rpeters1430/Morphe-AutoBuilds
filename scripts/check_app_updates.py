@@ -30,6 +30,7 @@ import sys
 import re
 import json
 import logging
+import datetime
 import importlib
 import subprocess
 import traceback
@@ -55,6 +56,17 @@ FORCE_FULL = os.environ.get("FORCE_FULL_REBUILD", "false").lower() in ("true", "
 ONLY_APPS = {
     a.strip() for a in re.split(r"[,\s]+", os.environ.get("ONLY_APPS", "")) if a.strip()
 }
+
+# Failure backoff: once the same inputs (source signature) have failed this
+# many scheduled builds in a row, stop retrying them daily and only retry every
+# RETRY_FAILED_AFTER_DAYS. Any input change (new patches, new app version
+# target, config edit), a missing APK, or a manual/forced run still rebuilds.
+MAX_FAILED_ATTEMPTS = 2
+RETRY_FAILED_AFTER_DAYS = 7
+# Rebuild reasons the backoff may suppress: they only mean "the inputs moved
+# on", and it's exactly those new inputs that keep failing.
+_BACKOFF_REASONS = ("patch-source-updated", "new-version:",
+                    "legacy-manifest-missing-built-version")
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -830,6 +842,25 @@ def _recover_apk_from_release(app: str, source: str, arch: str,
     return max(candidates, key=_version_key) if candidates else ""
 
 
+def _in_failure_backoff(old: dict, cur_src_sig: str) -> bool:
+    """True if these exact inputs already failed MAX_FAILED_ATTEMPTS times and
+    the last failure was under RETRY_FAILED_AFTER_DAYS ago. Failures are
+    recorded by merge_manifest.py."""
+    if not old or old.get("failed_sig") != cur_src_sig:
+        return False
+    try:
+        attempts = int(old.get("failed_attempts") or 0)
+    except (TypeError, ValueError):
+        return False
+    if attempts < MAX_FAILED_ATTEMPTS:
+        return False
+    try:
+        last = datetime.date.fromisoformat(old.get("last_failed_at") or "")
+    except ValueError:
+        return False
+    return (datetime.date.today() - last).days < RETRY_FAILED_AFTER_DAYS
+
+
 def _is_newer_version(candidate: str, reference: str) -> bool:
     """True if `candidate` is a strictly newer version than `reference`.
 
@@ -920,6 +951,10 @@ def plan_incremental(full_matrix: List[dict], old_manifest: Optional[dict],
             # Preserved verbatim; refreshed by the merge step after each build.
             "built_version": old_built_ver,
         }
+        # Failure history, updated by merge_manifest.py after the build.
+        for fkey in ("failed_sig", "failed_attempts", "last_failed_at"):
+            if old and fkey in old:
+                new_entries[mkey][fkey] = old[fkey]
 
         reasons: List[str] = []
         if FORCE_FULL:
@@ -976,6 +1011,20 @@ def plan_incremental(full_matrix: List[dict], old_manifest: Optional[dict],
             if not old_apk:
                 reasons.append("no-apk-recorded")
 
+        backed_off = (
+            reasons
+            and all(r.startswith(_BACKOFF_REASONS) for r in reasons)
+            and _in_failure_backoff(old, cur_src_sig)
+        )
+        if backed_off:
+            logging.info(
+                f"  skip   {app}/{src}/{arch}: these inputs failed "
+                f"{old.get('failed_attempts')}x (last {old.get('last_failed_at')}); "
+                f"retrying after {RETRY_FAILED_AFTER_DAYS} days or when inputs change "
+                f"[{'; '.join(reasons)}]"
+            )
+            reasons = []
+
         if reasons:
             logging.info(f"  REBUILD {app}/{src}/{arch}: {'; '.join(reasons)}")
             build_matrix.append(entry)
@@ -989,7 +1038,9 @@ def plan_incremental(full_matrix: List[dict], old_manifest: Optional[dict],
             new_entries[mkey]["pending_source_sig"] = cur_src_sig
         else:
             # Carry-over: nothing changed, safe to write the current signature.
-            new_entries[mkey]["source_sig"] = cur_src_sig
+            # A backed-off entry keeps its old signature so the change is
+            # still pending when the backoff ends.
+            new_entries[mkey]["source_sig"] = old_src_sig if backed_off else cur_src_sig
             old_apk = carried_apk
             if old_apk and old_apk in existing_apk_set:
                 carry_over.append(old_apk)
