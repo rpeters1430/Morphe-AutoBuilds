@@ -30,18 +30,49 @@ permissions:
   contents: read
   pages: write
   id-token: write
+  actions: read
 
 concurrency:
   group: 'pages'
   cancel-in-progress: false
 
 jobs:
+  check-trigger:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      deploy: ${{ steps.check.outputs.deploy }}
+    steps:
+      - name: Did the Triggering Run Touch the Release?
+        id: check
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          EVENT: ${{ github.event_name }}
+          CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
+          WORKFLOW: ${{ github.event.workflow_run.name }}
+        run: |
+          deploy=true
+          if [ "$EVENT" = "workflow_run" ]; then
+            # A cancelled or skipped build changed nothing worth republishing.
+            if [ "$CONCLUSION" != "success" ] && [ "$CONCLUSION" != "failure" ]; then
+              deploy=false
+            # The daily build succeeds even when nothing needed rebuilding; then
+            # its release job is skipped and there is nothing new to show.
+            elif [ "$WORKFLOW" = "Auto Build and Release Morphe" ]; then
+              release_job=$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${RUN_ID}/jobs?per_page=100" \
+                --jq '.jobs[] | select(.name == "Create Single Release") | .conclusion' 2>/dev/null || echo "unknown")
+              if [ "$release_job" = "skipped" ]; then
+                deploy=false
+              fi
+            fi
+          fi
+          echo "Deploy: $deploy"
+          echo "deploy=$deploy" >> "$GITHUB_OUTPUT"
+
   deploy-portal:
-    # A cancelled or skipped build changed nothing worth republishing.
-    if: >-
-      github.event_name != 'workflow_run' ||
-      github.event.workflow_run.conclusion == 'success' ||
-      github.event.workflow_run.conclusion == 'failure'
+    needs: check-trigger
+    if: needs.check-trigger.outputs.deploy == 'true'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
