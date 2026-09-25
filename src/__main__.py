@@ -1,3 +1,4 @@
+import json
 import logging
 import re
 import os
@@ -380,6 +381,15 @@ def run_build(app_name: str, source: str, arch: str = "universal", settings: dic
     # If we got here, every candidate version failed.
     return None
 
+def _write_build_meta(apk_path: str, follows_store: bool) -> None:
+    """Sidecar for scripts/record_build.py: facts about the build that the APK
+    filename doesn't carry."""
+    meta_dir = Path("build_meta")
+    meta_dir.mkdir(exist_ok=True)
+    (meta_dir / f"{Path(apk_path).name}.json").write_text(
+        json.dumps({"follows_store": follows_store}), encoding="utf-8")
+
+
 def main():
     app_name = getenv("APP_NAME")
     source = getenv("SOURCE")
@@ -400,6 +410,8 @@ def main():
     env_arch = (getenv("ARCH") or "").strip()
     arches = [env_arch] if env_arch else settings["arches"]
 
+    # force patches the store's newest version whatever the patches list.
+    force_follows = bool(settings["force"]) and not settings["version"]
     built_apks = []
     failed_arches = []
     for arch in arches:
@@ -413,6 +425,7 @@ def main():
             apk_path = None
         if apk_path:
             built_apks.append(apk_path)
+            _write_build_meta(apk_path, follows_store=force_follows or downloader.last_download_from_store)
             print(f"✅ Built {arch} version: {Path(apk_path).name}")
         else:
             failed_arches.append(arch)

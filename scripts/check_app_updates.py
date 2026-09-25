@@ -66,7 +66,7 @@ MAX_FAILED_ATTEMPTS = 2
 RETRY_FAILED_AFTER_DAYS = 7
 # Rebuild reasons the backoff may suppress: they only mean "the inputs moved
 # on", and it's exactly those new inputs that keep failing.
-_BACKOFF_REASONS = ("patch-source-updated", "new-version:",
+_BACKOFF_REASONS = ("patch-source-updated", "new-version:", "store-version:",
                     "legacy-manifest-missing-built-version")
 
 # ---------------------------------------------------------------------------
@@ -968,11 +968,13 @@ def plan_incremental(full_matrix: List[dict], old_manifest: Optional[dict],
             "built_version": old_built_ver,
         }
         # Failure history, updated by merge_manifest.py after the build.
-        for fkey in ("failed_sig", "failed_attempts", "last_failed_at"):
+        for fkey in ("failed_sig", "failed_attempts", "last_failed_at",
+                     "follows_store", "store_version_seen"):
             if old and fkey in old:
                 new_entries[mkey][fkey] = old[fkey]
 
         reasons: List[str] = []
+        store_target = ""
         if FORCE_FULL:
             reasons.append("force-rebuild")
         if ONLY_APPS:
@@ -1021,6 +1023,18 @@ def plan_incremental(full_matrix: List[dict], old_manifest: Optional[dict],
                         f"  {app}/{src}: no patches-list JSON available; "
                         f"relying on source-signature for rebuild detection"
                     )
+            # Builds that ship the store's newest version rather than one the
+            # patches list (force, or patches that list no versions) don't
+            # change when only the store does, so check the store for them.
+            # Each store version triggers at most one successful rebuild
+            # (store_version_seen), so a store listing the builder can't
+            # actually download never loops.
+            if not cur_app_ver and old_built_ver and (settings["force"] or old.get("follows_store")):
+                store_ver = fetch_latest_app_version(app)
+                if (store_ver and store_ver != old.get("store_version_seen")
+                        and _is_newer_version(store_ver, old_built_ver)):
+                    reasons.append(f"store-version: built {old_built_ver!r} -> store {store_ver!r}")
+                    store_target = store_ver
             old_apk = carried_apk
             if old_apk and old_apk not in existing_apk_set:
                 reasons.append("apk-missing-from-release")
@@ -1052,6 +1066,8 @@ def plan_incremental(full_matrix: List[dict], old_manifest: Optional[dict],
             # the next planner run will still see old_sig != cur_sig and retry.
             new_entries[mkey]["source_sig"] = old_src_sig
             new_entries[mkey]["pending_source_sig"] = cur_src_sig
+            if store_target:
+                new_entries[mkey]["pending_store_version"] = store_target
         else:
             # Carry-over: nothing changed, safe to write the current signature.
             # A backed-off entry keeps its old signature so the change is

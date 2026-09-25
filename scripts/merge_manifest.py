@@ -62,6 +62,12 @@ def main() -> int:
                 entry["apk"] = apk
             if resolved_version:
                 entry["built_version"] = resolved_version
+            # The build shipped a version its patches don't list (none listed,
+            # or force): the planner watches the store for this entry.
+            entry["follows_store"] = bool(rec.get("follows_store"))
+            pending_store = entry.pop("pending_store_version", "")
+            if pending_store:
+                entry["store_version_seen"] = pending_store
             # Promote pending_source_sig -> source_sig now that the build
             # succeeded.  The planner deliberately keeps the OLD source_sig
             # for rebuild entries so that a failed build doesn't "consume"
@@ -81,6 +87,8 @@ def main() -> int:
     # the same failing inputs every day.
     today = datetime.date.today().isoformat()
     for key, entry in entries.items():
+        # A failed build must not consume the store version it was built for.
+        entry.pop("pending_store_version", None)
         pending_sig = entry.pop("pending_source_sig", None)
         if not pending_sig:
             continue

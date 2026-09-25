@@ -14,6 +14,13 @@ from src import (
     apkcombo,
 )
 
+# True when the last successful download_platform() picked a version the
+# patches don't list (they list none, or force/fallback took the store's
+# newest). Such builds follow the store, so the update planner has to watch
+# the store for new versions of them. Read by src/__main__.py.
+last_download_from_store = False
+
+
 def download_resource(url: str, name: str = None) -> Path:
     res = session.get(url, stream=True)
     res.raise_for_status()
@@ -143,6 +150,8 @@ def download_platform(
     experimental: bool = False,
     force: bool = False,
 ) -> tuple[Path | None, str | None, list[str]]:
+    global last_download_from_store
+    last_download_from_store = False
     try:
         config_path = Path("apps") / platform / f"{app_name}.json"
         config = None
@@ -192,6 +201,7 @@ def download_platform(
         # - If none returned: fall back to latest available from the store.
         # - With force, the store's latest version is tried first.
         pinned = (config.get("version") or "").strip()
+        supported: list[str] | None = None  # None: not asked (pinned/override)
         if override_version:
             candidates = [override_version]
         elif pinned:
@@ -200,6 +210,7 @@ def download_platform(
             candidates = utils.get_supported_versions(
                 config["package"], cli, patches, include_experimental=experimental
             )
+            supported = list(candidates)
             try:
                 latest = platform_module.get_latest_version(app_name, config)
                 if latest:
@@ -220,6 +231,7 @@ def download_platform(
                 continue
             try:
                 filepath = download_resource(download_link)
+                last_download_from_store = supported is not None and version not in supported
                 return filepath, version, candidates
             except Exception as e:
                 last_error = e

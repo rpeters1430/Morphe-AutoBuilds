@@ -99,11 +99,21 @@ def main() -> int:
     # to "latest" never triggered a rebuild when a new APK version shipped.
     resolved_version = extract_version_from_filename(apk_name)
 
+    # Sidecar written by src/__main__.py next to each built APK.
+    follows_store = False
+    meta_file = Path("build_meta") / f"{apk_name}.json"
+    if apk_name and meta_file.exists():
+        try:
+            follows_store = bool(json.loads(meta_file.read_text(encoding="utf-8")).get("follows_store"))
+        except Exception:
+            pass
+
     REC_DIR.mkdir(parents=True, exist_ok=True)
     record = {
         "key": f"{app}|{src}|{arch}",
         "apk": apk_name,
         "resolved_version": resolved_version,
+        "follows_store": follows_store,
         "app_name": app,
         "source": src,
         "arch": arch,
