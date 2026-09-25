@@ -111,7 +111,8 @@
     },
     {
       "app_name": "photomath",
-      "source": "rookie"
+      "source": "rookie",
+      "exclude_patches": ["Hide update popup"]
     },
     {
       "app_name": "pixiv",
