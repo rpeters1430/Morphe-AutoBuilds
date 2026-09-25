@@ -25,6 +25,14 @@ DATA_JSON_PATH = DOCS_DIR / "data.json"
 DATA_JS_PATH = DOCS_DIR / "data.js"
 OBTAINIUM_JSON_PATH = DOCS_DIR / "apps.json"
 
+# Package IDs of the patched APKs where the patches rename the app (GmsCore
+# support), keyed by (app_name, source). Obtainium refuses to install an APK
+# whose package ID differs from the entry's ID, so the feed must use these.
+PATCHED_PACKAGES = {
+    ("youtube", "morphe"): "app.morphe.android.youtube",
+    ("youtube-music", "morphe"): "app.morphe.android.apps.youtube.music",
+}
+
 CATEGORIES = {
     "youtube": "Video & Streaming",
     "youtube-music": "Music & Audio",
@@ -190,7 +198,13 @@ def generate_portal_assets(console=None) -> None:
         source = entry.get("source", "morphe")
         category = CATEGORIES.get(app_name, "Utilities & Tools")
         display_name = app_name.replace("-", " ").title()
-        pkg = packages.get(app_name, f"com.{app_name}")
+        # Output package: a configured "Change package name" option, a known
+        # rename by the patches, or the stock app's package.
+        pkg = (
+            (entry["patch_options"].get("Change package name") or {}).get("packageName")
+            or PATCHED_PACKAGES.get((app_name, source))
+            or packages.get(app_name, f"com.{app_name}")
+        )
         icon = APP_ICONS.get(app_name, "")
 
         app_assets = assets_by_app.get(app_name, [])
