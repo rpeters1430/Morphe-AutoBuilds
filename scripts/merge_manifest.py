@@ -77,7 +77,8 @@ def main() -> int:
             if pending_sig:
                 entry["source_sig"] = pending_sig
                 del entry["pending_source_sig"]
-            for fkey in ("failed_sig", "failed_attempts", "last_failed_at"):
+            # A scheduled build replaced any manual build's APK.
+            for fkey in ("failed_sig", "failed_attempts", "last_failed_at", "manual_build"):
                 entry.pop(fkey, None)
             print(f"  merged {key} -> apk={apk!r} built_version={resolved_version!r}")
     # Entries still holding pending_source_sig were planned for a rebuild but

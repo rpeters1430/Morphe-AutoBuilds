@@ -969,7 +969,7 @@ def plan_incremental(full_matrix: List[dict], old_manifest: Optional[dict],
         }
         # Failure history, updated by merge_manifest.py after the build.
         for fkey in ("failed_sig", "failed_attempts", "last_failed_at",
-                     "follows_store", "store_version_seen"):
+                     "follows_store", "store_version_seen", "manual_build"):
             if old and fkey in old:
                 new_entries[mkey][fkey] = old[fkey]
 
@@ -1029,7 +1029,11 @@ def plan_incremental(full_matrix: List[dict], old_manifest: Optional[dict],
             # Each store version triggers at most one successful rebuild
             # (store_version_seen), so a store listing the builder can't
             # actually download never loops.
-            if not cur_app_ver and old_built_ver and (settings["force"] or old.get("follows_store")):
+            # A manual build with overrides (e.g. a pinned older version) is
+            # kept until the patches or settings change, not replaced because
+            # the store moved on.
+            if (not cur_app_ver and old_built_ver and not old.get("manual_build")
+                    and (settings["force"] or old.get("follows_store"))):
                 store_ver = fetch_latest_app_version(app)
                 if (store_ver and store_ver != old.get("store_version_seen")
                         and _is_newer_version(store_ver, old_built_ver)):
@@ -1076,7 +1080,9 @@ def plan_incremental(full_matrix: List[dict], old_manifest: Optional[dict],
             old_apk = carried_apk
             if old_apk and old_apk in existing_apk_set:
                 carry_over.append(old_apk)
-                logging.info(f"  carry  {app}/{src}/{arch}: {old_apk}")
+                manual = (old or {}).get("manual_build")
+                note = f" (manual build {manual.get('date')}: {manual.get('overrides')})" if manual else ""
+                logging.info(f"  carry  {app}/{src}/{arch}: {old_apk}{note}")
             else:
                 # Defensive: if we can't carry it, we must rebuild.
                 logging.info(f"  REBUILD {app}/{src}/{arch}: no carry-over apk")

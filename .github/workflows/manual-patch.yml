@@ -295,6 +295,26 @@ jobs:
 
           echo "✅ Release updated successfully!"
 
+      - name: Record Build in Manifest
+        # Lets the daily run know about this APK: a build with the configured
+        # settings counts as up to date; one with overrides is kept until the
+        # patches or settings change.
+        if: ${{ inputs.replace_in_release == true }}
+        env:
+          APP_NAME: ${{ inputs.app_name }}
+          SOURCE: ${{ steps.resolve.outputs.source }}
+          PATCHES_CHANNEL: ${{ inputs.patches_tag || inputs.patches_channel }}
+          CLI_CHANNEL: ${{ inputs.cli_channel }}
+          EXPERIMENTAL: ${{ inputs.experimental }}
+          FORCE_PATCH: ${{ inputs.force }}
+          CONTINUE_ON_ERROR: ${{ inputs.continue_on_error }}
+          INCLUDE_PATCHES: ${{ inputs.include_patches }}
+          EXCLUDE_PATCHES: ${{ inputs.exclude_patches }}
+          APP_VERSION: ${{ inputs.version }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python scripts/record_manual_build.py
+
       - name: Show Download Links
         if: ${{ inputs.replace_in_release == true }}
         env:

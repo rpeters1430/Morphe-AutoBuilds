@@ -350,6 +350,7 @@ python -m src
   * Override for a single run: patches channel or an exact `patches_tag`, CLI channel, `experimental`, `force`, `continue_on_error`.
   * Add patches to enable or disable for this run (`include_patches` / `exclude_patches`, comma-separated).
   * Option to update the public release or just build artifacts.
+* **Effect on the daily run:** when the release is updated, the build is recorded in `manifest.json`. A build with the configured settings counts as up to date, so the daily run won't rebuild it. A build with overrides (e.g. a pinned version) is kept until that app's patches or settings change, then replaced by a normal build.
 
 Builds and manual patches share one concurrency group, so they never edit the release at the same time. Only one run waits in the queue: starting another while one is waiting replaces the waiting one.
 
