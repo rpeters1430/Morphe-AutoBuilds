@@ -511,8 +511,19 @@ def detect_github_release(user: str, repo: str, tag: str) -> dict:
                 logging.info(f"Fetching release {tag} for {user}/{repo} (attempt {attempt + 1})...")
                 
                 if tag == "latest":
-                    data = gh_api_request(f"repos/{user}/{repo}/releases/latest")
-                    return data
+                    try:
+                        return gh_api_request(f"repos/{user}/{repo}/releases/latest")
+                    except subprocess.CalledProcessError as e:
+                        # Repos that publish only prereleases 404 here. Use the
+                        # newest release of any kind, as the update planner
+                        # does, instead of failing every build.
+                        if "404" not in (e.stderr or ""):
+                            raise
+                        releases = gh_api_request(f"repos/{user}/{repo}/releases")
+                        if not releases:
+                            raise ValueError(f"No releases found for {user}/{repo}") from e
+                        logging.warning(f"{user}/{repo} has no stable release; using its newest prerelease")
+                        return max(releases, key=lambda x: x['created_at'])
                 elif tag in ["", "dev", "prerelease"]:
                     data = gh_api_request(f"repos/{user}/{repo}/releases")
                     if not isinstance(data, list):
