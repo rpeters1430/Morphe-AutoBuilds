@@ -1056,9 +1056,12 @@ def main() -> int:
 
         if FORCE_FULL:
             logging.info("FORCE_FULL_REBUILD=true -> rebuilding everything")
-            old_manifest = None
-        else:
-            old_manifest = fetch_existing_manifest()
+        # Load the old manifest even on a forced rebuild: every requested entry
+        # is rebuilt anyway (the "force-rebuild" reason), and entries this run
+        # doesn't build (not in ONLY_APPS, or failed) must keep their previous
+        # state instead of dropping out of the manifest and all rebuilding on
+        # the next scheduled run.
+        old_manifest = fetch_existing_manifest()
 
         existing_apks = fetch_existing_apk_names()
         logging.info(f"Existing release has {len(existing_apks)} APK assets")
