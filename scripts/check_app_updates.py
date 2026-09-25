@@ -22,14 +22,16 @@ old manifest is rebuilt automatically).
 Build only some apps: env ONLY_APPS="youtube, reddit" rebuilds just those apps
 (whether or not they changed) and leaves every other manifest entry as it was.
 
-Fail-safe: any unexpected error -> full rebuild matrix is emitted (preserves the
-previous always-build behavior so nothing breaks).
+Errors: if the release can't be read, or planning fails unexpectedly, the
+check fails and nothing is built; the next run retries. (A missing release or
+manifest still means a full rebuild, which creates them.)
 """
 import os
 import sys
 import re
 import json
 import logging
+import datetime
 import importlib
 import subprocess
 import traceback
@@ -55,6 +57,17 @@ FORCE_FULL = os.environ.get("FORCE_FULL_REBUILD", "false").lower() in ("true", "
 ONLY_APPS = {
     a.strip() for a in re.split(r"[,\s]+", os.environ.get("ONLY_APPS", "")) if a.strip()
 }
+
+# Failure backoff: once the same inputs (source signature) have failed this
+# many scheduled builds in a row, stop retrying them daily and only retry every
+# RETRY_FAILED_AFTER_DAYS. Any input change (new patches, new app version
+# target, config edit), a missing APK, or a manual/forced run still rebuilds.
+MAX_FAILED_ATTEMPTS = 2
+RETRY_FAILED_AFTER_DAYS = 7
+# Rebuild reasons the backoff may suppress: they only mean "the inputs moved
+# on", and it's exactly those new inputs that keep failing.
+_BACKOFF_REASONS = ("patch-source-updated", "new-version:", "store-version:",
+                    "legacy-manifest-missing-built-version")
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -686,55 +699,70 @@ def _get_repo_owner_name() -> Optional[Tuple[str, str]]:
     return owner, name
 
 
-def fetch_existing_manifest() -> Optional[dict]:
-    rc, _, err = run_gh(["release", "download", RELEASE_TAG,
-                         "--pattern", MANIFEST_NAME, "--clobber"])
-    if rc != 0:
-        msg = err.strip()[:120]
-        logging.info(f"No existing '{MANIFEST_NAME}' on '{RELEASE_TAG}' ({msg})")
-        return None
-    try:
-        with open(MANIFEST_NAME, "r", encoding="utf-8") as f:
-            return json.load(f)
-    except Exception as e:
-        logging.warning(f"Bad manifest.json: {e}")
-        return None
+class ReleaseLookupError(RuntimeError):
+    """The release could not be read (API/network error), as opposed to not
+    existing. Planning must stop rather than guess."""
 
 
-def fetch_existing_apk_names() -> List[str]:
+def fetch_release_asset_names() -> Optional[List[str]]:
+    """Names of every asset on the release, or None if the release does not
+    exist. Raises ReleaseLookupError on any other failure, so a transient API
+    error is never mistaken for "no release" (which means rebuild everything)."""
     repo = _get_repo_owner_name()
     if repo:
         owner, name = repo
-        rc, out, _ = run_gh(
+        rc, out, err = run_gh(
             ["api", f"repos/{owner}/{name}/releases/tags/{RELEASE_TAG}", "--jq", ".id"]
         )
-        rel_id = out.strip() if rc == 0 else ""
-        if rel_id:
-            rc, out, _ = run_gh(
-                [
-                    "api",
-                    "--paginate",
-                    f"repos/{owner}/{name}/releases/{rel_id}/assets?per_page=100",
-                    "--jq",
-                    ".[].name",
-                ],
-                timeout=300,
-            )
-            if rc == 0:
-                names = [ln.strip() for ln in out.splitlines() if ln.strip()]
-                return [n for n in names if n.endswith(".apk")]
+        if rc != 0:
+            if "HTTP 404" in err or "Not Found" in err:
+                return None
+            raise ReleaseLookupError(f"could not read release '{RELEASE_TAG}': {err.strip()[:200]}")
+        rel_id = out.strip()
+        rc, out, err = run_gh(
+            [
+                "api",
+                "--paginate",
+                f"repos/{owner}/{name}/releases/{rel_id}/assets?per_page=100",
+                "--jq",
+                ".[].name",
+            ],
+            timeout=300,
+        )
+        if rc != 0:
+            raise ReleaseLookupError(f"could not list release assets: {err.strip()[:200]}")
+        return [ln.strip() for ln in out.splitlines() if ln.strip()]
 
-    rc, out, _ = run_gh(["release", "view", RELEASE_TAG, "--json", "assets"])
+    # No GITHUB_REPOSITORY (local run): let gh work out the repo.
+    rc, out, err = run_gh(["release", "view", RELEASE_TAG, "--json", "assets"])
     if rc != 0:
-        return []
+        if "not found" in err.lower():
+            return None
+        raise ReleaseLookupError(f"could not read release '{RELEASE_TAG}': {err.strip()[:200]}")
     try:
-        return [
-            a.get("name", "")
-            for a in json.loads(out).get("assets", [])
-            if a.get("name", "").endswith(".apk")
-        ]
-    except Exception:
-        return []
+        return [a.get("name", "") for a in json.loads(out).get("assets", []) if a.get("name")]
+    except Exception as e:
+        raise ReleaseLookupError(f"unparseable release data: {e}") from e
+
+
+def fetch_existing_manifest(asset_names: List[str]) -> Optional[dict]:
+    """The release's manifest.json, or None if it has none (or it is corrupt,
+    which a full rebuild repairs). Raises ReleaseLookupError if the manifest
+    exists but can't be downloaded."""
+    if MANIFEST_NAME not in asset_names:
+        logging.info(f"No '{MANIFEST_NAME}' on '{RELEASE_TAG}'")
+        return None
+    rc, _, err = run_gh(["release", "download", RELEASE_TAG,
+                         "--pattern", MANIFEST_NAME, "--clobber"])
+    if rc != 0:
+        raise ReleaseLookupError(f"could not download {MANIFEST_NAME}: {err.strip()[:200]}")
+    try:
+        with open(MANIFEST_NAME, "r", encoding="utf-8") as f:
+            data = json.load(f)
+    except Exception as e:
+        logging.warning(f"Bad manifest.json: {e}")
+        return None
+    return data if isinstance(data, dict) else None
 
 
 # ---------------------------------------------------------------------------
@@ -794,19 +822,59 @@ def _strip_branch_sha(sig: str) -> str:
     return _BRANCH_SHA_RE.sub("", sig or "")
 
 
-def _recover_apk_from_release(app: str, arch: str, existing_apks: List[str]) -> str:
-    a = (app or "").lower()
-    rarch = (arch or "").lower()
-    candidates: List[str] = []
-    for n in existing_apks:
-        nl = (n or "").lower()
-        if not nl.endswith(".apk"):
-            continue
-        if not nl.startswith(f"{a}-{rarch}-"):
-            continue
-        candidates.append(n)
-    candidates.sort()
-    return candidates[-1] if candidates else ""
+def _source_output_name(source: str) -> str:
+    """The patch-set name the builder puts in APK filenames
+    ({app}-{arch}-{name}-v{version}.apk): sources/<source>.json's first entry's
+    "name" (list format) or its "name" key (bundle format). '' if unknown."""
+    data = _load_source_entries(source, build_config.SOURCE_CHANNEL,
+                                build_config.SOURCE_CHANNEL)
+    if isinstance(data, list) and data and isinstance(data[0], dict):
+        return (data[0].get("name") or "").strip()
+    if isinstance(data, dict):
+        return (data.get("name") or "bundle-patches").strip()
+    return ""
+
+
+def _version_key(apk_name: str) -> List[int]:
+    try:
+        return provider_utils.normalize_version(extract_version_from_filename(apk_name))
+    except Exception:
+        return []
+
+
+def _recover_apk_from_release(app: str, source: str, arch: str,
+                              existing_apks: List[str]) -> str:
+    """Find this entry's APK among the release assets when the manifest's
+    filename is gone (e.g. a manual run replaced it). Only APKs built with the
+    same patch set count, so another source's build of the same app is never
+    adopted, and the highest version wins (numerically, not as text)."""
+    name = _source_output_name(source).lower()
+    prefix = f"{app}-{arch}-{name}-v" if name else f"{app}-{arch}-"
+    prefix = prefix.lower()
+    candidates = [
+        n for n in existing_apks
+        if n and n.lower().endswith(".apk") and n.lower().startswith(prefix)
+    ]
+    return max(candidates, key=_version_key) if candidates else ""
+
+
+def _in_failure_backoff(old: dict, cur_src_sig: str) -> bool:
+    """True if these exact inputs already failed MAX_FAILED_ATTEMPTS times and
+    the last failure was under RETRY_FAILED_AFTER_DAYS ago. Failures are
+    recorded by merge_manifest.py."""
+    if not old or old.get("failed_sig") != cur_src_sig:
+        return False
+    try:
+        attempts = int(old.get("failed_attempts") or 0)
+    except (TypeError, ValueError):
+        return False
+    if attempts < MAX_FAILED_ATTEMPTS:
+        return False
+    try:
+        last = datetime.date.fromisoformat(old.get("last_failed_at") or "")
+    except ValueError:
+        return False
+    return (datetime.date.today() - last).days < RETRY_FAILED_AFTER_DAYS
 
 
 def _is_newer_version(candidate: str, reference: str) -> bool:
@@ -876,7 +944,7 @@ def plan_incremental(full_matrix: List[dict], old_manifest: Optional[dict],
         old_built_ver = (old or {}).get("built_version", "")
         if old:
             if not carried_apk or carried_apk not in existing_apk_set:
-                recovered = _recover_apk_from_release(app, arch, existing_apks)
+                recovered = _recover_apk_from_release(app, src, arch, existing_apks)
                 if recovered:
                     carried_apk = recovered
                     # Recovered filename carries its own version; re-derive it
@@ -899,8 +967,15 @@ def plan_incremental(full_matrix: List[dict], old_manifest: Optional[dict],
             # Preserved verbatim; refreshed by the merge step after each build.
             "built_version": old_built_ver,
         }
+        # State carried between runs (failure backoff, store tracking, manual
+        # builds); merge_manifest.py updates it after the build.
+        for fkey in ("failed_sig", "failed_attempts", "last_failed_at",
+                     "follows_store", "store_version_seen", "manual_build"):
+            if old and fkey in old:
+                new_entries[mkey][fkey] = old[fkey]
 
         reasons: List[str] = []
+        store_target = ""
         if FORCE_FULL:
             reasons.append("force-rebuild")
         if ONLY_APPS:
@@ -949,11 +1024,42 @@ def plan_incremental(full_matrix: List[dict], old_manifest: Optional[dict],
                         f"  {app}/{src}: no patches-list JSON available; "
                         f"relying on source-signature for rebuild detection"
                     )
+            # Builds that ship the store's newest version rather than one the
+            # patches list (force, or patches that list no versions) don't
+            # change when only the store does, so check the store for them.
+            # Each store version triggers at most one successful rebuild
+            # (store_version_seen), so a store listing the builder can't
+            # actually download never loops.
+            #
+            # A manual build with overrides (e.g. a pinned older version) is
+            # kept until the patches or settings change, not replaced because
+            # the store moved on.
+            if (not cur_app_ver and old_built_ver and not old.get("manual_build")
+                    and (settings["force"] or old.get("follows_store"))):
+                store_ver = fetch_latest_app_version(app)
+                if (store_ver and store_ver != old.get("store_version_seen")
+                        and _is_newer_version(store_ver, old_built_ver)):
+                    reasons.append(f"store-version: built {old_built_ver!r} -> store {store_ver!r}")
+                    store_target = store_ver
             old_apk = carried_apk
             if old_apk and old_apk not in existing_apk_set:
                 reasons.append("apk-missing-from-release")
             if not old_apk:
                 reasons.append("no-apk-recorded")
+
+        backed_off = (
+            reasons
+            and all(r.startswith(_BACKOFF_REASONS) for r in reasons)
+            and _in_failure_backoff(old, cur_src_sig)
+        )
+        if backed_off:
+            logging.info(
+                f"  skip   {app}/{src}/{arch}: these inputs failed "
+                f"{old.get('failed_attempts')}x (last {old.get('last_failed_at')}); "
+                f"retrying after {RETRY_FAILED_AFTER_DAYS} days or when inputs change "
+                f"[{'; '.join(reasons)}]"
+            )
+            reasons = []
 
         if reasons:
             logging.info(f"  REBUILD {app}/{src}/{arch}: {'; '.join(reasons)}")
@@ -966,13 +1072,19 @@ def plan_incremental(full_matrix: List[dict], old_manifest: Optional[dict],
             # the next planner run will still see old_sig != cur_sig and retry.
             new_entries[mkey]["source_sig"] = old_src_sig
             new_entries[mkey]["pending_source_sig"] = cur_src_sig
+            if store_target:
+                new_entries[mkey]["pending_store_version"] = store_target
         else:
             # Carry-over: nothing changed, safe to write the current signature.
-            new_entries[mkey]["source_sig"] = cur_src_sig
+            # A backed-off entry keeps its old signature so the change is
+            # still pending when the backoff ends.
+            new_entries[mkey]["source_sig"] = old_src_sig if backed_off else cur_src_sig
             old_apk = carried_apk
             if old_apk and old_apk in existing_apk_set:
                 carry_over.append(old_apk)
-                logging.info(f"  carry  {app}/{src}/{arch}: {old_apk}")
+                manual = (old or {}).get("manual_build")
+                note = f" (manual build {manual.get('date')}: {manual.get('overrides')})" if manual else ""
+                logging.info(f"  carry  {app}/{src}/{arch}: {old_apk}{note}")
             else:
                 # Defensive: if we can't carry it, we must rebuild.
                 logging.info(f"  REBUILD {app}/{src}/{arch}: no carry-over apk")
@@ -1056,11 +1168,17 @@ def main() -> int:
 
         if FORCE_FULL:
             logging.info("FORCE_FULL_REBUILD=true -> rebuilding everything")
-            old_manifest = None
-        else:
-            old_manifest = fetch_existing_manifest()
-
-        existing_apks = fetch_existing_apk_names()
+        # Load the old manifest even on a forced rebuild: every requested entry
+        # is rebuilt anyway (the "force-rebuild" reason), and entries this run
+        # doesn't build (not in ONLY_APPS, or failed) must keep their previous
+        # state instead of dropping out of the manifest and all rebuilding on
+        # the next scheduled run.
+        asset_names = fetch_release_asset_names()
+        if asset_names is None:
+            logging.info(f"Release '{RELEASE_TAG}' does not exist yet")
+            asset_names = []
+        old_manifest = fetch_existing_manifest(asset_names)
+        existing_apks = [n for n in asset_names if n.endswith(".apk")]
         logging.info(f"Existing release has {len(existing_apks)} APK assets")
 
         if old_manifest is None and not FORCE_FULL:
@@ -1092,11 +1210,16 @@ def main() -> int:
 
         return 0
 
+    except ReleaseLookupError as e:
+        # Can't tell what's already released. Rebuilding everything on a
+        # transient error wastes a whole run, so fail and let the next run retry.
+        print(f"::error title=Could not read the release::{e}")
+        return 1
     except Exception as e:
         logging.error(f"check_app_updates failed: {e}")
         traceback.print_exc()
-        emit_full_rebuild(f"unexpected error: {e}")
-        return 0  # Never fail the workflow over a planning error.
+        print(f"::error title=Update check failed::{e}")
+        return 1
 
 
 if __name__ == "__main__":

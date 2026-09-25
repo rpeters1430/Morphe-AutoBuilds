@@ -39,20 +39,17 @@ Safety
 """
 import argparse
 import json
-import re
 import subprocess
 import sys
 from pathlib import Path
 from typing import List, Set
 
-# APK names look like: {app}-{arch}-{name}-v{version}.apk
-# We want to keep everything up to the version marker as the "identity".
-# The version marker must be restricted to genuine version characters (digits,
-# dots, parentheses for build numbers, hyphen, plus) so that the architecture
-# tokens "v8a"/"v7a" inside arm64-v8a / armeabi-v7a do NOT match (they have a
-# letter right after the digit, e.g. "v8a"). Otherwise the identity prefix would
-# be truncated at the arch segment.
-VERSION_MARKER = re.compile(r"-v\d[\d.()+\-]*\.apk$", re.IGNORECASE)
+# Reuse record_build's version parser so both scripts agree on where the
+# version begins. The previous digits-only marker missed versions with letters
+# or spaces ("-v206.0.857916353-downloadable", "-v2.2 build 016"), so those
+# APKs got their whole name as identity and old versions were never deleted.
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from record_build import extract_version_from_filename  # noqa: E402
 
 
 def gh_release_assets(release: str) -> List[dict]:
@@ -74,9 +71,12 @@ def gh_release_assets(release: str) -> List[dict]:
 def identity_prefix(apk_name: str) -> str:
     """Return the identity prefix of an APK filename (everything before the
     version marker). E.g. ``youtube-arm64-v8a-morphe-v2.5.0.apk`` ->
-    ``youtube-arm64-v8a-morphe``. Falls back to the stem if no marker matches."""
-    m = VERSION_MARKER.search(apk_name)
-    return (apk_name[: m.start()] if m else Path(apk_name).stem).lower()
+    ``youtube-arm64-v8a-morphe``. Falls back to the stem if no version is found."""
+    stem = apk_name[:-4] if apk_name.lower().endswith(".apk") else apk_name
+    version = extract_version_from_filename(apk_name)
+    if version and stem.endswith(f"-v{version}"):
+        return stem[: -len(version) - 2].lower()
+    return stem.lower()
 
 
 def load_keep_set(keep_file: Path) -> Set[str]:

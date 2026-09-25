@@ -1,3 +1,4 @@
+import json
 import logging
 import re
 import os
@@ -59,14 +60,16 @@ def _optional_flags(cli: Path, settings: dict) -> list[str]:
     return flags
 
 
-def run_build(app_name: str, source: str, arch: str = "universal", settings: dict | None = None) -> str:
-    """Build APK for specific architecture"""
+def run_build(app_name: str, source: str, arch: str = "universal", settings: dict | None = None,
+              tools: tuple[list[Path], str] | None = None) -> str:
+    """Build APK for specific architecture. `tools` is download_required()'s
+    result; pass it to reuse one CLI/patches download across arches."""
     settings = settings or build_config.get_entry(app_name, source)
     experimental = settings["experimental"]
     force = settings["force"]
     pinned_version = settings["version"] or None
 
-    download_files, name = downloader.download_required(
+    download_files, name = tools or downloader.download_required(
         source, settings["patches_channel"], settings["cli_channel"]
     )
 
@@ -380,6 +383,15 @@ def run_build(app_name: str, source: str, arch: str = "universal", settings: dic
     # If we got here, every candidate version failed.
     return None
 
+def _write_build_meta(apk_path: str, follows_store: bool) -> None:
+    """Sidecar for scripts/record_build.py: facts about the build that the APK
+    filename doesn't carry."""
+    meta_dir = Path("build_meta")
+    meta_dir.mkdir(exist_ok=True)
+    (meta_dir / f"{Path(apk_path).name}.json").write_text(
+        json.dumps({"follows_store": follows_store}), encoding="utf-8")
+
+
 def main():
     app_name = getenv("APP_NAME")
     source = getenv("SOURCE")
@@ -400,13 +412,37 @@ def main():
     env_arch = (getenv("ARCH") or "").strip()
     arches = [env_arch] if env_arch else settings["arches"]
 
+    # force patches the store's newest version whatever the patches list.
+    force_follows = bool(settings["force"]) and not settings["version"]
+    # Download the CLI and patches once for every arch: saves the repeat
+    # downloads, and all arches are patched with the same release even if a
+    # new one is published mid-build. (The app APK is still fetched per arch:
+    # stores can serve arch-specific variants.)
+    try:
+        tools = downloader.download_required(
+            source, settings["patches_channel"], settings["cli_channel"]
+        )
+    except Exception as e:
+        logging.error(f"❌ Could not download the patch tools for {source}: {e}")
+        exit(1)
+
     built_apks = []
+    failed_arches = []
     for arch in arches:
         logging.info(f"🔨 Building {app_name} for {arch} architecture...")
-        apk_path = run_build(app_name, source, arch, settings)
+        # One arch failing (e.g. a patch error) must not throw away the arches
+        # that already built.
+        try:
+            apk_path = run_build(app_name, source, arch, settings, tools)
+        except Exception as e:
+            logging.error(f"❌ {app_name}/{source}/{arch} failed: {e}")
+            apk_path = None
         if apk_path:
             built_apks.append(apk_path)
+            _write_build_meta(apk_path, follows_store=force_follows or downloader.last_download_from_store)
             print(f"✅ Built {arch} version: {Path(apk_path).name}")
+        else:
+            failed_arches.append(arch)
 
     print(f"\n🎯 Built {len(built_apks)} APK(s) for {app_name}:")
     for apk in built_apks:
@@ -415,6 +451,20 @@ def main():
     if not built_apks:
         logging.error(f"❌ No APKs were built for {app_name}/{source}")
         exit(1)
+
+    if failed_arches:
+        # Partial success keeps the job green so the built APKs still ship;
+        # flag the missing arches where they'll be seen. They are retried on
+        # the next run because they get no build record.
+        failed = ", ".join(failed_arches)
+        print(f"::warning title={app_name} partially built::"
+              f"{app_name}/{source} failed for {failed}; the previous APK is kept for those")
+        summary = getenv("GITHUB_STEP_SUMMARY")
+        if summary:
+            with open(summary, "a", encoding="utf-8") as f:
+                f.write(f"### ⚠️ {app_name} ({source}) partially built\n\n"
+                        f"Failed architectures: {failed}. The previous APK is kept "
+                        f"for those and they are retried on the next run.\n")
 
 if __name__ == "__main__":
     main()

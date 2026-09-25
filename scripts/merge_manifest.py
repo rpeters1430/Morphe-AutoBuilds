@@ -9,6 +9,7 @@ Inputs:
 Output:
   - manifest.json          (final manifest to attach to the release)
 """
+import datetime
 import json
 import sys
 from pathlib import Path
@@ -61,6 +62,12 @@ def main() -> int:
                 entry["apk"] = apk
             if resolved_version:
                 entry["built_version"] = resolved_version
+            # The build shipped a version its patches don't list (none listed,
+            # or force): the planner watches the store for this entry.
+            entry["follows_store"] = bool(rec.get("follows_store"))
+            pending_store = entry.pop("pending_store_version", "")
+            if pending_store:
+                entry["store_version_seen"] = pending_store
             # Promote pending_source_sig -> source_sig now that the build
             # succeeded.  The planner deliberately keeps the OLD source_sig
             # for rebuild entries so that a failed build doesn't "consume"
@@ -70,12 +77,29 @@ def main() -> int:
             if pending_sig:
                 entry["source_sig"] = pending_sig
                 del entry["pending_source_sig"]
+            # A scheduled build replaced any manual build's APK.
+            for fkey in ("failed_sig", "failed_attempts", "last_failed_at", "manual_build"):
+                entry.pop(fkey, None)
             print(f"  merged {key} -> apk={apk!r} built_version={resolved_version!r}")
-    # Clean up leftover pending_source_sig for entries whose build never
-    # completed (no build record).  The OLD source_sig stays in place so the
-    # next planner run will detect the difference and retry.
-    for entry in entries.values():
-        entry.pop("pending_source_sig", None)
+    # Entries still holding pending_source_sig were planned for a rebuild but
+    # got no build record, i.e. the build failed. The OLD source_sig stays in
+    # place so the next planner run still sees the change, and the failure is
+    # counted per input signature so check_app_updates.py can stop retrying
+    # the same failing inputs every day.
+    today = datetime.date.today().isoformat()
+    for key, entry in entries.items():
+        # A failed build must not consume the store version it was built for.
+        entry.pop("pending_store_version", None)
+        pending_sig = entry.pop("pending_source_sig", None)
+        if not pending_sig:
+            continue
+        if entry.get("failed_sig") == pending_sig:
+            entry["failed_attempts"] = int(entry.get("failed_attempts") or 0) + 1
+        else:
+            entry["failed_sig"] = pending_sig
+            entry["failed_attempts"] = 1
+        entry["last_failed_at"] = today
+        print(f"  failed {key} (attempt {entry['failed_attempts']} with these inputs)")
 
     with open("manifest.json", "w", encoding="utf-8") as f:
         json.dump(manifest, f, indent=2)
