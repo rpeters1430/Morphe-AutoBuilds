@@ -22,8 +22,9 @@ old manifest is rebuilt automatically).
 Build only some apps: env ONLY_APPS="youtube, reddit" rebuilds just those apps
 (whether or not they changed) and leaves every other manifest entry as it was.
 
-Fail-safe: any unexpected error -> full rebuild matrix is emitted (preserves the
-previous always-build behavior so nothing breaks).
+Errors: if the release can't be read, or planning fails unexpectedly, the
+check fails and nothing is built; the next run retries. (A missing release or
+manifest still means a full rebuild, which creates them.)
 """
 import os
 import sys
@@ -698,55 +699,70 @@ def _get_repo_owner_name() -> Optional[Tuple[str, str]]:
     return owner, name
 
 
-def fetch_existing_manifest() -> Optional[dict]:
-    rc, _, err = run_gh(["release", "download", RELEASE_TAG,
-                         "--pattern", MANIFEST_NAME, "--clobber"])
-    if rc != 0:
-        msg = err.strip()[:120]
-        logging.info(f"No existing '{MANIFEST_NAME}' on '{RELEASE_TAG}' ({msg})")
-        return None
-    try:
-        with open(MANIFEST_NAME, "r", encoding="utf-8") as f:
-            return json.load(f)
-    except Exception as e:
-        logging.warning(f"Bad manifest.json: {e}")
-        return None
+class ReleaseLookupError(RuntimeError):
+    """The release could not be read (API/network error), as opposed to not
+    existing. Planning must stop rather than guess."""
 
 
-def fetch_existing_apk_names() -> List[str]:
+def fetch_release_asset_names() -> Optional[List[str]]:
+    """Names of every asset on the release, or None if the release does not
+    exist. Raises ReleaseLookupError on any other failure, so a transient API
+    error is never mistaken for "no release" (which means rebuild everything)."""
     repo = _get_repo_owner_name()
     if repo:
         owner, name = repo
-        rc, out, _ = run_gh(
+        rc, out, err = run_gh(
             ["api", f"repos/{owner}/{name}/releases/tags/{RELEASE_TAG}", "--jq", ".id"]
         )
-        rel_id = out.strip() if rc == 0 else ""
-        if rel_id:
-            rc, out, _ = run_gh(
-                [
-                    "api",
-                    "--paginate",
-                    f"repos/{owner}/{name}/releases/{rel_id}/assets?per_page=100",
-                    "--jq",
-                    ".[].name",
-                ],
-                timeout=300,
-            )
-            if rc == 0:
-                names = [ln.strip() for ln in out.splitlines() if ln.strip()]
-                return [n for n in names if n.endswith(".apk")]
+        if rc != 0:
+            if "HTTP 404" in err or "Not Found" in err:
+                return None
+            raise ReleaseLookupError(f"could not read release '{RELEASE_TAG}': {err.strip()[:200]}")
+        rel_id = out.strip()
+        rc, out, err = run_gh(
+            [
+                "api",
+                "--paginate",
+                f"repos/{owner}/{name}/releases/{rel_id}/assets?per_page=100",
+                "--jq",
+                ".[].name",
+            ],
+            timeout=300,
+        )
+        if rc != 0:
+            raise ReleaseLookupError(f"could not list release assets: {err.strip()[:200]}")
+        return [ln.strip() for ln in out.splitlines() if ln.strip()]
 
-    rc, out, _ = run_gh(["release", "view", RELEASE_TAG, "--json", "assets"])
+    # No GITHUB_REPOSITORY (local run): let gh work out the repo.
+    rc, out, err = run_gh(["release", "view", RELEASE_TAG, "--json", "assets"])
     if rc != 0:
-        return []
+        if "not found" in err.lower():
+            return None
+        raise ReleaseLookupError(f"could not read release '{RELEASE_TAG}': {err.strip()[:200]}")
     try:
-        return [
-            a.get("name", "")
-            for a in json.loads(out).get("assets", [])
-            if a.get("name", "").endswith(".apk")
-        ]
-    except Exception:
-        return []
+        return [a.get("name", "") for a in json.loads(out).get("assets", []) if a.get("name")]
+    except Exception as e:
+        raise ReleaseLookupError(f"unparseable release data: {e}") from e
+
+
+def fetch_existing_manifest(asset_names: List[str]) -> Optional[dict]:
+    """The release's manifest.json, or None if it has none (or it is corrupt,
+    which a full rebuild repairs). Raises ReleaseLookupError if the manifest
+    exists but can't be downloaded."""
+    if MANIFEST_NAME not in asset_names:
+        logging.info(f"No '{MANIFEST_NAME}' on '{RELEASE_TAG}'")
+        return None
+    rc, _, err = run_gh(["release", "download", RELEASE_TAG,
+                         "--pattern", MANIFEST_NAME, "--clobber"])
+    if rc != 0:
+        raise ReleaseLookupError(f"could not download {MANIFEST_NAME}: {err.strip()[:200]}")
+    try:
+        with open(MANIFEST_NAME, "r", encoding="utf-8") as f:
+            data = json.load(f)
+    except Exception as e:
+        logging.warning(f"Bad manifest.json: {e}")
+        return None
+    return data if isinstance(data, dict) else None
 
 
 # ---------------------------------------------------------------------------
@@ -1133,9 +1149,12 @@ def main() -> int:
         # doesn't build (not in ONLY_APPS, or failed) must keep their previous
         # state instead of dropping out of the manifest and all rebuilding on
         # the next scheduled run.
-        old_manifest = fetch_existing_manifest()
-
-        existing_apks = fetch_existing_apk_names()
+        asset_names = fetch_release_asset_names()
+        if asset_names is None:
+            logging.info(f"Release '{RELEASE_TAG}' does not exist yet")
+            asset_names = []
+        old_manifest = fetch_existing_manifest(asset_names)
+        existing_apks = [n for n in asset_names if n.endswith(".apk")]
         logging.info(f"Existing release has {len(existing_apks)} APK assets")
 
         if old_manifest is None and not FORCE_FULL:
@@ -1167,11 +1186,16 @@ def main() -> int:
 
         return 0
 
+    except ReleaseLookupError as e:
+        # Can't tell what's already released. Rebuilding everything on a
+        # transient error wastes a whole run, so fail and let the next run retry.
+        print(f"::error title=Could not read the release::{e}")
+        return 1
     except Exception as e:
         logging.error(f"check_app_updates failed: {e}")
         traceback.print_exc()
-        emit_full_rebuild(f"unexpected error: {e}")
-        return 0  # Never fail the workflow over a planning error.
+        print(f"::error title=Update check failed::{e}")
+        return 1
 
 
 if __name__ == "__main__":
