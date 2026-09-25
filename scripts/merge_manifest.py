@@ -65,6 +65,11 @@ def main() -> int:
             # The build shipped a version its patches don't list (none listed,
             # or force): the planner watches the store for this entry.
             entry["follows_store"] = bool(rec.get("follows_store"))
+            # Patches this build saw and the new ones it turned on; the next
+            # build enables patches missing from known_patches.
+            for fkey in ("known_patches", "auto_patches"):
+                if fkey in rec:
+                    entry[fkey] = rec[fkey]
             pending_store = entry.pop("pending_store_version", "")
             if pending_store:
                 entry["store_version_seen"] = pending_store

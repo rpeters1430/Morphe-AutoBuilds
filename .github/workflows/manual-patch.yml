@@ -161,8 +161,15 @@ jobs:
           distribution: 'temurin'
           java-version: '25'
       
+      # Patch lists earlier builds saw, so new patches stay turned on.
+      - name: Download Release Manifest
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release download latest --pattern manifest.json --dir patch-state || true
+
       - name: Build APK
         env:
+          PATCH_STATE_FILE: patch-state/manifest.json
           APP_NAME: ${{ inputs.app_name }}
           SOURCE: ${{ steps.resolve.outputs.source }}
           ARCH: ${{ inputs.architecture != 'configured' && inputs.architecture || '' }}

@@ -29,7 +29,9 @@ Fields (per entry or in ``defaults``):
   include_patches  Patch names to force-enable (adds to patches/<app>-<source>.txt).
   exclude_patches  Patch names to disable (adds to patches/<app>-<source>.txt).
   exclusive        Apply ONLY the patches in include_patches / "+" rules; every
-                   other patch is off (passes --exclusive to the CLI).
+                   other patch is off (passes --exclusive to the CLI). Also
+                   stops new off-by-default patches being turned on (see
+                   _new_patches_to_enable in src/__main__.py).
   continue_on_error  Keep patching when a single patch fails instead of
                    aborting the whole build (passes --continue-on-error).
   patch_options    Per-patch option values, e.g.

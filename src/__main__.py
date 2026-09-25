@@ -30,6 +30,69 @@ def _should_retry_with_older_version(output: str | None) -> bool:
 
 _cli_help_cache: dict[str, str] = {}
 
+# Manifest the planner wrote for this run; carries each entry's patch state.
+PATCH_STATE_FILE = Path(getenv("PATCH_STATE_FILE") or "build-plan/new_manifest.json")
+
+# Patch state of the last run_build() that listed its patches, for the sidecar.
+last_patch_state: dict | None = None
+
+
+def _app_package(app_name: str) -> str:
+    for cfg in sorted(Path("apps").glob(f"*/{app_name}.json")):
+        try:
+            package = json.loads(cfg.read_text(encoding="utf-8")).get("package")
+        except Exception:
+            continue
+        if package:
+            return package
+    return ""
+
+
+def _previous_patch_state(app_name: str, source: str) -> tuple[set[str], set[str]]:
+    """(known, auto-enabled) patch names recorded by earlier builds."""
+    known: set[str] = set()
+    auto: set[str] = set()
+    try:
+        entries = json.loads(PATCH_STATE_FILE.read_text(encoding="utf-8")).get("entries", {})
+    except Exception:
+        return known, auto
+    for entry in entries.values():
+        if entry.get("app_name") == app_name and entry.get("source") == source:
+            known.update(entry.get("known_patches") or [])
+            auto.update(entry.get("auto_patches") or [])
+    return known, auto
+
+
+def _new_patches_to_enable(app_name: str, source: str, settings: dict,
+                           cli: Path, patches: Path) -> list[str]:
+    """Patches to turn on with -e because they appeared after an earlier build.
+
+    Patches on by default are applied anyway; this turns on the new ones
+    that ship off by default, and keeps them on in later builds. Patches
+    listed at the first build (the baseline) keep their default, and a "-"
+    rule, exclude_patches or exclusive still wins.
+    """
+    global last_patch_state
+    last_patch_state = None
+    package = _app_package(app_name)
+    listed = utils.list_app_patches(package, str(cli), str(patches)) if package else None
+    if not listed:
+        return []
+
+    known, auto = _previous_patch_state(app_name, source)
+    fresh = [n for n in listed if known and n not in known]
+    for n in fresh:
+        state = "on by default" if listed[n] else "off by default, enabling it"
+        logging.info(f"🆕 New patch for {app_name}: {n} ({state})")
+
+    _, exclude = build_config.patch_selection(settings)
+    enable = set() if settings.get("exclusive") else {
+        n for n in auto | {n for n in fresh if not listed[n]}
+        if n in listed and n not in exclude
+    }
+    last_patch_state = {"known_patches": sorted(listed), "auto_patches": sorted(enable)}
+    return sorted(enable)
+
 
 def _cli_supports(cli: Path, flag: str) -> bool:
     """True if `<cli> patch --help` lists the flag. Older ReVanced CLIs lack
@@ -178,6 +241,9 @@ def run_build(app_name: str, source: str, arch: str = "universal", settings: dic
     if candidates and version in candidates:
         versions_to_try += [v for v in candidates if v != version]
 
+    new_patches = _new_patches_to_enable(app_name, source, settings, cli, patches)
+    if new_patches:
+        settings = {**settings, "include_patches": [*settings["include_patches"], *new_patches]}
     patch_args = build_config.patch_cli_args(settings)
     force_args = ["--force"] if force else []
     extra_flags = _optional_flags(cli, settings)
@@ -389,7 +455,8 @@ def _write_build_meta(apk_path: str, follows_store: bool) -> None:
     meta_dir = Path("build_meta")
     meta_dir.mkdir(exist_ok=True)
     (meta_dir / f"{Path(apk_path).name}.json").write_text(
-        json.dumps({"follows_store": follows_store}), encoding="utf-8")
+        json.dumps({"follows_store": follows_store, **(last_patch_state or {})}),
+        encoding="utf-8")
 
 
 def main():

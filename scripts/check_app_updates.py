@@ -967,10 +967,11 @@ def plan_incremental(full_matrix: List[dict], old_manifest: Optional[dict],
             # Preserved verbatim; refreshed by the merge step after each build.
             "built_version": old_built_ver,
         }
-        # State carried between runs (failure backoff, store tracking, manual
+        # State carried between runs (failure backoff, store tracking, patch lists, manual
         # builds); merge_manifest.py updates it after the build.
         for fkey in ("failed_sig", "failed_attempts", "last_failed_at",
-                     "follows_store", "store_version_seen", "manual_build"):
+                     "follows_store", "store_version_seen", "manual_build",
+                     "known_patches", "auto_patches"):
             if old and fkey in old:
                 new_entries[mkey][fkey] = old[fkey]
 

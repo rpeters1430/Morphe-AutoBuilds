@@ -91,13 +91,14 @@ def main() -> int:
     resolved_version = extract_version_from_filename(apk_name)
 
     # Sidecar written by src/__main__.py next to each built APK.
-    follows_store = False
+    meta: dict = {}
     meta_file = Path("build_meta") / f"{apk_name}.json"
     if apk_name and meta_file.exists():
         try:
-            follows_store = bool(json.loads(meta_file.read_text(encoding="utf-8")).get("follows_store"))
+            meta = json.loads(meta_file.read_text(encoding="utf-8"))
         except Exception:
             pass
+    follows_store = bool(meta.get("follows_store"))
 
     REC_DIR.mkdir(parents=True, exist_ok=True)
     record = {
@@ -109,6 +110,10 @@ def main() -> int:
         "source": src,
         "arch": arch,
     }
+    # Patch lists seen by this build, for spotting newly added patches.
+    for fkey in ("known_patches", "auto_patches"):
+        if fkey in meta:
+            record[fkey] = meta[fkey]
 
     safe = f"{app}__{src}__{arch}".replace("/", "_")
     fp = REC_DIR / f"{safe}.json"

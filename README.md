@@ -260,6 +260,8 @@ Located in `patches/`. Example for `patches/youtube-morphe.txt`. Use `+` to forc
 
 ```
 
+**New patches are turned on automatically.** A new patch release triggers a rebuild, and patches that are on by default apply as usual. Each build also records the app's patch list in `manifest.json`. When a later release adds a patch for that app that's **off by default**, the build turns it on and keeps it on. The build log shows it as `🆕 New patch for <app>: <name>`. Patches that existed at the first recorded build keep their default, universal patches (e.g. "Change package name") are never turned on this way, and a `-` rule, `exclude_patches` or `exclusive` always wins.
+
 ---
 
 ## 🚀 Local Build Instructions
