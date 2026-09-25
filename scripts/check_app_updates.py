@@ -358,13 +358,11 @@ def _fetch_github_signature(user: str, repo: str, tag: str) -> str:
     asset_parts.sort()
     assets_sig = ",".join(asset_parts)
 
-    # Commit SHA of the default branch: detects commits/tags/prereleases that are
-    # not reflected in the Release object. Best-effort; '' if unavailable.
-    sha = _fetch_default_branch_sha(user, repo)
-    sha_part = f"|sha:{sha}" if sha else ""
-
-    # Format: <tag>@<published>@<updated>|<assets_sig><sha_part>
-    return f"{tag_name}@{published}@{updated}|{assets_sig}{sha_part}"
+    # No default-branch commit SHA here: the builder downloads release assets,
+    # not branch code, so a README/CI commit upstream must not rebuild every app
+    # that uses this repo. (The SHA is still the signal when there is no release.)
+    # Format: <tag>@<published>@<updated>|<assets_sig>
+    return f"{tag_name}@{published}@{updated}|{assets_sig}"
 
 
 def _fetch_gitlab_signature(project: str, tag: str) -> str:
@@ -785,6 +783,17 @@ def _is_unreliable_source_sig(sig: str) -> bool:
     )
 
 
+# Default-branch SHA token that older signatures appended after a release's
+# assets. The no-release fallback ("@|sha:...") is preceded by '@' and kept.
+_BRANCH_SHA_RE = re.compile(r"(?<!@)\|sha:[0-9a-f]+")
+
+
+def _strip_branch_sha(sig: str) -> str:
+    """Drop the release-path branch SHA from a stored signature so manifests
+    written before it was removed still match the current format."""
+    return _BRANCH_SHA_RE.sub("", sig or "")
+
+
 def _recover_apk_from_release(app: str, arch: str, existing_apks: List[str]) -> str:
     a = (app or "").lower()
     rarch = (arch or "").lower()
@@ -857,7 +866,7 @@ def plan_incremental(full_matrix: List[dict], old_manifest: Optional[dict],
             src, settings["patches_channel"], settings["cli_channel"]
         ) + build_config.build_options_signature(settings)
         old = old_entries.get(mkey)
-        old_src_sig = (old or {}).get("source_sig", "")
+        old_src_sig = _strip_branch_sha((old or {}).get("source_sig", ""))
         if old and old_src_sig and _is_unreliable_source_sig(cur_src_sig):
             cur_src_sig = old_src_sig
         carried_apk = (old or {}).get("apk", "")
@@ -901,7 +910,7 @@ def plan_incremental(full_matrix: List[dict], old_manifest: Optional[dict],
         else:
             if old.get("config_version", "") != cur_app_ver:
                 reasons.append(f"app-version: {old.get('config_version','')!r}->{cur_app_ver!r}")
-            if old.get("source_sig", "") != cur_src_sig:
+            if old_src_sig != cur_src_sig:
                 reasons.append("patch-source-updated")
             if not old.get("built_version", ""):
                 reasons.append("legacy-manifest-missing-built-version")
