@@ -216,8 +216,13 @@ def download_platform(
                 if latest:
                     if force:
                         candidates = [latest] + [v for v in candidates if v != latest]
-                    elif latest not in candidates:
+                    elif latest not in candidates and not _older_than_all(latest, supported):
                         candidates.append(latest)
+                    elif latest not in candidates:
+                        logging.info(
+                            f"{platform} latest {latest} for {app_name} is older than every "
+                            f"patch-supported version {supported}; not using it"
+                        )
             except Exception as e:
                 logging.debug(f"Could not get latest version for {app_name} on {platform}: {e}")
 
@@ -242,6 +247,15 @@ def download_platform(
     except Exception as e:
         logging.error(f"Unexpected error: {e}")
         return None, None, []
+
+def _older_than_all(version: str, supported: list[str]) -> bool:
+    """True when the patches name versions and `version` predates all of them.
+    Stale store mirrors (e.g. Aptoide serving pokecardex 5.13.0 when patches
+    need 8.7.2) otherwise yield a build where every patch is skipped."""
+    have = utils.normalize_version(version)
+    wanted = [w for w in (utils.normalize_version(v) for v in supported if v) if w]
+    return bool(have and wanted) and all(have < w for w in wanted)
+
 
 # Per-platform download functions, tried in order by the builder.
 def _platform_downloader(platform: str):

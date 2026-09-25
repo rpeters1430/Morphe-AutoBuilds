@@ -28,20 +28,11 @@ def detect_arch_from_filename(apk_name: str, default: str = "universal") -> str:
         return default
     base = apk_name.lower()
 
-    # Check for specific arch tokens in the filename
-    # Order matters: check more specific ones first
-    if "arm64-v8a" in base:
-        return "arm64-v8a"
-    if "armeabi-v7a" in base:
-        return "armeabi-v7a"
-    if "x86_64" in base:
-        return "x86_64"
-    if "x86" in base:
-        return "x86"
-    if "universal" in base:
-        return "universal"
-
-    return default
+    # The arch token follows the app name, so the earliest one wins: versions
+    # can carry arch tokens too (gboard-universal-...-v18.0.3-release-arm64-v8a).
+    # On a tie ("x86" inside "x86_64") the longer token wins.
+    found = [(base.find(a), -len(a), a) for a in KNOWN_ARCHES if a in base]
+    return min(found)[2] if found else default
 
 
 def extract_version_from_filename(apk_name: str) -> str:
