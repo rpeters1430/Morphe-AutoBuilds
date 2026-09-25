@@ -60,14 +60,16 @@ def _optional_flags(cli: Path, settings: dict) -> list[str]:
     return flags
 
 
-def run_build(app_name: str, source: str, arch: str = "universal", settings: dict | None = None) -> str:
-    """Build APK for specific architecture"""
+def run_build(app_name: str, source: str, arch: str = "universal", settings: dict | None = None,
+              tools: tuple[list[Path], str] | None = None) -> str:
+    """Build APK for specific architecture. `tools` is download_required()'s
+    result; pass it to reuse one CLI/patches download across arches."""
     settings = settings or build_config.get_entry(app_name, source)
     experimental = settings["experimental"]
     force = settings["force"]
     pinned_version = settings["version"] or None
 
-    download_files, name = downloader.download_required(
+    download_files, name = tools or downloader.download_required(
         source, settings["patches_channel"], settings["cli_channel"]
     )
 
@@ -412,6 +414,18 @@ def main():
 
     # force patches the store's newest version whatever the patches list.
     force_follows = bool(settings["force"]) and not settings["version"]
+    # Download the CLI and patches once for every arch: saves the repeat
+    # downloads, and all arches are patched with the same release even if a
+    # new one is published mid-build. (The app APK is still fetched per arch:
+    # stores can serve arch-specific variants.)
+    try:
+        tools = downloader.download_required(
+            source, settings["patches_channel"], settings["cli_channel"]
+        )
+    except Exception as e:
+        logging.error(f"❌ Could not download the patch tools for {source}: {e}")
+        exit(1)
+
     built_apks = []
     failed_arches = []
     for arch in arches:
@@ -419,7 +433,7 @@ def main():
         # One arch failing (e.g. a patch error) must not throw away the arches
         # that already built.
         try:
-            apk_path = run_build(app_name, source, arch, settings)
+            apk_path = run_build(app_name, source, arch, settings, tools)
         except Exception as e:
             logging.error(f"❌ {app_name}/{source}/{arch} failed: {e}")
             apk_path = None
