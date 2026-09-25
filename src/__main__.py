@@ -401,12 +401,21 @@ def main():
     arches = [env_arch] if env_arch else settings["arches"]
 
     built_apks = []
+    failed_arches = []
     for arch in arches:
         logging.info(f"🔨 Building {app_name} for {arch} architecture...")
-        apk_path = run_build(app_name, source, arch, settings)
+        # One arch failing (e.g. a patch error) must not throw away the arches
+        # that already built.
+        try:
+            apk_path = run_build(app_name, source, arch, settings)
+        except Exception as e:
+            logging.error(f"❌ {app_name}/{source}/{arch} failed: {e}")
+            apk_path = None
         if apk_path:
             built_apks.append(apk_path)
             print(f"✅ Built {arch} version: {Path(apk_path).name}")
+        else:
+            failed_arches.append(arch)
 
     print(f"\n🎯 Built {len(built_apks)} APK(s) for {app_name}:")
     for apk in built_apks:
@@ -415,6 +424,20 @@ def main():
     if not built_apks:
         logging.error(f"❌ No APKs were built for {app_name}/{source}")
         exit(1)
+
+    if failed_arches:
+        # Partial success keeps the job green so the built APKs still ship;
+        # flag the missing arches where they'll be seen. They are retried on
+        # the next run because they get no build record.
+        failed = ", ".join(failed_arches)
+        print(f"::warning title={app_name} partially built::"
+              f"{app_name}/{source} failed for {failed}; the previous APK is kept for those")
+        summary = getenv("GITHUB_STEP_SUMMARY")
+        if summary:
+            with open(summary, "a", encoding="utf-8") as f:
+                f.write(f"### ⚠️ {app_name} ({source}) partially built\n\n"
+                        f"Failed architectures: {failed}. The previous APK is kept "
+                        f"for those and they are retried on the next run.\n")
 
 if __name__ == "__main__":
     main()
