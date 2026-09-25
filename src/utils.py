@@ -3,6 +3,7 @@ import os
 import re
 import shutil
 import time
+import zipfile
 import logging
 from typing import List, Optional
 from github.GithubException import BadCredentialsException
@@ -626,5 +627,14 @@ def check_apk_integrity(apk_path: Path) -> bool:
             if bad_file is not None:
                 return False
         return True
+    except Exception:
+        return False
+
+
+def has_manifest(apk_path: Path) -> bool:
+    """True if the archive has an AndroidManifest.xml at its root."""
+    try:
+        with zipfile.ZipFile(apk_path, 'r') as z:
+            return "AndroidManifest.xml" in z.namelist()
     except Exception:
         return False

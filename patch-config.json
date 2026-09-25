@@ -95,7 +95,8 @@
     },
     {
       "app_name": "disney-plus",
-      "source": "rookie"
+      "source": "rookie",
+      "enabled": false
     },
     {
       "app_name": "duolingo",
@@ -111,7 +112,8 @@
     },
     {
       "app_name": "photomath",
-      "source": "rookie"
+      "source": "rookie",
+      "exclude_patches": ["Hide update popup"]
     },
     {
       "app_name": "pixiv",
@@ -147,7 +149,8 @@
     },
     {
       "app_name": "nomone",
-      "source": "Hoo"
+      "source": "Hoo",
+      "enabled": false
     },
     {
       "app_name": "wallcraft",
@@ -159,7 +162,8 @@
     },
     {
       "app_name": "number",
-      "source": "revanced-kitadai31"
+      "source": "revanced-kitadai31",
+      "enabled": false
     },
     {
       "app_name": "pandora",
@@ -215,7 +219,8 @@
     },
     {
       "app_name": "eggbun",
-      "source": "Hoo"
+      "source": "Hoo",
+      "enabled": false
     },
     {
       "app_name": "lingory",
@@ -231,7 +236,8 @@
     },
     {
       "app_name": "ttmik-stories",
-      "source": "Hoo"
+      "source": "Hoo",
+      "enabled": false
     },
     {
       "app_name": "windy",
@@ -291,7 +297,8 @@
     },
     {
       "app_name": "ticktick",
-      "source": "paresh"
+      "source": "paresh",
+      "enabled": false
     },
     {
       "app_name": "crex",
@@ -311,15 +318,18 @@
     },
     {
       "app_name": "lumina",
-      "source": "paresh"
+      "source": "paresh",
+      "enabled": false
     },
     {
       "app_name": "mark",
-      "source": "paresh"
+      "source": "paresh",
+      "enabled": false
     },
     {
       "app_name": "starsense",
-      "source": "paresh"
+      "source": "paresh",
+      "enabled": false
     },
     {
       "app_name": "prompter",
@@ -331,7 +341,8 @@
     },
     {
       "app_name": "alarmo",
-      "source": "paresh"
+      "source": "paresh",
+      "enabled": false
     },
     {
       "app_name": "vn",

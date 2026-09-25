@@ -281,12 +281,16 @@ def run_build(app_name: str, source: str, arch: str = "universal", settings: dic
                     "zip", "-FF", str(input_apk), "--out", str(fixed_apk)
                 ], check=False, capture_output=True)
 
-                if fixed_apk.exists() and fixed_apk.stat().st_size > 0:
+                # zip -FF can "succeed" while dropping almost every entry
+                # (seen: 3229 entries -> 3, no AndroidManifest.xml), so only
+                # swap in the repaired file when it is really an APK.
+                if utils.check_apk_integrity(fixed_apk) and utils.has_manifest(fixed_apk):
                     input_apk.unlink(missing_ok=True)
                     fixed_apk.rename(input_apk)
                     logging.info("APK fixed successfully")
                 else:
-                    logging.warning("Repair produced no usable file; keeping original APK")
+                    fixed_apk.unlink(missing_ok=True)
+                    logging.warning("Repair produced no usable APK; keeping original APK")
             else:
                 logging.warning("zip command not available for repair; proceeding with current APK")
         else:
