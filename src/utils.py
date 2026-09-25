@@ -321,6 +321,51 @@ def get_supported_versions(
     return versions
 
 
+def list_app_patches(package_name: str, cli: str, patches: str) -> Optional[dict[str, bool]]:
+    """{patch name: enabled by default} for the patches that name this package.
+
+    Universal patches (no package list, e.g. "Change package name") are left
+    out. None when the CLI's output can't be read.
+    """
+    cli_name = Path(cli).name.lower()
+    if 'morphe' in cli_name:
+        cmd = ['java', '-jar', cli, 'list-patches', '--with-packages',
+               '-f', package_name, '--patches', patches]
+    elif any(f'revanced-cli-{v}' in cli_name for v in (6, 7, 8)):
+        cmd = ['java', '-jar', cli, 'list-patches', '--with-packages',
+               '-f', package_name, '-p', patches, '-b']
+    else:
+        cmd = ['java', '-jar', cli, 'list-patches', '--with-packages',
+               '-f', package_name, patches]
+    output = run_process(cmd, capture=True, silent=True, check=False) or ""
+
+    # Blocks of "Name: X / Enabled: true / Compatible packages: / Package name: p",
+    # the first line prefixed by the logger's "INFO:".
+    result: dict[str, bool] = {}
+    name, enabled, for_app = None, None, False
+
+    def flush():
+        if name and enabled is not None and for_app:
+            result[name] = enabled
+
+    for raw in output.splitlines():
+        line = raw.strip().removeprefix("INFO:").strip()
+        if line.startswith("Index:"):
+            flush()
+            name, enabled, for_app = None, None, False
+        elif line.startswith("Name:"):
+            if name:
+                flush()
+                enabled, for_app = None, False
+            name = line[len("Name:"):].strip()
+        elif line.startswith("Enabled:"):
+            enabled = line[len("Enabled:"):].strip().lower() == "true"
+        elif line.startswith("Package name:"):
+            for_app = for_app or line[len("Package name:"):].strip() == package_name
+    flush()
+    return result or None
+
+
 def get_supported_version(package_name: str, cli: str, patches: str) -> Optional[str]:
     """Backwards compatible helper: returns the highest compatible version, if any."""
     versions = get_supported_versions(package_name, cli, patches)
