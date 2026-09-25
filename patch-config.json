@@ -113,7 +113,7 @@
     {
       "app_name": "photomath",
       "source": "rookie",
-      "exclude_patches": ["Hide update popup"]
+      "enabled": false
     },
     {
       "app_name": "pixiv",
@@ -366,7 +366,8 @@
     },
     {
       "app_name": "mladinska",
-      "source": "blazskufca"
+      "source": "blazskufca",
+      "enabled": false
     },
     {
       "app_name": "fxfile",
@@ -398,7 +399,8 @@
     },
     {
       "app_name": "pokecardex",
-      "source": "almewty"
+      "source": "almewty",
+      "enabled": false
     },
     {
       "app_name": "gamehub",
