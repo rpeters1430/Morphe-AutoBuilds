@@ -25,6 +25,10 @@ concurrency:
   group: morphe-release
   cancel-in-progress: false
 
+# Read-only by default; only the release job writes.
+permissions:
+  contents: read
+
 jobs:
   check-updates:
     name: Check for Updates
@@ -135,8 +139,6 @@ jobs:
         ports:
           - 8191:8191
         options: --shm-size=1gb
-    permissions:
-      contents: write
     strategy:
       fail-fast: false
       matrix:
