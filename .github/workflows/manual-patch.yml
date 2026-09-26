@@ -215,6 +215,7 @@ jobs:
         with:
           name: manual-apk-${{ inputs.app_name }}-${{ inputs.architecture }}
           path: "*.apk"
+          retention-days: 3
       
       - name: Check Existing Release
         if: ${{ inputs.replace_in_release == true }}
