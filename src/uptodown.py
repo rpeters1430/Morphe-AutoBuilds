@@ -138,6 +138,7 @@ def _variant_file_id(base_url: str, data_code: str, version_page: BeautifulSoup,
     requested = "armeabi-v7a" if arch == "arm-v7a" else arch
     current_arch = ""
     fallback_id = None
+    arm64_id = None
     for node in soup.select("section.variants > .content > *"):
         classes = node.get("class", [])
         if node.name == "p":
@@ -156,7 +157,11 @@ def _variant_file_id(base_url: str, data_code: str, version_page: BeautifulSoup,
             return file_id
         if requested and requested in current_arch:
             return file_id
-    return fallback_id
+        if arch == "universal" and not arm64_id and "arm64-v8a" in current_arch:
+            arm64_id = file_id
+    # A 32-bit-only file would not install on 64-bit-only phones, so a
+    # "universal" build falls back to arm64 before the page's first variant.
+    return arm64_id or fallback_id
 
 
 def get_download_link(version: str, app_name: str, config: dict) -> str | None:

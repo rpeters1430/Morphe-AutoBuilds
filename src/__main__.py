@@ -123,6 +123,27 @@ def _optional_flags(cli: Path, settings: dict) -> list[str]:
     return flags
 
 
+def _warn_if_32bit_only(apk: Path, app_name: str, arch: str) -> None:
+    """Flag an input whose native code only targets armeabi-v7a.
+
+    Such an APK installs on no 64-bit-only phone (Obtainium reports
+    "failureIncompatible"), which usually means a store handed back its
+    32-bit split instead of the arm64 one.
+    """
+    import zipfile
+    try:
+        with zipfile.ZipFile(apk) as z:
+            abis = {n.split("/")[1] for n in z.namelist() if n.startswith("lib/") and n.count("/") >= 2}
+    except Exception as e:
+        logging.debug(f"ABI inspection failed for {apk}: {e}")
+        return
+    if abis and "arm64-v8a" not in abis:
+        logging.warning(
+            f"⚠️  {app_name} ({arch}) only contains native libraries for {sorted(abis)}; "
+            "it will not install on 64-bit-only devices"
+        )
+
+
 def run_build(app_name: str, source: str, arch: str = "universal", settings: dict | None = None,
               tools: tuple[list[Path], str] | None = None) -> str:
     """Build APK for specific architecture. `tools` is download_required()'s
@@ -339,6 +360,9 @@ def run_build(app_name: str, source: str, arch: str = "universal", settings: dic
                 utils.strip_zip_entries(input_apk, ["lib/x86/*", "lib/x86_64/*", "lib/arm64-v8a/*"])
         else:
             utils.strip_zip_entries(input_apk, ["lib/x86/*", "lib/x86_64/*"])
+
+        if arch in ("universal", "arm64-v8a"):
+            _warn_if_32bit_only(input_apk, app_name, arch)
 
         # Validate APK integrity
         logging.info("Checking APK integrity...")
