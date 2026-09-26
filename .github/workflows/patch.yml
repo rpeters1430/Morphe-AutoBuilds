@@ -228,6 +228,7 @@ jobs:
         with:
           name: build-records-${{ matrix.app_name }}-${{ matrix.source }}
           path: build_records/
+          retention-days: 3
           if-no-files-found: ignore
 
   create-single-release:
