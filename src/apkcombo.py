@@ -62,7 +62,58 @@ def _variant_matches(anchor, version: str) -> bool:
     return re.search(rf"(?<![\w.]){re.escape(version)}(?![\w.])", text) is not None
 
 
-def _dynamic_download_link(response, package: str, version: str) -> str | None:
+def _variant_abis(anchor) -> set[str]:
+    """ABIs APKCombo lists above a variant's file list (empty when unlabelled).
+
+    Split apps are published as one XAPK per ABI, each under a heading such as
+    ``<li><span><code>armeabi-v7a</code></span><ul class="file-list">…``.
+    """
+    file_list = anchor.find_parent("ul", class_="file-list")
+    group = file_list.parent if file_list else None
+    heading = group.find("span", recursive=False) if group else None
+    if not heading:
+        return set()
+    return {code.get_text(strip=True).lower() for code in heading.find_all("code")}
+
+
+def _abi_rank(abis: set[str], arch: str) -> int:
+    """Lower is better. Never prefer a variant the requested arch can't run.
+
+    A "universal" build must install on 64-bit-only phones, so an XAPK that
+    carries only armeabi-v7a splits is the last resort, not the first pick.
+    """
+    has64, has32 = "arm64-v8a" in abis, "armeabi-v7a" in abis
+    if arch == "arm64-v8a":
+        order = (has64, not abis)
+    elif arch == "armeabi-v7a":
+        order = (has32, not abis)
+    else:
+        order = (has64 and has32, not abis, has64, has32)
+    for rank, matched in enumerate(order):
+        if matched:
+            return rank
+    return len(order)
+
+
+def _pick_variant(anchors, arch: str, version: str | None = None):
+    """Return the best ``a.variant`` for ``arch`` (ties keep page order)."""
+    best, best_rank = None, None
+    for anchor in anchors:
+        if not anchor.get("href"):
+            continue
+        if version and not _variant_matches(anchor, version):
+            logging.debug(
+                "APKCombo offered %r instead of %s; ignoring",
+                anchor.select_one(".vername").get_text(" ", strip=True), version,
+            )
+            continue
+        rank = _abi_rank(_variant_abis(anchor), arch)
+        if best_rank is None or rank < best_rank:
+            best, best_rank = anchor, rank
+    return best
+
+
+def _dynamic_download_link(response, package: str, version: str, arch: str = "universal") -> str | None:
     """Resolve APKCombo's JavaScript-loaded download tab.
 
     APKCombo no longer embeds a ``.variant`` link in many download pages.  The
@@ -104,17 +155,9 @@ def _dynamic_download_link(response, package: str, version: str) -> str | None:
             logging.debug("APKCombo dynamic request failed for %s: %s", package, exc)
             continue
         soup = BeautifulSoup(fragment.content, "html.parser")
-        for anchor in soup.select("a.variant[href]"):
-            href = anchor.get("href")
-            if not href:
-                continue
-            if not _variant_matches(anchor, version):
-                logging.debug(
-                    "APKCombo offered %r instead of %s for %s; ignoring",
-                    anchor.select_one(".vername").get_text(" ", strip=True), version, package,
-                )
-                continue
-            return _unwrap_redirect(urljoin(fragment.url, href))
+        anchor = _pick_variant(soup.select("a.variant[href]"), arch, version)
+        if anchor:
+            return _unwrap_redirect(urljoin(fragment.url, anchor["href"]))
     return None
 
 
@@ -122,6 +165,7 @@ def get_download_link(version: str, app_name: str, config: dict) -> str | None:
     package = (config.get("package") or "").strip()
     if not package or not version:
         return None
+    arch = config.get("arch") or "universal"
     for extension in ("apk", "xapk", "apks"):
         page_url = f"{BASE_URL}/search/{package}/download/phone-{version}-{extension}"
         try:
@@ -130,11 +174,10 @@ def get_download_link(version: str, app_name: str, config: dict) -> str | None:
             soup = BeautifulSoup(response.content, "html.parser")
             # The public page puts signed assets behind /r2?u=… redirects.
             # Select an actual variant link, never advertising/navigation links.
-            for anchor in soup.select("a.variant[href]"):
-                href = anchor.get("href")
-                if href:
-                    return _unwrap_redirect(urljoin(response.url, href))
-            dynamic_link = _dynamic_download_link(response, package, version)
+            anchor = _pick_variant(soup.select("a.variant[href]"), arch)
+            if anchor:
+                return _unwrap_redirect(urljoin(response.url, anchor["href"]))
+            dynamic_link = _dynamic_download_link(response, package, version, arch)
             if dynamic_link:
                 return dynamic_link
         except Exception as exc:
@@ -147,11 +190,10 @@ def get_download_link(version: str, app_name: str, config: dict) -> str | None:
             response = plain_requests.get(page_url, headers=HEADERS, timeout=25)
             response.raise_for_status()
             soup = BeautifulSoup(response.content, "html.parser")
-            for anchor in soup.select("a.variant[href]"):
-                href = anchor.get("href")
-                if href:
-                    return _unwrap_redirect(urljoin(response.url, href))
-            dynamic_link = _dynamic_download_link(response, package, version)
+            anchor = _pick_variant(soup.select("a.variant[href]"), arch)
+            if anchor:
+                return _unwrap_redirect(urljoin(response.url, anchor["href"]))
+            dynamic_link = _dynamic_download_link(response, package, version, arch)
             if dynamic_link:
                 return dynamic_link
         except Exception as exc:
