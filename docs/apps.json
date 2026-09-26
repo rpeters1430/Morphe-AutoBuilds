@@ -8,14 +8,14 @@
       "additionalSettings": "{\"apkFilterRegEx\": \"^tiktok-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
-      "id": "com.google.android.youtube",
+      "id": "app.morphe.android.youtube",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
       "author": "rpeters1430",
       "name": "Youtube",
       "additionalSettings": "{\"apkFilterRegEx\": \"^youtube-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
-      "id": "com.google.android.apps.youtube.music",
+      "id": "app.morphe.android.apps.youtube.music",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
       "author": "rpeters1430",
       "name": "Youtube Music",
@@ -692,6 +692,83 @@
       "author": "rpeters1430",
       "name": "Gboard",
       "additionalSettings": "{\"apkFilterRegEx\": \"^gboard-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
+    },
+    {
+      "id": "com.cloudflare.onedotonedotonedotone",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "author": "rpeters1430",
+      "name": "1 1 1 1",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^1-1-1-1-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
+    },
+    {
+      "id": "com.accuweather.android",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "author": "rpeters1430",
+      "name": "Accuweather",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^accuweather-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
+    },
+    {
+      "id": "com.adguard.android",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "author": "rpeters1430",
+      "name": "Adguard",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^adguard-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
+    },
+    {
+      "id": "com.jndapp.depth.live.wallpaper",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "author": "rpeters1430",
+      "name": "Depth Live Wallpaper",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^depth-live-wallpaper-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
+    },
+    {
+      "id": "au.com.shiftyjelly.pocketcasts",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "author": "rpeters1430",
+      "name": "Pocket Casts",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^pocket-casts-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
+    },
+    {
+      "id": "com.truebill",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "author": "rpeters1430",
+      "name": "Rocket Money",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^rocket-money-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
+    },
+    {
+      "id": "com.server.auditor.ssh.client",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "author": "rpeters1430",
+      "name": "Server Auditor",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^server-auditor-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
+    },
+    {
+      "id": "ai.topicfinder.podcastdiscovery",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "author": "rpeters1430",
+      "name": "Snipd",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^snipd-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
+    },
+    {
+      "id": "com.weather.Weather",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "author": "rpeters1430",
+      "name": "The Weather Channel",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^the-weather-channel-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
+    },
+    {
+      "id": "mobi.lockdown.weather",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "author": "rpeters1430",
+      "name": "Today Weather",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^today-weather-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
+    },
+    {
+      "id": "com.wallverse.wallpapers",
+      "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+      "author": "rpeters1430",
+      "name": "Wallverse",
+      "additionalSettings": "{\"apkFilterRegEx\": \"^wallverse-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     }
   ]
 }

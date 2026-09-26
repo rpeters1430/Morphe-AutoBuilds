@@ -1,0 +1,9 @@
+{
+  "org": "wallverse",
+  "name": "wallverse-wallpapers",
+  "type": "APK",
+  "arch": "universal",
+  "dpi": "nodpi",
+  "package": "com.wallverse.wallpapers",
+  "version": ""
+}

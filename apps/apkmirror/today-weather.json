@@ -1,0 +1,9 @@
+{
+  "org": "today-weather",
+  "name": "today-weather-forecast-radar",
+  "type": "APK",
+  "arch": "universal",
+  "dpi": "nodpi",
+  "package": "mobi.lockdown.weather",
+  "version": ""
+}

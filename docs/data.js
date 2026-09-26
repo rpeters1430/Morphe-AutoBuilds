@@ -2,7 +2,7 @@ window.PORTAL_DATA = {
   "repository": "rpeters1430/Morphe-AutoBuilds",
   "release_tag": "latest",
   "last_updated": "2026-09-24T07:12:07Z",
-  "total_apps": 99,
+  "total_apps": 110,
   "apps": [
     {
       "name": "Tiktok",
@@ -18,7 +18,7 @@ window.PORTAL_DATA = {
           "filename": "tiktok-universal-morphe-patches-v46.2.3.apk",
           "arch": "universal",
           "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/tiktok-universal-morphe-patches-v46.2.3.apk",
-          "size": "561.2 MB"
+          "size": "561.3 MB"
         }
       ],
       "obtainium_config": {
@@ -33,7 +33,7 @@ window.PORTAL_DATA = {
       "name": "Youtube",
       "slug": "youtube",
       "source": "morphe",
-      "package": "com.google.android.youtube",
+      "package": "app.morphe.android.youtube",
       "category": "Video & Streaming",
       "icon": "https://raw.githubusercontent.com/walkxcode/dashboard-icons/main/svg/youtube.svg",
       "enabled": true,
@@ -47,7 +47,7 @@ window.PORTAL_DATA = {
         }
       ],
       "obtainium_config": {
-        "id": "com.google.android.youtube",
+        "id": "app.morphe.android.youtube",
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Youtube",
@@ -58,7 +58,7 @@ window.PORTAL_DATA = {
       "name": "Youtube Music",
       "slug": "youtube-music",
       "source": "morphe",
-      "package": "com.google.android.apps.youtube.music",
+      "package": "app.morphe.android.apps.youtube.music",
       "category": "Music & Audio",
       "icon": "https://raw.githubusercontent.com/walkxcode/dashboard-icons/main/svg/youtube-music.svg",
       "enabled": true,
@@ -78,7 +78,7 @@ window.PORTAL_DATA = {
         }
       ],
       "obtainium_config": {
-        "id": "com.google.android.apps.youtube.music",
+        "id": "app.morphe.android.apps.youtube.music",
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Youtube Music",
@@ -96,10 +96,10 @@ window.PORTAL_DATA = {
       "channel": "prerelease",
       "downloads": [
         {
-          "filename": "reddit-universal-morphe-v2026.38.0.apk",
+          "filename": "reddit-universal-morphe-v2026.39.0.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/reddit-universal-morphe-v2026.38.0.apk",
-          "size": "90.0 MB"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/reddit-universal-morphe-v2026.39.0.apk",
+          "size": "90.4 MB"
         }
       ],
       "obtainium_config": {
@@ -213,7 +213,7 @@ window.PORTAL_DATA = {
     {
       "name": "Camscanner",
       "slug": "camscanner",
-      "source": "Hoo",
+      "source": "rushiranpise-dev",
       "package": "com.intsig.camscanner",
       "category": "Productivity",
       "icon": "",
@@ -271,10 +271,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "macrofactor-workout-universal.apk",
+          "filename": "macrofactor-workout-universal-morphe-patches-v1.2.1.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/macrofactor-workout-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/macrofactor-workout-universal-morphe-patches-v1.2.1.apk",
+          "size": "193.1 MB"
         }
       ],
       "obtainium_config": {
@@ -296,10 +296,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "mirinae-universal.apk",
+          "filename": "mirinae-universal-morphe-patches-v2.2.2.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/mirinae-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/mirinae-universal-morphe-patches-v2.2.2.apk",
+          "size": "26.2 MB"
         }
       ],
       "obtainium_config": {
@@ -349,7 +349,7 @@ window.PORTAL_DATA = {
           "filename": "lightroom-universal-morphe-patches-v11.5.22.apk",
           "arch": "universal",
           "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/lightroom-universal-morphe-patches-v11.5.22.apk",
-          "size": "91.5 MB"
+          "size": "91.4 MB"
         }
       ],
       "obtainium_config": {
@@ -523,7 +523,7 @@ window.PORTAL_DATA = {
       "package": "com.disney.disneyplus",
       "category": "Utilities & Tools",
       "icon": "",
-      "enabled": true,
+      "enabled": false,
       "channel": "source",
       "downloads": [
         {
@@ -555,7 +555,7 @@ window.PORTAL_DATA = {
           "filename": "duolingo-universal-morphe-patches-v6.95.4.apk",
           "arch": "universal",
           "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/duolingo-universal-morphe-patches-v6.95.4.apk",
-          "size": "158.8 MB"
+          "size": "19.7 MB"
         }
       ],
       "obtainium_config": {
@@ -577,10 +577,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "google-news-universal-morphe-patches-v5.108.0.644447823.apk",
+          "filename": "google-news-universal-morphe-patches-v5.167.0.985388348.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/google-news-universal-morphe-patches-v5.108.0.644447823.apk",
-          "size": "16.8 MB"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/google-news-universal-morphe-patches-v5.167.0.985388348.apk",
+          "size": "17.6 MB"
         }
       ],
       "obtainium_config": {
@@ -594,7 +594,7 @@ window.PORTAL_DATA = {
     {
       "name": "Messenger",
       "slug": "messenger",
-      "source": "rookie",
+      "source": "rushiranpise-dev",
       "package": "com.facebook.orca",
       "category": "Communication",
       "icon": "",
@@ -623,7 +623,7 @@ window.PORTAL_DATA = {
       "package": "com.microblink.photomath",
       "category": "Education",
       "icon": "",
-      "enabled": true,
+      "enabled": false,
       "channel": "source",
       "downloads": [
         {
@@ -719,7 +719,7 @@ window.PORTAL_DATA = {
     {
       "name": "Proton Vpn",
       "slug": "proton-vpn",
-      "source": "Hoo",
+      "source": "rushiranpise-dev",
       "package": "ch.protonvpn.android",
       "category": "Utilities & Tools",
       "icon": "",
@@ -848,7 +848,7 @@ window.PORTAL_DATA = {
       "package": "nom.vrd",
       "category": "Utilities & Tools",
       "icon": "",
-      "enabled": true,
+      "enabled": false,
       "channel": "source",
       "downloads": [
         {
@@ -923,7 +923,7 @@ window.PORTAL_DATA = {
       "package": "com.pryshedko.mtisland",
       "category": "Utilities & Tools",
       "icon": "",
-      "enabled": true,
+      "enabled": false,
       "channel": "source",
       "downloads": [
         {
@@ -1002,10 +1002,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "icon-packer-universal.apk",
+          "filename": "icon-packer-universal-morphe-patches-v1.21.0.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/icon-packer-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/icon-packer-universal-morphe-patches-v1.21.0.apk",
+          "size": "15.3 MB"
         }
       ],
       "obtainium_config": {
@@ -1019,7 +1019,7 @@ window.PORTAL_DATA = {
     {
       "name": "Rar",
       "slug": "rar",
-      "source": "rookie",
+      "source": "rushiranpise-dev",
       "package": "com.rarlab.rar",
       "category": "Productivity",
       "icon": "",
@@ -1044,7 +1044,7 @@ window.PORTAL_DATA = {
     {
       "name": "Strava",
       "slug": "strava",
-      "source": "rookie",
+      "source": "rushiranpise-dev",
       "package": "com.strava",
       "category": "Health & Fitness",
       "icon": "https://raw.githubusercontent.com/walkxcode/dashboard-icons/main/svg/strava.svg",
@@ -1102,10 +1102,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "threads-universal-morphe-patches-v448.0.0.24.85.apk",
+          "filename": "threads-universal-morphe-patches-v448.0.0.54.85.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/threads-universal-morphe-patches-v448.0.0.24.85.apk",
-          "size": "112.8 MB"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/threads-universal-morphe-patches-v448.0.0.54.85.apk",
+          "size": "81.2 MB"
         }
       ],
       "obtainium_config": {
@@ -1273,7 +1273,7 @@ window.PORTAL_DATA = {
       "package": "kr.eggbun.eggconvo",
       "category": "Utilities & Tools",
       "icon": "",
-      "enabled": true,
+      "enabled": false,
       "channel": "source",
       "downloads": [
         {
@@ -1373,7 +1373,7 @@ window.PORTAL_DATA = {
       "package": "app.ttmikstories.android",
       "category": "Utilities & Tools",
       "icon": "",
-      "enabled": true,
+      "enabled": false,
       "channel": "source",
       "downloads": [
         {
@@ -1394,7 +1394,7 @@ window.PORTAL_DATA = {
     {
       "name": "Windy",
       "slug": "windy",
-      "source": "Hoo",
+      "source": "rushiranpise-dev",
       "package": "com.windyty.android",
       "category": "Weather",
       "icon": "",
@@ -1427,10 +1427,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "calistree-universal.apk",
+          "filename": "calistree-universal-morphe-patches-v5.9.1.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/calistree-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/calistree-universal-morphe-patches-v5.9.1.apk",
+          "size": "115.9 MB"
         }
       ],
       "obtainium_config": {
@@ -1477,10 +1477,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "chargeprice-universal.apk",
+          "filename": "chargeprice-universal-morphe-patches-v3.9.2.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/chargeprice-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/chargeprice-universal-morphe-patches-v3.9.2.apk",
+          "size": "49.1 MB"
         }
       ],
       "obtainium_config": {
@@ -1519,7 +1519,7 @@ window.PORTAL_DATA = {
     {
       "name": "Telegram",
       "slug": "telegram",
-      "source": "paresh",
+      "source": "rushiranpise-dev",
       "package": "org.telegram.messenger.web",
       "category": "Communication",
       "icon": "https://raw.githubusercontent.com/walkxcode/dashboard-icons/main/svg/telegram.svg",
@@ -1530,7 +1530,7 @@ window.PORTAL_DATA = {
           "filename": "telegram-universal-paresh-v12.10.4.apk",
           "arch": "universal",
           "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/telegram-universal-paresh-v12.10.4.apk",
-          "size": "62.9 MB"
+          "size": "43.8 MB"
         }
       ],
       "obtainium_config": {
@@ -1644,7 +1644,7 @@ window.PORTAL_DATA = {
     {
       "name": "Nova",
       "slug": "nova",
-      "source": "rushiranpise",
+      "source": "rushiranpise-dev",
       "package": "com.teslacoilsw.launcher",
       "category": "Utilities & Tools",
       "icon": "",
@@ -1702,10 +1702,10 @@ window.PORTAL_DATA = {
       "channel": "source",
       "downloads": [
         {
-          "filename": "flatastic-universal.apk",
+          "filename": "flatastic-universal-revanced-patches-v3.16.1.apk",
           "arch": "universal",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/flatastic-universal.apk",
-          "size": "Auto"
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/flatastic-universal-revanced-patches-v3.16.1.apk",
+          "size": "20.0 MB"
         }
       ],
       "obtainium_config": {
@@ -1748,7 +1748,7 @@ window.PORTAL_DATA = {
       "package": "com.ticktick.task",
       "category": "Utilities & Tools",
       "icon": "",
-      "enabled": true,
+      "enabled": false,
       "channel": "source",
       "downloads": [
         {
@@ -1873,7 +1873,7 @@ window.PORTAL_DATA = {
       "package": "com.lumina.wallpapers",
       "category": "Utilities & Tools",
       "icon": "",
-      "enabled": true,
+      "enabled": false,
       "channel": "source",
       "downloads": [
         {
@@ -1898,7 +1898,7 @@ window.PORTAL_DATA = {
       "package": "com.markOne.ss_app",
       "category": "Utilities & Tools",
       "icon": "",
-      "enabled": true,
+      "enabled": false,
       "channel": "source",
       "downloads": [
         {
@@ -1923,7 +1923,7 @@ window.PORTAL_DATA = {
       "package": "com.celestron.skybox",
       "category": "Utilities & Tools",
       "icon": "",
-      "enabled": true,
+      "enabled": false,
       "channel": "source",
       "downloads": [
         {
@@ -1998,7 +1998,7 @@ window.PORTAL_DATA = {
       "package": "com.bytesong.missionalarm",
       "category": "Utilities & Tools",
       "icon": "",
-      "enabled": true,
+      "enabled": false,
       "channel": "source",
       "downloads": [
         {
@@ -2044,7 +2044,7 @@ window.PORTAL_DATA = {
     {
       "name": "Splitwise",
       "slug": "splitwise",
-      "source": "burgers",
+      "source": "rushiranpise-dev",
       "package": "com.Splitwise.SplitwiseMobile",
       "category": "Utilities & Tools",
       "icon": "",
@@ -2130,7 +2130,7 @@ window.PORTAL_DATA = {
           "filename": "kakaotalk-universal-revanced-patches-v26.8.2.apk",
           "arch": "universal",
           "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/kakaotalk-universal-revanced-patches-v26.8.2.apk",
-          "size": "170.7 MB"
+          "size": "207.0 MB"
         }
       ],
       "obtainium_config": {
@@ -2148,7 +2148,7 @@ window.PORTAL_DATA = {
       "package": "com.mladinska.mkplus",
       "category": "Utilities & Tools",
       "icon": "",
-      "enabled": true,
+      "enabled": false,
       "channel": "source",
       "downloads": [
         {
@@ -2305,7 +2305,7 @@ window.PORTAL_DATA = {
           "filename": "wps-office-universal-morphe-patches-v3.4.1.apk",
           "arch": "universal",
           "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/wps-office-universal-morphe-patches-v3.4.1.apk",
-          "size": "809.8 MB"
+          "size": "810.1 MB"
         }
       ],
       "obtainium_config": {
@@ -2348,13 +2348,13 @@ window.PORTAL_DATA = {
       "package": "com.application.pokecardex",
       "category": "Utilities & Tools",
       "icon": "",
-      "enabled": true,
+      "enabled": false,
       "channel": "source",
       "downloads": [
         {
-          "filename": "pokecardex-armeabi-v7a-morphe-patches-v8.7.2.apk",
+          "filename": "pokecardex-armeabi-v7a-morphe-patches-v5.13.0.apk",
           "arch": "armeabi-v7a",
-          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/pokecardex-armeabi-v7a-morphe-patches-v8.7.2.apk",
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/pokecardex-armeabi-v7a-morphe-patches-v5.13.0.apk",
           "size": "13.5 MB"
         }
       ],
@@ -2455,7 +2455,7 @@ window.PORTAL_DATA = {
           "filename": "x-new-universal-piko-patches-v12.28.0-prod.01.apk",
           "arch": "universal",
           "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/x-new-universal-piko-patches-v12.28.0-prod.01.apk",
-          "size": "164.6 MB"
+          "size": "163.7 MB"
         }
       ],
       "obtainium_config": {
@@ -2469,7 +2469,7 @@ window.PORTAL_DATA = {
     {
       "name": "Gboard",
       "slug": "gboard",
-      "source": "jasonwu1994",
+      "source": "morning-entree",
       "package": "com.google.android.inputmethod.latin",
       "category": "Utilities & Tools",
       "icon": "",
@@ -2489,6 +2489,281 @@ window.PORTAL_DATA = {
         "author": "rpeters1430",
         "name": "Gboard",
         "additionalSettings": "{\"apkFilterRegEx\": \"^gboard-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
+      }
+    },
+    {
+      "name": "1 1 1 1",
+      "slug": "1-1-1-1",
+      "source": "rushiranpise-dev",
+      "package": "com.cloudflare.onedotonedotonedotone",
+      "category": "Utilities & Tools",
+      "icon": "",
+      "enabled": true,
+      "channel": "source",
+      "downloads": [
+        {
+          "filename": "1-1-1-1-universal.apk",
+          "arch": "universal",
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/1-1-1-1-universal.apk",
+          "size": "Auto"
+        }
+      ],
+      "obtainium_config": {
+        "id": "com.cloudflare.onedotonedotonedotone",
+        "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+        "author": "rpeters1430",
+        "name": "1 1 1 1",
+        "additionalSettings": "{\"apkFilterRegEx\": \"^1-1-1-1-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
+      }
+    },
+    {
+      "name": "Accuweather",
+      "slug": "accuweather",
+      "source": "rushiranpise-dev",
+      "package": "com.accuweather.android",
+      "category": "Utilities & Tools",
+      "icon": "",
+      "enabled": true,
+      "channel": "source",
+      "downloads": [
+        {
+          "filename": "accuweather-universal.apk",
+          "arch": "universal",
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/accuweather-universal.apk",
+          "size": "Auto"
+        }
+      ],
+      "obtainium_config": {
+        "id": "com.accuweather.android",
+        "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+        "author": "rpeters1430",
+        "name": "Accuweather",
+        "additionalSettings": "{\"apkFilterRegEx\": \"^accuweather-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
+      }
+    },
+    {
+      "name": "Adguard",
+      "slug": "adguard",
+      "source": "rushiranpise-dev",
+      "package": "com.adguard.android",
+      "category": "Utilities & Tools",
+      "icon": "",
+      "enabled": true,
+      "channel": "source",
+      "downloads": [
+        {
+          "filename": "adguard-universal.apk",
+          "arch": "universal",
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/adguard-universal.apk",
+          "size": "Auto"
+        }
+      ],
+      "obtainium_config": {
+        "id": "com.adguard.android",
+        "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+        "author": "rpeters1430",
+        "name": "Adguard",
+        "additionalSettings": "{\"apkFilterRegEx\": \"^adguard-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
+      }
+    },
+    {
+      "name": "Depth Live Wallpaper",
+      "slug": "depth-live-wallpaper",
+      "source": "rushiranpise-dev",
+      "package": "com.jndapp.depth.live.wallpaper",
+      "category": "Utilities & Tools",
+      "icon": "",
+      "enabled": true,
+      "channel": "source",
+      "downloads": [
+        {
+          "filename": "depth-live-wallpaper-universal.apk",
+          "arch": "universal",
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/depth-live-wallpaper-universal.apk",
+          "size": "Auto"
+        }
+      ],
+      "obtainium_config": {
+        "id": "com.jndapp.depth.live.wallpaper",
+        "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+        "author": "rpeters1430",
+        "name": "Depth Live Wallpaper",
+        "additionalSettings": "{\"apkFilterRegEx\": \"^depth-live-wallpaper-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
+      }
+    },
+    {
+      "name": "Pocket Casts",
+      "slug": "pocket-casts",
+      "source": "rushiranpise-dev",
+      "package": "au.com.shiftyjelly.pocketcasts",
+      "category": "Utilities & Tools",
+      "icon": "",
+      "enabled": true,
+      "channel": "source",
+      "downloads": [
+        {
+          "filename": "pocket-casts-universal.apk",
+          "arch": "universal",
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/pocket-casts-universal.apk",
+          "size": "Auto"
+        }
+      ],
+      "obtainium_config": {
+        "id": "au.com.shiftyjelly.pocketcasts",
+        "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+        "author": "rpeters1430",
+        "name": "Pocket Casts",
+        "additionalSettings": "{\"apkFilterRegEx\": \"^pocket-casts-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
+      }
+    },
+    {
+      "name": "Rocket Money",
+      "slug": "rocket-money",
+      "source": "rushiranpise-dev",
+      "package": "com.truebill",
+      "category": "Utilities & Tools",
+      "icon": "",
+      "enabled": true,
+      "channel": "source",
+      "downloads": [
+        {
+          "filename": "rocket-money-universal.apk",
+          "arch": "universal",
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/rocket-money-universal.apk",
+          "size": "Auto"
+        }
+      ],
+      "obtainium_config": {
+        "id": "com.truebill",
+        "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+        "author": "rpeters1430",
+        "name": "Rocket Money",
+        "additionalSettings": "{\"apkFilterRegEx\": \"^rocket-money-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
+      }
+    },
+    {
+      "name": "Server Auditor",
+      "slug": "server-auditor",
+      "source": "rushiranpise-dev",
+      "package": "com.server.auditor.ssh.client",
+      "category": "Utilities & Tools",
+      "icon": "",
+      "enabled": true,
+      "channel": "source",
+      "downloads": [
+        {
+          "filename": "server-auditor-universal.apk",
+          "arch": "universal",
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/server-auditor-universal.apk",
+          "size": "Auto"
+        }
+      ],
+      "obtainium_config": {
+        "id": "com.server.auditor.ssh.client",
+        "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+        "author": "rpeters1430",
+        "name": "Server Auditor",
+        "additionalSettings": "{\"apkFilterRegEx\": \"^server-auditor-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
+      }
+    },
+    {
+      "name": "Snipd",
+      "slug": "snipd",
+      "source": "rushiranpise-dev",
+      "package": "ai.topicfinder.podcastdiscovery",
+      "category": "Utilities & Tools",
+      "icon": "",
+      "enabled": true,
+      "channel": "source",
+      "downloads": [
+        {
+          "filename": "snipd-universal.apk",
+          "arch": "universal",
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/snipd-universal.apk",
+          "size": "Auto"
+        }
+      ],
+      "obtainium_config": {
+        "id": "ai.topicfinder.podcastdiscovery",
+        "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+        "author": "rpeters1430",
+        "name": "Snipd",
+        "additionalSettings": "{\"apkFilterRegEx\": \"^snipd-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
+      }
+    },
+    {
+      "name": "The Weather Channel",
+      "slug": "the-weather-channel",
+      "source": "rushiranpise-dev",
+      "package": "com.weather.Weather",
+      "category": "Utilities & Tools",
+      "icon": "",
+      "enabled": true,
+      "channel": "source",
+      "downloads": [
+        {
+          "filename": "the-weather-channel-universal.apk",
+          "arch": "universal",
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/the-weather-channel-universal.apk",
+          "size": "Auto"
+        }
+      ],
+      "obtainium_config": {
+        "id": "com.weather.Weather",
+        "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+        "author": "rpeters1430",
+        "name": "The Weather Channel",
+        "additionalSettings": "{\"apkFilterRegEx\": \"^the-weather-channel-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
+      }
+    },
+    {
+      "name": "Today Weather",
+      "slug": "today-weather",
+      "source": "rushiranpise-dev",
+      "package": "mobi.lockdown.weather",
+      "category": "Utilities & Tools",
+      "icon": "",
+      "enabled": true,
+      "channel": "source",
+      "downloads": [
+        {
+          "filename": "today-weather-universal.apk",
+          "arch": "universal",
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/today-weather-universal.apk",
+          "size": "Auto"
+        }
+      ],
+      "obtainium_config": {
+        "id": "mobi.lockdown.weather",
+        "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+        "author": "rpeters1430",
+        "name": "Today Weather",
+        "additionalSettings": "{\"apkFilterRegEx\": \"^today-weather-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
+      }
+    },
+    {
+      "name": "Wallverse",
+      "slug": "wallverse",
+      "source": "rushiranpise-dev",
+      "package": "com.wallverse.wallpapers",
+      "category": "Utilities & Tools",
+      "icon": "",
+      "enabled": true,
+      "channel": "source",
+      "downloads": [
+        {
+          "filename": "wallverse-universal.apk",
+          "arch": "universal",
+          "download_url": "https://github.com/rpeters1430/Morphe-AutoBuilds/releases/download/latest/wallverse-universal.apk",
+          "size": "Auto"
+        }
+      ],
+      "obtainium_config": {
+        "id": "com.wallverse.wallpapers",
+        "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
+        "author": "rpeters1430",
+        "name": "Wallverse",
+        "additionalSettings": "{\"apkFilterRegEx\": \"^wallverse-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
       }
     }
   ]

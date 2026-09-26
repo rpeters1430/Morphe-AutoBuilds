@@ -1,0 +1,9 @@
+{
+  "org": "automattic-inc",
+  "name": "pocket-casts-podcast-player",
+  "type": "APK",
+  "arch": "universal",
+  "dpi": "nodpi",
+  "package": "au.com.shiftyjelly.pocketcasts",
+  "version": ""
+}

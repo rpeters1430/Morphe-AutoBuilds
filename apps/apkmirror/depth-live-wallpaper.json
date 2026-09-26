@@ -1,0 +1,9 @@
+{
+  "org": "justnewdesigns",
+  "name": "depth-wallpapers-live-clock",
+  "type": "APK",
+  "arch": "universal",
+  "dpi": "nodpi",
+  "package": "com.jndapp.depth.live.wallpaper",
+  "version": ""
+}

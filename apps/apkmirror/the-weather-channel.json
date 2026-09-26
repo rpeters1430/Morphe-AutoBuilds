@@ -1,0 +1,9 @@
+{
+  "org": "the-weather-channel",
+  "name": "weather-the-weather-channel",
+  "type": "BUNDLE",
+  "arch": "universal",
+  "dpi": "nodpi",
+  "package": "com.weather.Weather",
+  "version": ""
+}

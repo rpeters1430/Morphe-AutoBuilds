@@ -1,0 +1,9 @@
+{
+  "org": "snipd",
+  "name": "snipd-podcast-player",
+  "type": "APK",
+  "arch": "universal",
+  "dpi": "nodpi",
+  "package": "ai.topicfinder.podcastdiscovery",
+  "version": ""
+}

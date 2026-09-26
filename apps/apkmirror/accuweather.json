@@ -1,0 +1,9 @@
+{
+  "org": "accuweather",
+  "name": "accuweather",
+  "type": "BUNDLE",
+  "arch": "universal",
+  "dpi": "nodpi",
+  "package": "com.accuweather.android",
+  "version": ""
+}

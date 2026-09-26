@@ -47,7 +47,7 @@
     },
     {
       "app_name": "camscanner",
-      "source": "Hoo"
+      "source": "rushiranpise-dev"
     },
     {
       "app_name": "macrofactor",
@@ -108,7 +108,7 @@
     },
     {
       "app_name": "messenger",
-      "source": "rookie"
+      "source": "rushiranpise-dev"
     },
     {
       "app_name": "photomath",
@@ -129,7 +129,7 @@
     },
     {
       "app_name": "proton-vpn",
-      "source": "Hoo"
+      "source": "rushiranpise-dev"
     },
     {
       "app_name": "meme",
@@ -179,11 +179,11 @@
     },
     {
       "app_name": "rar",
-      "source": "rookie"
+      "source": "rushiranpise-dev"
     },
     {
       "app_name": "strava",
-      "source": "rookie"
+      "source": "rushiranpise-dev"
     },
     {
       "app_name": "tumblr",
@@ -241,7 +241,7 @@
     },
     {
       "app_name": "windy",
-      "source": "Hoo"
+      "source": "rushiranpise-dev"
     },
     {
       "app_name": "calistree",
@@ -261,7 +261,7 @@
     },
     {
       "app_name": "telegram",
-      "source": "paresh"
+      "source": "rushiranpise-dev"
     },
     {
       "app_name": "park4night",
@@ -281,7 +281,7 @@
     },
     {
       "app_name": "nova",
-      "source": "rushiranpise"
+      "source": "rushiranpise-dev"
     },
     {
       "app_name": "earphone",
@@ -350,7 +350,7 @@
     },
     {
       "app_name": "splitwise",
-      "source": "burgers"
+      "source": "rushiranpise-dev"
     },
     {
       "app_name": "trakt",
@@ -420,7 +420,57 @@
     },
     {
       "app_name": "gboard",
-      "source": "jasonwu1994"
+      "source": "morning-entree",
+      "include_patches": [
+        "Block tracking and analytics",
+        "Remove promotional banners",
+        "Network privacy",
+        "Disable telemetry & federated learning"
+      ]
+    },
+    {
+      "app_name": "1-1-1-1",
+      "source": "rushiranpise-dev"
+    },
+    {
+      "app_name": "accuweather",
+      "source": "rushiranpise-dev"
+    },
+    {
+      "app_name": "adguard",
+      "source": "rushiranpise-dev"
+    },
+    {
+      "app_name": "depth-live-wallpaper",
+      "source": "rushiranpise-dev"
+    },
+    {
+      "app_name": "pocket-casts",
+      "source": "rushiranpise-dev"
+    },
+    {
+      "app_name": "rocket-money",
+      "source": "rushiranpise-dev"
+    },
+    {
+      "app_name": "server-auditor",
+      "source": "rushiranpise-dev"
+    },
+    {
+      "app_name": "snipd",
+      "source": "rushiranpise-dev"
+    },
+    {
+      "app_name": "the-weather-channel",
+      "source": "rushiranpise-dev"
+    },
+    {
+      "app_name": "today-weather",
+      "source": "rushiranpise-dev"
+    },
+    {
+      "app_name": "wallverse",
+      "source": "rushiranpise-dev"
     }
   ]
 }

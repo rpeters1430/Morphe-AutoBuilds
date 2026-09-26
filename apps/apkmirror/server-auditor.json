@@ -1,0 +1,9 @@
+{
+  "org": "termius-corporation",
+  "name": "termius-basic",
+  "type": "APK",
+  "arch": "universal",
+  "dpi": "nodpi",
+  "package": "com.server.auditor.ssh.client",
+  "version": ""
+}

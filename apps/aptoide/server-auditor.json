@@ -1,0 +1,5 @@
+{
+  "name": "server-auditor",
+  "package": "com.server.auditor.ssh.client",
+  "version": ""
+}

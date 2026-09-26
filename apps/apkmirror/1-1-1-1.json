@@ -1,0 +1,9 @@
+{
+  "org": "cloudflare",
+  "name": "1-1-1-1",
+  "type": "APK",
+  "arch": "universal",
+  "dpi": "nodpi",
+  "package": "com.cloudflare.onedotonedotonedotone",
+  "version": ""
+}
