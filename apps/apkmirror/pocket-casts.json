@@ -1,6 +1,7 @@
 {
   "org": "automattic-inc",
-  "name": "pocket-casts-podcast-player",
+  "name": "pocket-casts",
+  "release_prefix": "pocket-casts-podcast-app",
   "type": "APK",
   "arch": "universal",
   "dpi": "nodpi",
