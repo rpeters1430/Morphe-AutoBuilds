@@ -48,7 +48,21 @@ def _unwrap_redirect(url: str) -> str:
     return url
 
 
-def _dynamic_download_link(response, package: str) -> str | None:
+def _variant_matches(anchor, version: str) -> bool:
+    """True when a variant's label names `version` (or carries no label).
+
+    The download fragment lists the app's *latest* build when it does not
+    recognise the requested version, so an unchecked link can silently hand
+    back a release the patches don't support.
+    """
+    label = anchor.select_one(".vername")
+    text = label.get_text(" ", strip=True) if label else ""
+    if not text:
+        return True
+    return re.search(rf"(?<![\w.]){re.escape(version)}(?![\w.])", text) is not None
+
+
+def _dynamic_download_link(response, package: str, version: str) -> str | None:
     """Resolve APKCombo's JavaScript-loaded download tab.
 
     APKCombo no longer embeds a ``.variant`` link in many download pages.  The
@@ -67,10 +81,14 @@ def _dynamic_download_link(response, package: str) -> str | None:
     app_path = re.sub(r"/download(?:/[^/?#]+)?/?(?:[?#].*)?$", "/", urlparse(page_url).path)
     if not app_path.endswith("/"):
         app_path += "/"
-    endpoint = urljoin(page_url, f"{app_path.lstrip('/')}{xid_match.group(1)}/dl")
+    # Join as an absolute path: a relative join would resolve against the
+    # page's /download/ directory and request /download/<app>/<xid>/dl (404).
+    if not app_path.startswith("/"):
+        app_path = "/" + app_path
+    endpoint = urljoin(page_url, f"{app_path}{xid_match.group(1)}/dl")
 
     request_kwargs = {
-        "data": {"package_name": package, "version": ""},
+        "data": {"package_name": package, "version": version},
         "headers": {**HEADERS, "Referer": page_url, "X-Requested-With": "XMLHttpRequest"},
         "timeout": 25,
     }
@@ -88,8 +106,15 @@ def _dynamic_download_link(response, package: str) -> str | None:
         soup = BeautifulSoup(fragment.content, "html.parser")
         for anchor in soup.select("a.variant[href]"):
             href = anchor.get("href")
-            if href:
-                return _unwrap_redirect(urljoin(fragment.url, href))
+            if not href:
+                continue
+            if not _variant_matches(anchor, version):
+                logging.debug(
+                    "APKCombo offered %r instead of %s for %s; ignoring",
+                    anchor.select_one(".vername").get_text(" ", strip=True), version, package,
+                )
+                continue
+            return _unwrap_redirect(urljoin(fragment.url, href))
     return None
 
 
@@ -109,7 +134,7 @@ def get_download_link(version: str, app_name: str, config: dict) -> str | None:
                 href = anchor.get("href")
                 if href:
                     return _unwrap_redirect(urljoin(response.url, href))
-            dynamic_link = _dynamic_download_link(response, package)
+            dynamic_link = _dynamic_download_link(response, package, version)
             if dynamic_link:
                 return dynamic_link
         except Exception as exc:
@@ -126,7 +151,7 @@ def get_download_link(version: str, app_name: str, config: dict) -> str | None:
                 href = anchor.get("href")
                 if href:
                     return _unwrap_redirect(urljoin(response.url, href))
-            dynamic_link = _dynamic_download_link(response, package)
+            dynamic_link = _dynamic_download_link(response, package, version)
             if dynamic_link:
                 return dynamic_link
         except Exception as exc:

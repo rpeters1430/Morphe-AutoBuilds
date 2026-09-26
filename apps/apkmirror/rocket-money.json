@@ -1,7 +1,8 @@
 {
-  "org": "rocket-money",
-  "name": "rocket-money-bills-budgets",
-  "type": "APK",
+  "org": "truebill",
+  "name": "truebill",
+  "release_prefix": "rocket-money-bills-budgets",
+  "type": "BUNDLE",
   "arch": "universal",
   "dpi": "nodpi",
   "package": "com.truebill",
