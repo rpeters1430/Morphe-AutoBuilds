@@ -15,6 +15,11 @@ The archive SHA-256 is
 Publish the unpatched bundle as an asset in this repository's release tagged
 `facebook-stock-580`. Its asset name must include `580.0.0.51.74` and end
 in `.apkm`, for example `facebook-580.0.0.51.74-arm64-v8a.apkm`.
+When publishing this stock-only release, set **Set as the latest release** to off
+(or use `gh release create facebook-stock-580 ... --latest=false`). Keep the
+patched-APK release designated latest so the README's `/releases/latest` links
+continue to show patched builds.
+
 The GitHub downloader selects the asset by version in its name. The Facebook
 configuration builds only `arm64-v8a` for this stock variant. Enable its
 `patch-config.json` entry after the release asset is available.
