@@ -704,7 +704,15 @@ def usable_android_archive(path: Path, bundle: bool = False) -> bool:
         with zipfile.ZipFile(path) as archive:
             names = archive.namelist()
             if bundle:
-                return any(name.lower().endswith(".apk") for name in names)
+                apk_names = [name for name in names if name.lower().endswith(".apk")]
+                if not apk_names:
+                    return False
+                for name in apk_names:
+                    with archive.open(name) as apk_stream:
+                        with zipfile.ZipFile(apk_stream) as apk:
+                            if "AndroidManifest.xml" not in apk.namelist() or apk.testzip() is not None:
+                                return False
+                return True
             return "AndroidManifest.xml" in names
     except Exception:
         return False

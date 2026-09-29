@@ -485,6 +485,9 @@ def run_build(app_name: str, source: str, arch: str = "universal", settings: dic
                 _strip_arch_libs(input_apk, arch)
                 if arch in ("universal", "arm64-v8a"):
                     _warn_if_32bit_only(input_apk, app_name, arch)
+                if not utils.ensure_usable_android_archive(input_apk):
+                    logging.warning(f"Fallback merge for {version} is unusable; trying next version")
+                    continue
                 _run_patch(cli, patches, input_apk, output_apk, is_morphe,
                            [*patch_args, *force_args, *extra_flags])
         except subprocess.CalledProcessError as e:

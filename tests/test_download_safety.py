@@ -1,3 +1,4 @@
+import io
 import tempfile
 import unittest
 import zipfile
@@ -16,10 +17,28 @@ class DownloadSafetyTests(unittest.TestCase):
             with zipfile.ZipFile(apk, "w") as archive:
                 archive.writestr("AndroidManifest.xml", b"manifest")
             with zipfile.ZipFile(bundle, "w") as archive:
-                archive.writestr("base.apk", b"apk")
+                archive.writestr("base.apk", apk.read_bytes())
             self.assertTrue(utils.usable_android_archive(apk))
             self.assertTrue(utils.usable_android_archive(bundle, bundle=True))
             self.assertFalse(utils.usable_android_archive(bundle))
+
+    def test_bundle_rejects_corrupt_embedded_apk(self):
+        with tempfile.TemporaryDirectory() as directory:
+            bundle = Path(directory) / "broken.apkm"
+            with zipfile.ZipFile(bundle, "w") as archive:
+                archive.writestr("base.apk", b"not a zip")
+            self.assertFalse(utils.usable_android_archive(bundle, bundle=True))
+
+    def test_bundle_rejects_invalid_split(self):
+        with tempfile.TemporaryDirectory() as directory:
+            base = io.BytesIO()
+            with zipfile.ZipFile(base, "w") as archive:
+                archive.writestr("AndroidManifest.xml", b"manifest")
+            bundle = Path(directory) / "broken.apkm"
+            with zipfile.ZipFile(bundle, "w") as archive:
+                archive.writestr("base.apk", base.getvalue())
+                archive.writestr("split.apk", b"not a zip")
+            self.assertFalse(utils.usable_android_archive(bundle, bundle=True))
 
     def test_unusable_download_is_discarded(self):
         with tempfile.TemporaryDirectory() as directory:
