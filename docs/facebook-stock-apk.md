@@ -1,19 +1,23 @@
-# Facebook stock APK for De-Vanced
+# Facebook stock bundle for De-Vanced
 
-The De-Vanced prerelease patches currently require Facebook
-`580.0.0.51.74` (`com.facebook.katana`). The public store downloaders cannot
-reliably supply this older version on GitHub Actions runners.
+The De-Vanced prerelease patches currently require Facebook `580.0.0.51.74`
+(`com.facebook.katana`). The public store downloaders could not reliably
+supply this version on GitHub Actions runners.
 
-To activate the configured Facebook build:
+The selected stock bundle is the [arm64-v8a, Android 11+, 320-640dpi variant](https://www.apkmirror.com/apk/facebook-2/facebook/facebook-580-0-0-51-74-release/facebook-580-0-0-51-74-16-android-apk-download/),
+version code `475019369` (BUNDLE 17 S 8a3c). The uploaded `.apkm` archive
+contains a base APK and 17 splits. All 18 APK archives passed integrity checks.
+The base manifest reports `com.facebook.katana`, version `580.0.0.51.74`,
+version code `475019369`, and Android 11 minimum; it has a v2 signature.
+The archive SHA-256 is
+`1bf782142c05f36ed3d9265e8decd87a2682401da2b90cc0fdcda8430a33ddd4`.
 
-1. Open the [Facebook 580.0.0.51.74 release page](https://www.apkmirror.com/apk/facebook-2/facebook/facebook-580-0-0-51-74-release/) in your own browser and download an unpatched, complete APK or APK bundle. Choose a variant suitable for your target device, and check that the file is `com.facebook.katana` version `580.0.0.51.74` before publishing it. The release page can present a Cloudflare verification challenge to CI runners; adding its URL to the configuration does not supply a downloadable file.
-2. Create a release in `rpeters1430/Morphe-AutoBuilds` tagged
-   `facebook-stock-580`. Attach the stock file with a name containing
-   `580.0.0.51.74` and an `.apk`, `.apkm`, or `.xapk` extension. Do not attach
-   a patched APK. The GitHub downloader matches the version in the asset name.
-3. Set the `facebook` entry in `patch-config.json` to `"enabled": true` and
-   run the build. Until then, Facebook remains available for explicit manual
-   builds, which fail clearly if no provider supplies the stock APK.
+Publish the unpatched bundle as an asset in this repository's release tagged
+`facebook-stock-580`. Its asset name must include `580.0.0.51.74` and end
+in `.apkm`, for example `facebook-580.0.0.51.74-arm64-v8a.apkm`.
+The GitHub downloader selects the asset by version in its name. The Facebook
+configuration builds only `arm64-v8a` for this stock variant. Enable its
+`patch-config.json` entry after the release asset is available.
 
-The build rejects damaged archives and validates embedded APKs in bundles,
-but source provenance and package/version should be checked before upload.
+The build validates archive structure and embedded APKs, but does not verify
+the published asset against this documented SHA-256 automatically.
