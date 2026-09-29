@@ -6,9 +6,7 @@ reliably supply this older version on GitHub Actions runners.
 
 To activate the configured Facebook build:
 
-1. Obtain the unpatched, complete APK or APK bundle for exactly
-   `com.facebook.katana` version `580.0.0.51.74` from a source you trust.
-   Check its package and version before publishing it.
+1. Open the [Facebook 580.0.0.51.74 release page](https://www.apkmirror.com/apk/facebook-2/facebook/facebook-580-0-0-51-74-release/) in your own browser and download an unpatched, complete APK or APK bundle. Choose a variant suitable for your target device, and check that the file is `com.facebook.katana` version `580.0.0.51.74` before publishing it. The release page can present a Cloudflare verification challenge to CI runners; adding its URL to the configuration does not supply a downloadable file.
 2. Create a release in `rpeters1430/Morphe-AutoBuilds` tagged
    `facebook-stock-580`. Attach the stock file with a name containing
    `580.0.0.51.74` and an `.apk`, `.apkm`, or `.xapk` extension. Do not attach
