@@ -181,6 +181,9 @@ def _scrape_release_url_from_soup(soup, version: str, config: dict, build_number
         version_variants.append(clean_v)
 
     app_slug = (config.get('name') or config.get('app_slug') or '').lower()
+    # "6.6 build 020" style versions: the bare "6-6" also matches unrelated
+    # releases such as "6-6-5-build-008", so require the exact build token.
+    build_token = f"build-{build_number}" if build_number and build_format == 'build_suffix' else None
 
     for v in version_variants:
         version_parts = v.split('.')
@@ -197,6 +200,8 @@ def _scrape_release_url_from_soup(soup, version: str, config: dict, build_number
                     continue
                 # Ensure the link belongs to this app
                 if app_slug and app_slug not in href:
+                    continue
+                if build_token and not re.search(rf'(?:^|[/-]){re.escape(build_token)}(?:[/-]|$)', href):
                     continue
                 # Check version pattern properly bounded
                 ver_pattern = re.escape(current_ver_dash)
@@ -247,7 +252,11 @@ def find_release_page_from_main(version: str, config: dict, build_number: str = 
             response = _cf_get(discovered_url)
             if response.status_code == 200:
                 soup = BeautifulSoup(response.content, "html.parser")
-                result = _scrape_release_url_from_soup(soup, version, config, build_number, build_format)
+                # Release links on the discovered page use its slug, not the
+                # stale configured name, so filter by the discovered slug.
+                discovered_slug = discovered_url.rstrip('/').rsplit('/', 1)[-1]
+                discovered_config = {**config, 'name': discovered_slug}
+                result = _scrape_release_url_from_soup(soup, version, discovered_config, build_number, build_format)
                 if result:
                     return result
         
