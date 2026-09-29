@@ -694,3 +694,54 @@ def has_manifest(apk_path: Path) -> bool:
             return "AndroidManifest.xml" in z.namelist()
     except Exception:
         return False
+
+
+def usable_android_archive(path: Path, bundle: bool = False) -> bool:
+    """Check ZIP integrity and the required Android payload structure."""
+    if not check_apk_integrity(path):
+        return False
+    try:
+        with zipfile.ZipFile(path) as archive:
+            names = archive.namelist()
+            if bundle:
+                apk_names = [name for name in names if name.lower().endswith(".apk")]
+                if not apk_names:
+                    return False
+                for name in apk_names:
+                    with archive.open(name) as apk_stream:
+                        with zipfile.ZipFile(apk_stream) as apk:
+                            if "AndroidManifest.xml" not in apk.namelist() or apk.testzip() is not None:
+                                return False
+                return True
+            return "AndroidManifest.xml" in names
+    except Exception:
+        return False
+
+
+def ensure_usable_android_archive(path: Path, bundle: bool = False) -> Path | None:
+    """Repair a damaged download if possible; discard unusable input."""
+    if usable_android_archive(path, bundle):
+        return path
+
+    logging.warning(f"Unusable Android {'bundle' if bundle else 'APK'}: {path}")
+    repaired = path.with_name(f"{path.stem}-fixed{path.suffix}")
+    repaired.unlink(missing_ok=True)
+    if path.exists() and shutil.which("zip"):
+        try:
+            subprocess.run(
+                ["zip", "-FF", str(path), "--out", str(repaired)],
+                check=False, capture_output=True, timeout=120,
+                stdin=subprocess.DEVNULL,
+            )
+        except (subprocess.TimeoutExpired, OSError) as exc:
+            logging.warning(f"Archive repair failed: {exc}")
+        if usable_android_archive(repaired, bundle):
+            path.unlink(missing_ok=True)
+            repaired.rename(path)
+            logging.info(f"Repaired Android archive: {path}")
+            return path
+
+    repaired.unlink(missing_ok=True)
+    path.unlink(missing_ok=True)
+    logging.warning("Discarding unusable archive")
+    return None

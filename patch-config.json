@@ -163,7 +163,7 @@
     {
       "app_name": "number",
       "source": "revanced-kitadai31",
-      "enabled": false
+      "version": "10.3"
     },
     {
       "app_name": "pandora",
@@ -427,6 +427,11 @@
         "Network privacy",
         "Disable telemetry & federated learning"
       ]
+    },
+    {
+      "app_name": "facebook",
+      "source": "devanced",
+      "version": "580.0.0.51.74"
     },
     {
       "app_name": "1-1-1-1",

@@ -82,23 +82,12 @@ def get_download_link(version: str, app_name: str, config: Dict) -> Optional[str
             except (KeyError, TypeError):
                 continue
 
-    # Fallback to latest trusted version of THIS package if specific version not
-    # found -- but never to one OLDER than requested: Aptoide mirrors can be
-    # years stale (e.g. ticktick 4.8.6 when patches need 8.x), and patching an
-    # old build only fails later with a confusing patcher error.
-    pinned = (config.get("version") or "").strip()
-    if not vercode and not pinned and items:
+    # Never substitute a different version for a patch-compatible or pinned
+    # version. Only an unversioned request may use the store's latest.
+    if not vercode and (not version or version.lower() == "latest") and items:
         try:
-            nearest = items[0]["file"]["vername"]
-            wanted = utils.normalize_version(version) if version and version.lower() != "latest" else []
-            have = utils.normalize_version(nearest)
-            if wanted and have and have < wanted:
-                logging.warning(
-                    f"Aptoide only has {nearest} for {package}, older than {version}; not using it"
-                )
-            else:
-                vercode = items[0]["file"]["vercode"]
-                logging.info(f"Using nearest Aptoide version {nearest} for {package}")
+            vercode = items[0]["file"]["vercode"]
+            logging.info(f"Using latest Aptoide version {items[0]['file']['vername']} for {package}")
         except (KeyError, TypeError):
             pass
 

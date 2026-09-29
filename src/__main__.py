@@ -2,7 +2,6 @@ import json
 import logging
 import re
 import os
-import shutil
 from sys import exit
 from pathlib import Path
 from os import getenv
@@ -343,13 +342,19 @@ def run_build(app_name: str, source: str, arch: str = "universal", settings: dic
     candidates: list[str] = []
     used_method = None
     for method in download_methods:
-        input_apk, version, candidates = method(
+        downloaded, downloaded_version, downloaded_candidates = method(
             app_name, str(cli), str(patches), arch,
             override_version=pinned_version, experimental=experimental, force=force,
         )
-        if input_apk:
-            used_method = method
-            break
+        if not downloaded:
+            continue
+        is_bundle = _is_bundle(downloaded)
+        if not utils.ensure_usable_android_archive(downloaded, bundle=is_bundle):
+            logging.warning(f"Trying next download source after {method.__name__}")
+            continue
+        input_apk, version, candidates = downloaded, downloaded_version, downloaded_candidates
+        used_method = method
+        break
 
     if input_apk is None or not used_method or not version:
         logging.error(f"❌ Failed to download APK for {app_name}")
@@ -388,6 +393,9 @@ def run_build(app_name: str, source: str, arch: str = "universal", settings: dic
                 override_version=ver, experimental=experimental, force=force,
             )
             if input_apk is None:
+                continue
+            if not utils.ensure_usable_android_archive(input_apk, bundle=_is_bundle(input_apk)):
+                logging.warning(f"Re-downloaded archive for {ver} is unusable; trying next version")
                 continue
             version = ver
 
@@ -443,30 +451,11 @@ def run_build(app_name: str, source: str, arch: str = "universal", settings: dic
             if arch in ("universal", "arm64-v8a"):
                 _warn_if_32bit_only(input_apk, app_name, arch)
 
-        # Validate APK integrity
-        logging.info("Checking APK integrity...")
-        if not utils.check_apk_integrity(input_apk):
-            logging.warning("APK integrity check failed; attempting repair with zip -FF if available")
-            if shutil.which("zip"):
-                fixed_apk = Path(f"{app_name}-fixed-v{version}.apk")
-                subprocess.run([
-                    "zip", "-FF", str(input_apk), "--out", str(fixed_apk)
-                ], check=False, capture_output=True)
-
-                # zip -FF can "succeed" while dropping almost every entry
-                # (seen: 3229 entries -> 3, no AndroidManifest.xml), so only
-                # swap in the repaired file when it is really an APK.
-                if utils.check_apk_integrity(fixed_apk) and utils.has_manifest(fixed_apk):
-                    input_apk.unlink(missing_ok=True)
-                    fixed_apk.rename(input_apk)
-                    logging.info("APK fixed successfully")
-                else:
-                    fixed_apk.unlink(missing_ok=True)
-                    logging.warning("Repair produced no usable APK; keeping original APK")
-            else:
-                logging.warning("zip command not available for repair; proceeding with current APK")
-        else:
-            logging.info("APK integrity OK; no repair needed")
+        # Arch stripping and bundle merging can damage an otherwise valid
+        # download. Never send that input to the patcher.
+        if not utils.ensure_usable_android_archive(input_apk, bundle=native_bundle):
+            logging.warning(f"Processed archive for {version} is unusable; trying next version")
+            continue
 
         # Include architecture in output filename
         output_apk = Path(f"{app_name}-{arch}-patch-v{version}.apk")
@@ -496,6 +485,9 @@ def run_build(app_name: str, source: str, arch: str = "universal", settings: dic
                 _strip_arch_libs(input_apk, arch)
                 if arch in ("universal", "arm64-v8a"):
                     _warn_if_32bit_only(input_apk, app_name, arch)
+                if not utils.ensure_usable_android_archive(input_apk):
+                    logging.warning(f"Fallback merge for {version} is unusable; trying next version")
+                    continue
                 _run_patch(cli, patches, input_apk, output_apk, is_morphe,
                            [*patch_args, *force_args, *extra_flags])
         except subprocess.CalledProcessError as e:
