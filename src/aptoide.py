@@ -109,8 +109,23 @@ def get_download_link(version: str, app_name: str, config: Dict) -> Optional[str
     # Get meta with download path
     url_meta = f"{BASE_URL}getAppMeta?package_name={package}&vercode={vercode}{q}"
     data = _safe_get_json(url_meta) or {}
+    meta = data.get("data") or {}
+    # A split app's main file is only the base APK; the config splits (native
+    # libraries, resources) are listed under "aab". Patching the base alone
+    # builds an APK that crashes or won't install, so leave these apps to the
+    # stores that serve a full bundle. OBB games are incomplete the same way.
+    splits = ((meta.get("aab") or {}).get("splits")) or []
+    if splits:
+        logging.warning(
+            f"Aptoide serves {package}@{vercode} as a split app ({len(splits)} splits); "
+            "skipping Aptoide for it"
+        )
+        return None
+    if meta.get("obb"):
+        logging.warning(f"Aptoide lists OBB files for {package}@{vercode}; skipping Aptoide for it")
+        return None
     try:
-        return data["data"]["file"]["path"]
+        return meta["file"]["path"]
     except (KeyError, TypeError):
         logging.warning(f"Aptoide meta missing download path for {package}@{vercode}")
         return None

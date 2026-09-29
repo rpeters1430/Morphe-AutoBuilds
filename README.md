@@ -106,6 +106,7 @@ This repository utilizes a robust Python-based pipeline to ensure high reliabili
 * **Fully Automated:** GitHub Actions workflow executes daily at 06:00 UTC, requiring zero manual intervention.
 * **Architecture Optimization:** Builds specific `arm64-v8a`, `armeabi-v7a`, and `universal` APKs to reduce file size and improve performance on target devices.
 * **Multi-Source Strategy:** Intelligent fetching from APKMirror, APKPure, and Uptodown ensures high success rates even if one source is down.
+* **Split Bundle Support:** `.apkm`, `.xapk` and `.apks` bundles are patched directly. Morphe builds hand the bundle to `morphe-cli`, which merges it and strips other architectures (`--striplibs`). ReVanced builds, older Morphe CLIs, and any bundle `morphe-cli` can't open are merged with APKEditor first. On APKMirror the app's configured `type` (APK or BUNDLE) is tried first and the other type is used when that version has none. Aptoide is skipped for apps it only serves as split files, since its main download is just the base APK.
 * **Granular Patch Control:** Simple text-based configuration allows for precise inclusion or exclusion of specific patches.
 * **Smart Failover:** The system automatically switches download sources if a fetch attempt fails.
 * **Auto-Signing:** All APKs are signed with a consistent public keystore, making them ready to install immediately.

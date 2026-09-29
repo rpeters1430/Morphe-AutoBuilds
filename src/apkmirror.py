@@ -492,13 +492,22 @@ def get_download_link(version: str, app_name: str, config: dict, arch: str = Non
             rows = table.find_all('div', class_='table-row')
     download_page_url = None
     
-    def _row_matches(row_text: str) -> bool:
+    # Try the configured file type first, then the other one: an app set to
+    # APK can still be built when a version only ships as a BUNDLE (and the
+    # reverse). A blank type matches either.
+    configured_type = (config.get('type') or '').strip().upper()
+    if configured_type in ('APK', 'BUNDLE'):
+        type_order = [configured_type, 'BUNDLE' if configured_type == 'APK' else 'APK']
+    else:
+        type_order = ['']
+
+    def _row_matches(row_text: str, c_type: str) -> bool:
         r = row_text.lower()
         if 'variant' in r and 'arch' in r and 'version' in r:
             return False  # Skip header row
-            
-        c_type = (config.get('type') or '').lower()
-        if c_type and c_type not in r:
+
+        # Whole word, so "apk" can't match inside other text on a BUNDLE row.
+        if c_type and not re.search(rf'\b{c_type.lower()}\b', r):
             return False
         
         t_arch = (target_arch or 'universal').lower()
@@ -529,38 +538,44 @@ def get_download_link(version: str, app_name: str, config: dict, arch: str = Non
             return base_url + link['href']
         return None
 
-    # Try to find exact version match first
-    for row in rows:
-        row_text = row.get_text()
-        if 'variant' in row_text.lower() and 'arch' in row_text.lower():
-            continue
-        
-        # Check if row contains our exact version
-        if version in row_text or version.replace('.', '-') in row_text:
-            if _row_matches(row_text):
-                download_page_url = _extract_row_link(row)
-                if download_page_url:
-                    break
-    
-    # If exact version not found, try to find any variant matching criteria
-    if not download_page_url:
+    # Exact version first (each type in order), then any variant that
+    # matches the criteria (each type in order).
+    for c_type in type_order:
         for row in rows:
             row_text = row.get_text()
             if 'variant' in row_text.lower() and 'arch' in row_text.lower():
                 continue
-            if _row_matches(row_text):
-                # Check if this looks like a variant row (has version numbers)
-                if re.search(r'\d+(\.\d+)+', row_text):
+            if version in row_text or version.replace('.', '-') in row_text:
+                if _row_matches(row_text, c_type):
                     download_page_url = _extract_row_link(row)
                     if download_page_url:
-                        match = re.search(r'(\d+(\.\d+)+(\.\w+)*)', row_text)
-                        if match:
-                            actual_version = match.group(1)
-                            logging.warning(f"Using variant {actual_version} (criteria match)")
                         break
-    
+        if download_page_url:
+            if c_type and c_type != type_order[0]:
+                logging.warning(f"No {type_order[0]} variant of {app_name} {version} on APKMirror; using the {c_type}")
+            break
+
     if not download_page_url:
-        logging.error(f"No variant found for {app_name} {version} with criteria {criteria}")
+        for c_type in type_order:
+            for row in rows:
+                row_text = row.get_text()
+                if 'variant' in row_text.lower() and 'arch' in row_text.lower():
+                    continue
+                if _row_matches(row_text, c_type):
+                    # Check if this looks like a variant row (has version numbers)
+                    if re.search(r'\d+(\.\d+)+', row_text):
+                        download_page_url = _extract_row_link(row)
+                        if download_page_url:
+                            match = re.search(r'(\d+(\.\d+)+(\.\w+)*)', row_text)
+                            if match:
+                                actual_version = match.group(1)
+                                logging.warning(f"Using variant {actual_version} ({c_type or 'any type'}, criteria match)")
+                            break
+            if download_page_url:
+                break
+
+    if not download_page_url:
+        logging.error(f"No variant found for {app_name} {version} with criteria {[' or '.join(type_order) or 'any type', *criteria[1:]]}")
         # Debug: log what rows we found
         logging.debug(f"Found {len(rows)} rows total")
         for idx, row in enumerate(rows[:5]):  # First 5 rows

@@ -144,6 +144,101 @@ def _warn_if_32bit_only(apk: Path, app_name: str, arch: str) -> None:
         )
 
 
+# Split-APK bundle containers morphe-cli merges on its own (by extension).
+MORPHE_BUNDLE_SUFFIXES = (".apkm", ".xapk", ".apks")
+
+# Native-library ABIs each build keeps (x86 is always dropped).
+KEEP_ARCHES = {
+    "arm64-v8a": "arm64-v8a",
+    "armeabi-v7a": "armeabi-v7a",
+    "universal": "arm64-v8a,armeabi-v7a",
+}
+
+
+def _is_bundle(path: Path) -> bool:
+    """True for a split-APK bundle: a zip holding .apk files, or a file with a
+    bundle extension."""
+    import zipfile
+    if path.suffix.lower() in (*MORPHE_BUNDLE_SUFFIXES, ".zip"):
+        return True
+    try:
+        if zipfile.is_zipfile(path):
+            with zipfile.ZipFile(path, "r") as z:
+                return any(n.endswith(".apk") for n in z.namelist())
+    except Exception as e:
+        logging.debug(f"Zip inspection failed for {path}: {e}")
+    return False
+
+
+def _merge_bundle(bundle: Path) -> Path:
+    """Merge a split bundle into one .apk with APKEditor. If the merge fails,
+    the file is renamed to .apk in case it is really a standalone APK."""
+    logging.info(f"Input file is a bundle ({bundle.name}), using APKEditor to merge")
+    apk_editor = downloader.download_apkeditor()
+    merged_apk = bundle.with_suffix(".apk")
+    merged_apk.unlink(missing_ok=True)
+    try:
+        utils.run_process([
+            "java", "-jar", str(apk_editor), "m",
+            "-f",
+            "-i", str(bundle),
+            "-o", str(merged_apk)
+        ], silent=True, check=True)
+        bundle.unlink(missing_ok=True)
+        return merged_apk
+    except Exception as e:
+        logging.warning(f"APKEditor merge failed ({e}); checking if file can be used as standalone APK")
+        if bundle.exists():
+            merged_apk.unlink(missing_ok=True)
+            os.replace(bundle, merged_apk)
+        return merged_apk
+
+
+def _strip_arch_libs(apk: Path, arch: str) -> None:
+    """Remove native libraries the target architecture doesn't need."""
+    if arch == "arm64-v8a":
+        logging.info(f"Processing APK for {arch} architecture...")
+        utils.strip_zip_entries(apk, ["lib/x86/*", "lib/x86_64/*", "lib/armeabi-v7a/*"])
+    elif arch == "armeabi-v7a":
+        logging.info(f"Processing APK for {arch} architecture...")
+        utils.strip_zip_entries(apk, ["lib/x86/*", "lib/x86_64/*", "lib/arm64-v8a/*"])
+    else:
+        utils.strip_zip_entries(apk, ["lib/x86/*", "lib/x86_64/*"])
+
+
+def _run_patch(cli: Path, patches: Path, input_apk: Path, output_apk: Path,
+               is_morphe: bool, args: list[str]) -> None:
+    if is_morphe:
+        logging.info("🔧 Using Morphe patching system...")
+        utils.run_process([
+            "java", "-jar", str(cli),
+            "patch", "--patches", str(patches),
+            "--out", str(output_apk), str(input_apk),
+            *args
+        ], capture=True, stream=True)
+        return
+
+    logging.info("🔧 Using ReVanced patching system...")
+    cli_name = Path(cli).name.lower()
+    is_revanced_v6_or_newer = (
+        'revanced-cli-6' in cli_name or 'revanced-cli-7' in cli_name or 'revanced-cli-8' in cli_name
+    )
+    if is_revanced_v6_or_newer:
+        utils.run_process([
+            "java", "-jar", str(cli),
+            "patch", "-p", str(patches), "-b",
+            "--out", str(output_apk), str(input_apk),
+            *args
+        ], capture=True, stream=True)
+    else:
+        utils.run_process([
+            "java", "-jar", str(cli),
+            "patch", "--patches", str(patches),
+            "--out", str(output_apk), str(input_apk),
+            *args
+        ], capture=True, stream=True)
+
+
 def run_build(app_name: str, source: str, arch: str = "universal", settings: dict | None = None,
               tools: tuple[list[Path], str] | None = None) -> str:
     """Build APK for specific architecture. `tools` is download_required()'s
@@ -237,6 +332,12 @@ def run_build(app_name: str, source: str, arch: str = "universal", settings: dic
         downloader.download_apkcombo,
     ]
 
+    # Newer morphe-cli merges split bundles itself; --striplibs marks those
+    # releases and is needed to build per-arch APKs from a bundle.
+    use_native_bundles = is_morphe and _cli_supports(cli, "--striplibs")
+    if is_morphe and not use_native_bundles:
+        logging.info(f"{cli.name} has no --striplibs; bundles will be merged with APKEditor")
+
     input_apk = None
     version = None
     candidates: list[str] = []
@@ -291,42 +392,22 @@ def run_build(app_name: str, source: str, arch: str = "universal", settings: dic
             version = ver
 
         # --- Normalize/merge input into .apk when needed ---
+        native_bundle = False
         if input_apk.suffix != ".apk":
-            # Check if it is a split bundle (contains multiple .apk files or is .apkm/.xapk/.apks)
-            is_bundle = False
-            try:
-                import zipfile
-                if zipfile.is_zipfile(input_apk):
-                    with zipfile.ZipFile(input_apk, "r") as z:
-                        namelist = z.namelist()
-                        has_split_apks = any(n.endswith(".apk") for n in namelist)
-                        is_bundle = has_split_apks or input_apk.suffix.lower() in [".apkm", ".xapk", ".apks", ".zip"]
-            except Exception as e:
-                logging.debug(f"Zip inspection failed for {input_apk}: {e}")
-
             target_apk = input_apk.with_name(f"{input_apk.stem}.apk" if not input_apk.name.endswith(".apk") else input_apk.name)
 
-            if is_bundle:
-                logging.info(f"Input file is a bundle ({input_apk.name}), using APKEditor to merge")
-                apk_editor = downloader.download_apkeditor()
-                merged_apk = input_apk.with_suffix(".apk")
-                merged_apk.unlink(missing_ok=True)
-
-                try:
-                    utils.run_process([
-                        "java", "-jar", str(apk_editor), "m",
-                        "-f",
-                        "-i", str(input_apk),
-                        "-o", str(merged_apk)
-                    ], silent=True, check=True)
-                    input_apk.unlink(missing_ok=True)
-                    input_apk = merged_apk
-                except Exception as e:
-                    logging.warning(f"APKEditor merge failed ({e}); checking if file can be used as standalone APK")
-                    if input_apk.exists():
-                        target_apk.unlink(missing_ok=True)
-                        os.replace(input_apk, target_apk)
-                        input_apk = target_apk
+            if _is_bundle(input_apk) and use_native_bundles:
+                # morphe-cli merges .apkm/.xapk/.apks itself; it only goes by
+                # the extension, so give other bundle containers (.zip) one.
+                if input_apk.suffix.lower() not in MORPHE_BUNDLE_SUFFIXES:
+                    bundle = input_apk.with_suffix(".apks")
+                    bundle.unlink(missing_ok=True)
+                    os.replace(input_apk, bundle)
+                    input_apk = bundle
+                logging.info(f"Input file is a bundle ({input_apk.name}); handing it to {cli.name} to merge")
+                native_bundle = True
+            elif _is_bundle(input_apk):
+                input_apk = _merge_bundle(input_apk)
             else:
                 logging.info(f"Normalizing standalone APK filename to {target_apk.name}")
                 if input_apk != target_apk:
@@ -352,17 +433,15 @@ def run_build(app_name: str, source: str, arch: str = "universal", settings: dic
             logging.info(f"Normalized APK file: {input_apk}")
 
         # --- ARCHITECTURE-SPECIFIC PROCESSING ---
-        if arch != "universal":
-            logging.info(f"Processing APK for {arch} architecture...")
-            if arch == "arm64-v8a":
-                utils.strip_zip_entries(input_apk, ["lib/x86/*", "lib/x86_64/*", "lib/armeabi-v7a/*"])
-            elif arch == "armeabi-v7a":
-                utils.strip_zip_entries(input_apk, ["lib/x86/*", "lib/x86_64/*", "lib/arm64-v8a/*"])
+        # A bundle's native libraries sit inside its split APKs, so they can't
+        # be stripped here; morphe-cli strips them after merging (--striplibs).
+        bundle_args: list[str] = []
+        if native_bundle:
+            bundle_args = ["--striplibs", KEEP_ARCHES.get(arch, KEEP_ARCHES["universal"])]
         else:
-            utils.strip_zip_entries(input_apk, ["lib/x86/*", "lib/x86_64/*"])
-
-        if arch in ("universal", "arm64-v8a"):
-            _warn_if_32bit_only(input_apk, app_name, arch)
+            _strip_arch_libs(input_apk, arch)
+            if arch in ("universal", "arm64-v8a"):
+                _warn_if_32bit_only(input_apk, app_name, arch)
 
         # Validate APK integrity
         logging.info("Checking APK integrity...")
@@ -392,41 +471,36 @@ def run_build(app_name: str, source: str, arch: str = "universal", settings: dic
         # Include architecture in output filename
         output_apk = Path(f"{app_name}-{arch}-patch-v{version}.apk")
 
+        # morphe-cli writes its merge of a bundle next to the output and
+        # deletes it afterwards; a crash can leave it behind, where the
+        # workflows' *.apk globs would publish it.
+        cli_merged_apk = Path(f"{input_apk.stem}-merged.apk")
+
         try:
-            # USE DIFFERENT COMMANDS BASED ON SOURCE TYPE
-            if is_morphe:
-                logging.info("🔧 Using Morphe patching system...")
-                morphe_cmd = [
-                    "java", "-jar", str(cli),
-                    "patch", "--patches", str(patches),
-                    "--out", str(output_apk), str(input_apk),
-                    *patch_args, *force_args, *extra_flags
-                ]
-                utils.run_process(morphe_cmd, capture=True, stream=True)
-            else:
-                logging.info("🔧 Using ReVanced patching system...")
-                cli_name = Path(cli).name.lower()
-                is_revanced_v6_or_newer = (
-                    'revanced-cli-6' in cli_name or 'revanced-cli-7' in cli_name or 'revanced-cli-8' in cli_name
+            try:
+                _run_patch(cli, patches, input_apk, output_apk, is_morphe,
+                           [*patch_args, *force_args, *extra_flags, *bundle_args])
+            except subprocess.CalledProcessError as e:
+                # A fingerprint mismatch is the app version's fault, not the
+                # bundle handling's: leave it to the older-version retry below.
+                if not native_bundle or _should_retry_with_older_version(getattr(e, "output", None)):
+                    raise
+                logging.warning(
+                    f"⚠️  {cli.name} could not patch the bundle directly; "
+                    "merging it with APKEditor and patching again"
                 )
-
-                if is_revanced_v6_or_newer:
-                    utils.run_process([
-                        "java", "-jar", str(cli),
-                        "patch", "-p", str(patches), "-b",
-                        "--out", str(output_apk), str(input_apk),
-                        *patch_args, *force_args, *extra_flags
-                    ], capture=True, stream=True)
-                else:
-                    utils.run_process([
-                        "java", "-jar", str(cli),
-                        "patch", "--patches", str(patches),
-                        "--out", str(output_apk), str(input_apk),
-                        *patch_args, *force_args, *extra_flags
-                    ], capture=True, stream=True)
-
+                cli_merged_apk.unlink(missing_ok=True)
+                output_apk.unlink(missing_ok=True)
+                native_bundle = False
+                input_apk = _merge_bundle(input_apk)
+                _strip_arch_libs(input_apk, arch)
+                if arch in ("universal", "arm64-v8a"):
+                    _warn_if_32bit_only(input_apk, app_name, arch)
+                _run_patch(cli, patches, input_apk, output_apk, is_morphe,
+                           [*patch_args, *force_args, *extra_flags])
         except subprocess.CalledProcessError as e:
             # Remove temp input apk; we'll re-download if retrying.
+            cli_merged_apk.unlink(missing_ok=True)
             input_apk.unlink(missing_ok=True)
             output_apk.unlink(missing_ok=True)
 
@@ -435,7 +509,10 @@ def run_build(app_name: str, source: str, arch: str = "universal", settings: dic
             raise
 
         # Patch succeeded -> cleanup input and sign.
+        cli_merged_apk.unlink(missing_ok=True)
         input_apk.unlink(missing_ok=True)
+        if native_bundle and arch in ("universal", "arm64-v8a"):
+            _warn_if_32bit_only(output_apk, app_name, arch)
 
         signed_apk = Path(f"{app_name}-{arch}-{name}-v{version}.apk")
 
