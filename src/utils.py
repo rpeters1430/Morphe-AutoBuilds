@@ -371,6 +371,20 @@ def get_supported_version(package_name: str, cli: str, patches: str) -> Optional
     versions = get_supported_versions(package_name, cli, patches)
     return versions[0] if versions else None
 
+def release_safe_filename(name: str) -> str:
+    """Return ``name`` as GitHub will store it as a release asset.
+
+    GitHub replaces characters it doesn't allow in asset names with dots
+    (``v6.6 build 020.apk`` becomes ``v6.6.build.020.apk``). Naming the APK
+    that way up front keeps the local name, the manifest and the uploaded
+    asset identical; otherwise cleanup_old_apks.py doesn't recognise the
+    renamed upload and deletes it as a superseded version.
+    """
+    safe = re.sub(r"[^A-Za-z0-9._-]+", ".", name)
+    safe = re.sub(r"\.{2,}", ".", safe)
+    return safe.strip(".")
+
+
 def extract_filename(response, fallback_url=None) -> str:
     cd = response.headers.get('content-disposition')
     if cd:
