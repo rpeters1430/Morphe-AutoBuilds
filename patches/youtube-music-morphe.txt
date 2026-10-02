@@ -1,1 +1,19 @@
++ App refresh rate
++ Change header
++ Change miniplayer color
++ Crossfade
++ Downloads
++ GmsCore support
++ Hide ads
++ Hide buttons
++ Jam queue sharing
++ Remove background playback restrictions
++ Remove viewer discretion dialog
++ Return YouTube Dislike
++ Sanitize sharing links
++ Scrobbling
++ SponsorBlock
++ Theme
++ Third-party lyrics
+
 -AddResourcesPatch
