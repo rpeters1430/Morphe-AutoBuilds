@@ -39,6 +39,7 @@ Safety
 """
 import argparse
 import json
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -79,6 +80,16 @@ def identity_prefix(apk_name: str) -> str:
     return stem.lower()
 
 
+def github_asset_name(name: str) -> str:
+    """Name GitHub gives an uploaded asset: characters it doesn't allow become
+    dots. Matches src.utils.release_safe_filename; without it a kept APK named
+    ``...-v6.6 build 020.apk`` would not match its uploaded asset
+    ``...-v6.6.build.020.apk`` and would be deleted as superseded."""
+    safe = re.sub(r"[^A-Za-z0-9._-]+", ".", name)
+    safe = re.sub(r"\.{2,}", ".", safe)
+    return safe.strip(".")
+
+
 def load_keep_set(keep_file: Path) -> Set[str]:
     if not keep_file or not keep_file.exists():
         return set()
@@ -86,7 +97,10 @@ def load_keep_set(keep_file: Path) -> Set[str]:
     for line in keep_file.read_text(encoding="utf-8").splitlines():
         line = line.strip()
         if line:
+            # Workflows may write paths; compare on the basename.
+            line = Path(line).name
             names.add(line)
+            names.add(github_asset_name(line))
     return names
 
 

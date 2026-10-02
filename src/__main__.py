@@ -506,7 +506,7 @@ def run_build(app_name: str, source: str, arch: str = "universal", settings: dic
         if native_bundle and arch in ("universal", "arm64-v8a"):
             _warn_if_32bit_only(output_apk, app_name, arch)
 
-        signed_apk = Path(f"{app_name}-{arch}-{name}-v{version}.apk")
+        signed_apk = Path(utils.release_safe_filename(f"{app_name}-{arch}-{name}-v{version}.apk"))
 
         apksigner = utils.find_apksigner()
         if not apksigner:
