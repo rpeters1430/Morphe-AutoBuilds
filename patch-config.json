@@ -95,7 +95,7 @@
       "force": true,
       "patch_options": {
         "Clone app": {
-          "packageName": "com.google.android.apps.photos.morphe"
+          "packageName": "app.morphe.android.apps.photos"
         }
       }
     },
