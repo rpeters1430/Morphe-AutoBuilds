@@ -92,7 +92,12 @@
     {
       "app_name": "google-photos",
       "source": "rookie",
-      "force": true
+      "force": true,
+      "patch_options": {
+        "Clone app": {
+          "packageName": "com.google.android.apps.photos.morphe"
+        }
+      }
     },
     {
       "app_name": "disney-plus",

@@ -214,15 +214,17 @@ def download_platform(
             try:
                 latest = platform_module.get_latest_version(app_name, config)
                 if latest:
-                    if force:
-                        candidates = [latest] + [v for v in candidates if v != latest]
-                    elif latest not in candidates and not _older_than_all(latest, supported):
-                        candidates.append(latest)
-                    elif latest not in candidates:
+                    if latest not in candidates and _older_than_all(latest, supported):
+                        # Checked before force too: force means "newer than the
+                        # patches list", not a stale mirror's years-old build.
                         logging.info(
                             f"{platform} latest {latest} for {app_name} is older than every "
                             f"patch-supported version {supported}; not using it"
                         )
+                    elif force:
+                        candidates = [latest] + [v for v in candidates if v != latest]
+                    elif latest not in candidates:
+                        candidates.append(latest)
             except Exception as e:
                 logging.debug(f"Could not get latest version for {app_name} on {platform}: {e}")
 
