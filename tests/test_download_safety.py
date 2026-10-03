@@ -56,6 +56,19 @@ class DownloadSafetyTests(unittest.TestCase):
             self.assertIsNone(aptoide.get_download_link("1.0", "example", {"package": "example.app"}))
             request.assert_called_once()
 
+    def test_force_skips_stale_store_latest(self):
+        from src import downloader
+        with tempfile.TemporaryDirectory() as directory, \
+                patch.object(downloader, "Path", side_effect=lambda *a: Path(directory, *a)), \
+                patch.object(utils, "get_supported_versions", return_value=["7.92.0", "7.80.0"]), \
+                patch.object(aptoide, "get_latest_version", return_value="4.13.0"), \
+                patch.object(aptoide, "get_download_link", return_value=None) as link:
+            config = Path(directory, "apps", "aptoide")
+            config.mkdir(parents=True)
+            (config / "example.json").write_text('{"package": "example.app"}')
+            downloader.download_platform("example", "aptoide", "cli.jar", "p.mpp", force=True)
+        self.assertEqual([c.args[0] for c in link.call_args_list], ["7.92.0", "7.80.0"])
+
 
 if __name__ == "__main__":
     unittest.main()
