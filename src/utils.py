@@ -199,7 +199,13 @@ def get_highest_version(versions: list[str]) -> str | None:
 
 def get_supported_versions(
     package_name: str, cli: str, patches: str, include_experimental: bool = False
-) -> list[str]:
+) -> Optional[list[str]]:
+    """App versions the patch bundle declares compatibility with, highest first.
+
+    [] means the CLI answered but named no versions (version-agnostic patches),
+    so the store's latest is safe to build. None means the CLI query itself
+    failed and compatibility is unknown; callers must not guess latest.
+    """
     # Morphe CLI and ReVanced CLI have different list-versions syntax
     cli_name = Path(cli).name.lower()
     is_morphe_cli = 'morphe' in cli_name
@@ -254,7 +260,7 @@ def get_supported_versions(
 
     if not output:
         logging.warning("No output returned from list-versions command")
-        return []
+        return None
 
     lines = output.splitlines()
     logging.info(f"CLI raw output lines: {lines}")
@@ -263,7 +269,7 @@ def get_supported_versions(
     first_line = lines[0].strip().lower()
     if 'usage:' in first_line or 'unmatched argument' in first_line or 'error' in first_line:
         logging.warning(f"CLI returned error/usage output, cannot determine version")
-        return []
+        return None
 
     if len(lines) <= 2:
         logging.warning("Output has no version lines")

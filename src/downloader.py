@@ -21,6 +21,11 @@ from src import (
 last_download_from_store = False
 
 
+class UnknownPatchCompatibilityError(ValueError):
+    """The patch CLI couldn't say which app versions the patches support."""
+
+
+
 def download_resource(url: str, name: str = None) -> Path:
     res = session.get(url, stream=True)
     res.raise_for_status()
@@ -194,11 +199,13 @@ def download_platform(
 
         platform_module = globals()[platform]
 
-        # Candidate versions (highest -> lowest) for universal robustness:
+        # Candidate versions (highest -> lowest):
         # - If config pins a version: only try that.
         # - Else if override provided (retry path): try only that.
-        # - Else ask the patching CLI for compatible versions and try those.
-        # - If none returned: fall back to latest available from the store.
+        # - Else ask the patching CLI for compatible versions and try only those.
+        #   The store's latest is never appended: when none of the supported
+        #   versions can be downloaded, building latest would ship with patches
+        #   silently skipped. Latest is used when the patches name no versions.
         # - With force, the store's latest version is tried first.
         pinned = (config.get("version") or "").strip()
         supported: list[str] | None = None  # None: not asked (pinned/override)
@@ -207,12 +214,23 @@ def download_platform(
         elif pinned:
             candidates = [pinned]
         else:
-            candidates = utils.get_supported_versions(
+            compat = utils.get_supported_versions(
                 config["package"], cli, patches, include_experimental=experimental
             )
-            supported = list(candidates)
-            try:
-                latest = platform_module.get_latest_version(app_name, config)
+            if compat is None and not force:
+                raise UnknownPatchCompatibilityError(
+                    f"Cannot determine patch-compatible versions for {app_name} "
+                    f"(package {config['package']}); refusing to fall back to the "
+                    f"store's latest and ship a build with skipped patches"
+                )
+            supported = list(compat or [])
+            candidates = list(supported)
+            if force or not supported:
+                try:
+                    latest = platform_module.get_latest_version(app_name, config)
+                except Exception as e:
+                    logging.debug(f"Could not get latest version for {app_name} on {platform}: {e}")
+                    latest = None
                 if latest:
                     if latest not in candidates and _older_than_all(latest, supported):
                         # Checked before force too: force means "newer than the
@@ -221,12 +239,8 @@ def download_platform(
                             f"{platform} latest {latest} for {app_name} is older than every "
                             f"patch-supported version {supported}; not using it"
                         )
-                    elif force:
+                    else:
                         candidates = [latest] + [v for v in candidates if v != latest]
-                    elif latest not in candidates:
-                        candidates.append(latest)
-            except Exception as e:
-                logging.debug(f"Could not get latest version for {app_name} on {platform}: {e}")
 
         last_error: Exception | None = None
         for version in candidates:
@@ -246,6 +260,9 @@ def download_platform(
 
         raise last_error or ValueError(f"No downloadable versions found for {app_name} on {platform}")
 
+    except UnknownPatchCompatibilityError:
+        # Not a download error: every source would hit it, so fail the build.
+        raise
     except Exception as e:
         logging.error(f"Unexpected error: {e}")
         return None, None, []

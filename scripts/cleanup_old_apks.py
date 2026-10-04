@@ -55,7 +55,10 @@ from record_build import extract_version_from_filename  # noqa: E402
 
 def gh_release_assets(release: str) -> List[dict]:
     """Return asset dicts (with 'name' + 'id') currently attached to the release.
-    Only APK assets are returned."""
+    Only APK assets are returned.
+
+    Raises RuntimeError when the list can't be read: an empty list would look
+    like "nothing to clean up" and superseded APKs would pile up unnoticed."""
     try:
         result = subprocess.run(
             ["gh", "release", "view", release, "--json", "assets"],
@@ -65,8 +68,7 @@ def gh_release_assets(release: str) -> List[dict]:
         return [a for a in assets if isinstance(a, dict)
                 and str(a.get("name", "")).endswith(".apk")]
     except Exception as e:
-        print(f"⚠️  could not list release assets: {e}", file=sys.stderr)
-        return []
+        raise RuntimeError(f"could not list release assets: {e}") from e
 
 
 def identity_prefix(apk_name: str) -> str:
@@ -150,7 +152,7 @@ def _repo_slug() -> str:
 def delete_asset(release: str, name: str, asset_id: str = "") -> bool:
     """Delete a single release asset. Tries `gh release delete-asset` first,
     falls back to the REST API (by asset id) on failure. Returns True on
-    success. Every failure is logged to stderr but never fatal."""
+    success. Every failure is logged to stderr; main() fails the run if any remain."""
     ok, msg = delete_asset_by_name(release, name)
     if ok:
         return True
@@ -177,7 +179,12 @@ def main() -> int:
     args = parser.parse_args()
 
     keep = load_keep_set(Path(args.keep_file))
-    assets = gh_release_assets(args.release)  # list of {name, id, ...} dicts
+    try:
+        assets = gh_release_assets(args.release)  # list of {name, id, ...} dicts
+    except RuntimeError as e:
+        print(f"❌ {e}", file=sys.stderr)
+        print("Refusing to continue: cannot tell which assets are superseded.", file=sys.stderr)
+        return 1
 
     if not assets:
         print("No existing APK assets to clean up.")
@@ -217,6 +224,10 @@ def main() -> int:
 
     action = "would delete" if args.dry_run else "deleted"
     print(f"Done. {action} {len(to_delete) if args.dry_run else deleted} superseded asset(s).")
+    if not args.dry_run and deleted != len(to_delete):
+        print(f"❌ {len(to_delete) - deleted} superseded asset(s) could not be deleted.",
+              file=sys.stderr)
+        return 1
     return 0
 
 
