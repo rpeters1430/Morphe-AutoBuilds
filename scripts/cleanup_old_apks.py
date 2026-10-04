@@ -20,6 +20,11 @@ For every newly-built APK, derive its *identity prefix*
 APK in the release that shares that prefix but is not in the keep-set. This is
 identity-based, so v2.5 correctly supersedes v2.4.
 
+Each app is built from one patch source, so an APK with the same ``{app}-{arch}-``
+but a different source name (left over after switching the app's source, e.g.
+``google-photos-arm64-v8a-morphe-patches-v7.92.apk`` once the akash-photos build
+is uploaded) is superseded too.
+
 Inputs
 ------
 - ``--keep-file``: a newline-delimited file of APK basenames to PRESERVE
@@ -34,7 +39,7 @@ Safety
 ------
 - Only ``.apk`` assets are ever considered for deletion.
 - Anything in the keep-set is always preserved.
-- Every deletion is best-effort (logged + non-fatal).
+- A failed listing or deletion is logged and makes the script exit non-zero.
 - A ``--dry-run`` flag prints what would be deleted without deleting.
 """
 import argparse
@@ -55,7 +60,10 @@ from record_build import extract_version_from_filename  # noqa: E402
 
 def gh_release_assets(release: str) -> List[dict]:
     """Return asset dicts (with 'name' + 'id') currently attached to the release.
-    Only APK assets are returned."""
+    Only APK assets are returned.
+
+    Raises RuntimeError when the list can't be read: an empty list would look
+    like "nothing to clean up" and superseded APKs would pile up unnoticed."""
     try:
         result = subprocess.run(
             ["gh", "release", "view", release, "--json", "assets"],
@@ -65,8 +73,7 @@ def gh_release_assets(release: str) -> List[dict]:
         return [a for a in assets if isinstance(a, dict)
                 and str(a.get("name", "")).endswith(".apk")]
     except Exception as e:
-        print(f"⚠️  could not list release assets: {e}", file=sys.stderr)
-        return []
+        raise RuntimeError(f"could not list release assets: {e}") from e
 
 
 def identity_prefix(apk_name: str) -> str:
@@ -78,6 +85,28 @@ def identity_prefix(apk_name: str) -> str:
     if version and stem.endswith(f"-v{version}"):
         return stem[: -len(version) - 2].lower()
     return stem.lower()
+
+
+ARCHES = ("arm64-v8a", "armeabi-v7a", "universal")
+
+
+def app_arch_prefix(apk_name: str) -> str:
+    """``{app}-{arch}-`` part of an APK filename, or '' if it names no arch.
+    E.g. ``google-photos-arm64-v8a-akash-photos-v7.95.apk`` ->
+    ``google-photos-arm64-v8a-``. The arch right after the app name keeps
+    ``youtube-`` from matching ``youtube-music-``."""
+    lower = apk_name.lower()
+    hits = [lower.find(f"-{arch}-") for arch in ARCHES]
+    hits = [(i, arch) for i, arch in zip(hits, ARCHES) if i > 0]
+    if not hits:
+        return ""
+    i, arch = min(hits)
+    return lower[: i + len(arch) + 2]
+
+
+def is_superseded(name: str, keep_prefixes: Set[str], keep_app_arches: Set[str]) -> bool:
+    """Same app/arch as a freshly built APK, but a different version or source."""
+    return identity_prefix(name) in keep_prefixes or app_arch_prefix(name) in keep_app_arches
 
 
 def github_asset_name(name: str) -> str:
@@ -150,7 +179,7 @@ def _repo_slug() -> str:
 def delete_asset(release: str, name: str, asset_id: str = "") -> bool:
     """Delete a single release asset. Tries `gh release delete-asset` first,
     falls back to the REST API (by asset id) on failure. Returns True on
-    success. Every failure is logged to stderr but never fatal."""
+    success. Every failure is logged to stderr; main() fails the run if any remain."""
     ok, msg = delete_asset_by_name(release, name)
     if ok:
         return True
@@ -177,7 +206,12 @@ def main() -> int:
     args = parser.parse_args()
 
     keep = load_keep_set(Path(args.keep_file))
-    assets = gh_release_assets(args.release)  # list of {name, id, ...} dicts
+    try:
+        assets = gh_release_assets(args.release)  # list of {name, id, ...} dicts
+    except RuntimeError as e:
+        print(f"❌ {e}", file=sys.stderr)
+        print("Refusing to continue: cannot tell which assets are superseded.", file=sys.stderr)
+        return 1
 
     if not assets:
         print("No existing APK assets to clean up.")
@@ -186,14 +220,15 @@ def main() -> int:
     # Identity prefixes that must be preserved (one or more of the keep-set may
     # share a prefix when multiple arches of the same app are kept).
     keep_prefixes = {identity_prefix(n) for n in keep}
+    keep_app_arches = {p for p in (app_arch_prefix(n) for n in keep) if p}
 
     to_delete = []  # list of asset dicts
     for asset in assets:
         name = str(asset.get("name", ""))
         if not name or name in keep:
             continue  # explicitly kept (or unnamed)
-        if identity_prefix(name) in keep_prefixes:
-            to_delete.append(asset)  # same app/arch, but a different (older) version
+        if is_superseded(name, keep_prefixes, keep_app_arches):
+            to_delete.append(asset)  # same app/arch, older version or old source
         # else: an app/arch we didn't rebuild this run -> leave it untouched
 
     if not to_delete:
@@ -217,6 +252,10 @@ def main() -> int:
 
     action = "would delete" if args.dry_run else "deleted"
     print(f"Done. {action} {len(to_delete) if args.dry_run else deleted} superseded asset(s).")
+    if not args.dry_run and deleted != len(to_delete):
+        print(f"❌ {len(to_delete) - deleted} superseded asset(s) could not be deleted.",
+              file=sys.stderr)
+        return 1
     return 0
 
 

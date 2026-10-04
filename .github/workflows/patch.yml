@@ -401,8 +401,10 @@ jobs:
               [ -f "$apk" ] || continue
               basename "$apk" >> keep_apks.txt
             done
+            # The new APKs are already uploaded, so don't stop publishing over a
+            # failed cleanup, but flag it on the run instead of a quiet warning.
             python scripts/cleanup_old_apks.py --release latest --keep-file keep_apks.txt || \
-              echo "⚠️  cleanup_old_apks.py failed; superseded APKs may remain"
+              echo "::error title=Superseded APKs remain::cleanup_old_apks.py failed; older APK versions are still attached to the release"
           else
             echo "🆕 Creating 'latest' release..."
             gh release create "latest" \

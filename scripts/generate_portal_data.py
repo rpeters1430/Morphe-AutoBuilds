@@ -32,6 +32,7 @@ PATCHED_PACKAGES = {
     ("youtube", "morphe"): "app.morphe.android.youtube",
     ("youtube-music", "morphe"): "app.morphe.android.apps.youtube.music",
     ("x-new", "piko-newx"): "com.twitter.android.piko",
+    ("google-photos", "akash-photos"): "app.morphe.android.apps.photos",
 }
 
 CATEGORIES = {

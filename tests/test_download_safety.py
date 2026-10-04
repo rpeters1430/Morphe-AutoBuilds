@@ -69,6 +69,37 @@ class DownloadSafetyTests(unittest.TestCase):
             downloader.download_platform("example", "aptoide", "cli.jar", "p.mpp", force=True)
         self.assertEqual([c.args[0] for c in link.call_args_list], ["7.92.0", "7.80.0"])
 
+    def _candidates_tried(self, supported, latest="9.0.0", force=False):
+        """Run aptoide's download_platform and return the versions it tried."""
+        from src import downloader
+        with tempfile.TemporaryDirectory() as directory, \
+                patch.object(downloader, "Path", side_effect=lambda *a: Path(directory, *a)), \
+                patch.object(utils, "get_supported_versions", return_value=supported), \
+                patch.object(aptoide, "get_latest_version", return_value=latest), \
+                patch.object(aptoide, "get_download_link", return_value=None) as link:
+            config = Path(directory, "apps", "aptoide")
+            config.mkdir(parents=True)
+            (config / "example.json").write_text('{"package": "example.app"}')
+            downloader.download_platform("example", "aptoide", "cli.jar", "p.mpp", force=force)
+        return [c.args[0] for c in link.call_args_list]
+
+    def test_store_latest_is_not_appended_to_supported_versions(self):
+        self.assertEqual(self._candidates_tried(["7.92.0", "7.80.0"]), ["7.92.0", "7.80.0"])
+
+    def test_store_latest_used_when_patches_name_no_versions(self):
+        self.assertEqual(self._candidates_tried([]), ["9.0.0"])
+
+    def test_force_tries_store_latest_first(self):
+        self.assertEqual(self._candidates_tried(["7.92.0"], force=True), ["9.0.0", "7.92.0"])
+
+    def test_unknown_compatibility_fails_the_build(self):
+        from src import downloader
+        with self.assertRaises(downloader.UnknownPatchCompatibilityError):
+            self._candidates_tried(None)
+
+    def test_force_builds_latest_when_compatibility_unknown(self):
+        self.assertEqual(self._candidates_tried(None, force=True), ["9.0.0"])
+
 
 if __name__ == "__main__":
     unittest.main()

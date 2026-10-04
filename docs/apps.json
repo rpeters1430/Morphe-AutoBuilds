@@ -134,7 +134,7 @@
       "additionalSettings": "{\"apkFilterRegEx\": \"^xrecorder-(arm64-v8a|armeabi-v7a|universal)-.*\\\\.apk$\", \"invertAPKFilter\": false, \"useLatestAssetDateAsReleaseDate\": true, \"releaseDateAsVersion\": true}"
     },
     {
-      "id": "com.google.android.apps.photos",
+      "id": "app.morphe.android.apps.photos",
       "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
       "author": "rpeters1430",
       "name": "Google Photos",
