@@ -2445,7 +2445,7 @@ window.PORTAL_DATA = {
       "name": "X New",
       "slug": "x-new",
       "source": "piko-newx",
-      "package": "com.twitter.android",
+      "package": "com.twitter.android.piko",
       "category": "Utilities & Tools",
       "icon": "",
       "enabled": true,
@@ -2459,7 +2459,7 @@ window.PORTAL_DATA = {
         }
       ],
       "obtainium_config": {
-        "id": "com.twitter.android",
+        "id": "com.twitter.android.piko",
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "X New",
