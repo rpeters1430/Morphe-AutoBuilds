@@ -488,8 +488,8 @@ window.PORTAL_DATA = {
     {
       "name": "Google Photos",
       "slug": "google-photos",
-      "source": "rookie",
-      "package": "com.google.android.apps.photos",
+      "source": "akash-photos",
+      "package": "app.morphe.android.apps.photos",
       "category": "Photography",
       "icon": "https://raw.githubusercontent.com/walkxcode/dashboard-icons/main/svg/google-photos.svg",
       "enabled": true,
@@ -509,7 +509,7 @@ window.PORTAL_DATA = {
         }
       ],
       "obtainium_config": {
-        "id": "com.google.android.apps.photos",
+        "id": "app.morphe.android.apps.photos",
         "url": "https://github.com/rpeters1430/Morphe-AutoBuilds",
         "author": "rpeters1430",
         "name": "Google Photos",

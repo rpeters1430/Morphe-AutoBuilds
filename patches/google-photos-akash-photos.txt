@@ -1,0 +1,8 @@
++ GmsCore support
++ Spoof features
++ Enable DCIM folders backup control
+
+# Both need stock Photos removed (ADB uninstall or root), which a
+# side-by-side install via GmsCore support doesn't do.
+- Change to official package name
+- Disable Play Store updates

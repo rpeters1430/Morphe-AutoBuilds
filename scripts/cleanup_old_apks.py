@@ -20,6 +20,11 @@ For every newly-built APK, derive its *identity prefix*
 APK in the release that shares that prefix but is not in the keep-set. This is
 identity-based, so v2.5 correctly supersedes v2.4.
 
+Each app is built from one patch source, so an APK with the same ``{app}-{arch}-``
+but a different source name (left over after switching the app's source, e.g.
+``google-photos-arm64-v8a-morphe-patches-v7.92.apk`` once the akash-photos build
+is uploaded) is superseded too.
+
 Inputs
 ------
 - ``--keep-file``: a newline-delimited file of APK basenames to PRESERVE
@@ -34,7 +39,7 @@ Safety
 ------
 - Only ``.apk`` assets are ever considered for deletion.
 - Anything in the keep-set is always preserved.
-- Every deletion is best-effort (logged + non-fatal).
+- A failed listing or deletion is logged and makes the script exit non-zero.
 - A ``--dry-run`` flag prints what would be deleted without deleting.
 """
 import argparse
@@ -80,6 +85,28 @@ def identity_prefix(apk_name: str) -> str:
     if version and stem.endswith(f"-v{version}"):
         return stem[: -len(version) - 2].lower()
     return stem.lower()
+
+
+ARCHES = ("arm64-v8a", "armeabi-v7a", "universal")
+
+
+def app_arch_prefix(apk_name: str) -> str:
+    """``{app}-{arch}-`` part of an APK filename, or '' if it names no arch.
+    E.g. ``google-photos-arm64-v8a-akash-photos-v7.95.apk`` ->
+    ``google-photos-arm64-v8a-``. The arch right after the app name keeps
+    ``youtube-`` from matching ``youtube-music-``."""
+    lower = apk_name.lower()
+    hits = [lower.find(f"-{arch}-") for arch in ARCHES]
+    hits = [(i, arch) for i, arch in zip(hits, ARCHES) if i > 0]
+    if not hits:
+        return ""
+    i, arch = min(hits)
+    return lower[: i + len(arch) + 2]
+
+
+def is_superseded(name: str, keep_prefixes: Set[str], keep_app_arches: Set[str]) -> bool:
+    """Same app/arch as a freshly built APK, but a different version or source."""
+    return identity_prefix(name) in keep_prefixes or app_arch_prefix(name) in keep_app_arches
 
 
 def github_asset_name(name: str) -> str:
@@ -193,14 +220,15 @@ def main() -> int:
     # Identity prefixes that must be preserved (one or more of the keep-set may
     # share a prefix when multiple arches of the same app are kept).
     keep_prefixes = {identity_prefix(n) for n in keep}
+    keep_app_arches = {p for p in (app_arch_prefix(n) for n in keep) if p}
 
     to_delete = []  # list of asset dicts
     for asset in assets:
         name = str(asset.get("name", ""))
         if not name or name in keep:
             continue  # explicitly kept (or unnamed)
-        if identity_prefix(name) in keep_prefixes:
-            to_delete.append(asset)  # same app/arch, but a different (older) version
+        if is_superseded(name, keep_prefixes, keep_app_arches):
+            to_delete.append(asset)  # same app/arch, older version or old source
         # else: an app/arch we didn't rebuild this run -> leave it untouched
 
     if not to_delete:
