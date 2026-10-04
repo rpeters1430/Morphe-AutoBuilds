@@ -26,11 +26,12 @@ DATA_JS_PATH = DOCS_DIR / "data.js"
 OBTAINIUM_JSON_PATH = DOCS_DIR / "apps.json"
 
 # Package IDs of the patched APKs where the patches rename the app (GmsCore
-# support), keyed by (app_name, source). Obtainium refuses to install an APK
+# support, Piko's X build), keyed by (app_name, source). Obtainium refuses to install an APK
 # whose package ID differs from the entry's ID, so the feed must use these.
 PATCHED_PACKAGES = {
     ("youtube", "morphe"): "app.morphe.android.youtube",
     ("youtube-music", "morphe"): "app.morphe.android.apps.youtube.music",
+    ("x-new", "piko-newx"): "com.twitter.android.piko",
 }
 
 CATEGORIES = {
