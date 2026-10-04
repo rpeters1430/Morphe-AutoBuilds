@@ -48,6 +48,11 @@
           "description": "Patch the newest store version even if the patches don't list it as compatible (--force).",
           "default": false
         },
+        "supported_only": {
+          "type": "boolean",
+          "description": "Only build app versions the patches list; never fall back to the store's latest.",
+          "default": false
+        },
         "version": {
           "type": "string",
           "description": "Pin the app version. Empty = pick automatically.",
@@ -134,6 +139,7 @@
           "cli_channel",
           "experimental",
           "force",
+          "supported_only",
           "version",
           "arches",
           "include_patches",
@@ -175,6 +181,7 @@
             "cli_channel",
             "experimental",
             "force",
+            "supported_only",
             "version",
             "arches",
             "include_patches",

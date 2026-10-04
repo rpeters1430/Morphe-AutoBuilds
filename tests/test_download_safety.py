@@ -69,7 +69,7 @@ class DownloadSafetyTests(unittest.TestCase):
             downloader.download_platform("example", "aptoide", "cli.jar", "p.mpp", force=True)
         self.assertEqual([c.args[0] for c in link.call_args_list], ["7.92.0", "7.80.0"])
 
-    def _candidates_tried(self, supported, latest="9.0.0", force=False):
+    def _candidates_tried(self, supported, latest="9.0.0", force=False, supported_only=False):
         """Run aptoide's download_platform and return the versions it tried."""
         from src import downloader
         with tempfile.TemporaryDirectory() as directory, \
@@ -80,11 +80,15 @@ class DownloadSafetyTests(unittest.TestCase):
             config = Path(directory, "apps", "aptoide")
             config.mkdir(parents=True)
             (config / "example.json").write_text('{"package": "example.app"}')
-            downloader.download_platform("example", "aptoide", "cli.jar", "p.mpp", force=force)
+            downloader.download_platform("example", "aptoide", "cli.jar", "p.mpp", force=force,
+                                         supported_only=supported_only)
         return [c.args[0] for c in link.call_args_list]
 
-    def test_store_latest_is_not_appended_to_supported_versions(self):
-        self.assertEqual(self._candidates_tried(["7.92.0", "7.80.0"]), ["7.92.0", "7.80.0"])
+    def test_store_latest_is_tried_after_supported_versions(self):
+        self.assertEqual(self._candidates_tried(["7.92.0", "7.80.0"]), ["7.92.0", "7.80.0", "9.0.0"])
+
+    def test_supported_only_skips_store_latest(self):
+        self.assertEqual(self._candidates_tried(["7.92.0"], supported_only=True), ["7.92.0"])
 
     def test_store_latest_used_when_patches_name_no_versions(self):
         self.assertEqual(self._candidates_tried([]), ["9.0.0"])

@@ -245,6 +245,7 @@ def run_build(app_name: str, source: str, arch: str = "universal", settings: dic
     settings = settings or build_config.get_entry(app_name, source)
     experimental = settings["experimental"]
     force = settings["force"]
+    supported_only = settings["supported_only"]
     pinned_version = settings["version"] or None
 
     download_files, name = tools or downloader.download_required(
@@ -345,6 +346,7 @@ def run_build(app_name: str, source: str, arch: str = "universal", settings: dic
         downloaded, downloaded_version, downloaded_candidates = method(
             app_name, str(cli), str(patches), arch,
             override_version=pinned_version, experimental=experimental, force=force,
+            supported_only=supported_only,
         )
         if not downloaded:
             continue
@@ -391,6 +393,7 @@ def run_build(app_name: str, source: str, arch: str = "universal", settings: dic
             input_apk, version, _ = used_method(
                 app_name, str(cli), str(patches), arch,
                 override_version=ver, experimental=experimental, force=force,
+                supported_only=supported_only,
             )
             if input_apk is None:
                 continue

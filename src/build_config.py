@@ -24,6 +24,9 @@ Fields (per entry or in ``defaults``):
                    experimental when picking which app version to patch.
   force            Patch the newest store version even if the patches don't
                    list it as compatible (passes --force to the CLI).
+  supported_only   Only build app versions the patches list. Without it the
+                   store's latest is a last resort when none of them can be
+                   downloaded, which skips patches tied to those versions.
   version          Pin the app version (overrides apps/<platform>/<app>.json).
   arches           Architectures to build (overrides arch-config.json).
   include_patches  Patch names to force-enable (adds to patches/<app>-<source>.txt).
@@ -71,6 +74,7 @@ BUILTIN_DEFAULTS = {
     "cli_channel": SOURCE_CHANNEL,
     "experimental": False,
     "force": False,
+    "supported_only": False,
     "version": "",
     "arches": None,          # None -> arch-config.json -> ["universal"]
     "include_patches": [],
@@ -80,7 +84,7 @@ BUILTIN_DEFAULTS = {
     "patch_options": {},
 }
 
-BOOL_FIELDS = ("enabled", "experimental", "force", "exclusive", "continue_on_error")
+BOOL_FIELDS = ("enabled", "experimental", "force", "supported_only", "exclusive", "continue_on_error")
 
 _ENV_OVERRIDES = {
     "PATCHES_CHANNEL": "patches_channel",
@@ -235,6 +239,8 @@ def build_options_signature(entry: dict) -> str:
         parts.append("exp")
     if entry.get("force"):
         parts.append("force")
+    if entry.get("supported_only"):
+        parts.append("supported")
     if entry.get("include_patches"):
         parts.append("inc=" + ",".join(sorted(entry["include_patches"])))
     if entry.get("exclude_patches"):
