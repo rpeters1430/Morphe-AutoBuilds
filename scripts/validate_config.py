@@ -30,6 +30,7 @@ FIELD_TYPES = {
     "cli_channel": str,
     "experimental": bool,
     "force": bool,
+    "supported_only": bool,
     "version": str,
     "arches": list,
     "include_patches": list,
