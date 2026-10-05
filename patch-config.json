@@ -96,7 +96,7 @@
     },
     {
       "app_name": "disney-plus",
-      "source": "rookie",
+      "source": "aimal",
       "enabled": false
     },
     {
@@ -105,7 +105,7 @@
     },
     {
       "app_name": "google-news",
-      "source": "rookie"
+      "source": "Hoo"
     },
     {
       "app_name": "messenger",
@@ -113,12 +113,12 @@
     },
     {
       "app_name": "photomath",
-      "source": "rookie",
+      "source": "devanced",
       "enabled": false
     },
     {
       "app_name": "pixiv",
-      "source": "rookie"
+      "source": "fripe070"
     },
     {
       "app_name": "prime-video",
@@ -126,7 +126,7 @@
     },
     {
       "app_name": "proton-mail",
-      "source": "rookie"
+      "source": "hxreborn"
     },
     {
       "app_name": "proton-vpn",
@@ -188,11 +188,11 @@
     },
     {
       "app_name": "tumblr",
-      "source": "rookie"
+      "source": "hoomans"
     },
     {
       "app_name": "threads",
-      "source": "rookie"
+      "source": "chiggi"
     },
     {
       "app_name": "crunchyroll",
@@ -200,11 +200,11 @@
     },
     {
       "app_name": "tasker",
-      "source": "dropped"
+      "source": "heval"
     },
     {
       "app_name": "icon-pack-studio",
-      "source": "rookie"
+      "source": "devanced"
     },
     {
       "app_name": "my-expenses",
@@ -285,18 +285,6 @@
       "source": "rushiranpise-dev"
     },
     {
-      "app_name": "earphone",
-      "source": "tosox"
-    },
-    {
-      "app_name": "flatastic",
-      "source": "tosox"
-    },
-    {
-      "app_name": "kicker",
-      "source": "tosox"
-    },
-    {
       "app_name": "ticktick",
       "source": "paresh",
       "enabled": false
@@ -355,11 +343,11 @@
     },
     {
       "app_name": "trakt",
-      "source": "tosox"
+      "source": "pixelpusher"
     },
     {
       "app_name": "letterboxd",
-      "source": "rookie"
+      "source": "hakim"
     },
     {
       "app_name": "kakaotalk",
@@ -369,10 +357,6 @@
       "app_name": "mladinska",
       "source": "blazskufca",
       "enabled": false
-    },
-    {
-      "app_name": "fxfile",
-      "source": "dropped"
     },
     {
       "app_name": "myfitnesspal",
@@ -477,6 +461,10 @@
     {
       "app_name": "wallverse",
       "source": "rushiranpise-dev"
+    },
+    {
+      "app_name": "twitch",
+      "source": "ryykitty-twitch"
     }
   ]
 }
