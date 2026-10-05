@@ -154,6 +154,7 @@ def download_platform(
     override_version: str = None,
     experimental: bool = False,
     force: bool = False,
+    supported_only: bool = False,
 ) -> tuple[Path | None, str | None, list[str]]:
     global last_download_from_store
     last_download_from_store = False
@@ -202,11 +203,13 @@ def download_platform(
         # Candidate versions (highest -> lowest):
         # - If config pins a version: only try that.
         # - Else if override provided (retry path): try only that.
-        # - Else ask the patching CLI for compatible versions and try only those.
-        #   The store's latest is never appended: when none of the supported
-        #   versions can be downloaded, building latest would ship with patches
-        #   silently skipped. Latest is used when the patches name no versions.
-        # - With force, the store's latest version is tried first.
+        # - Else ask the patching CLI for compatible versions and try those,
+        #   then the store's latest as a last resort. Patch sets like Hoo pin
+        #   one exact build that stores stop carrying; without the fallback
+        #   those apps can't be built at all.
+        # - The store's latest is never used when it predates every supported
+        #   version (a stale mirror) or with supported_only, and with force it
+        #   is tried first.
         pinned = (config.get("version") or "").strip()
         supported: list[str] | None = None  # None: not asked (pinned/override)
         if override_version:
@@ -225,22 +228,23 @@ def download_platform(
                 )
             supported = list(compat or [])
             candidates = list(supported)
-            if force or not supported:
-                try:
-                    latest = platform_module.get_latest_version(app_name, config)
-                except Exception as e:
-                    logging.debug(f"Could not get latest version for {app_name} on {platform}: {e}")
-                    latest = None
-                if latest:
-                    if latest not in candidates and _older_than_all(latest, supported):
-                        # Checked before force too: force means "newer than the
-                        # patches list", not a stale mirror's years-old build.
-                        logging.info(
-                            f"{platform} latest {latest} for {app_name} is older than every "
-                            f"patch-supported version {supported}; not using it"
-                        )
-                    else:
-                        candidates = [latest] + [v for v in candidates if v != latest]
+            try:
+                latest = platform_module.get_latest_version(app_name, config)
+            except Exception as e:
+                logging.debug(f"Could not get latest version for {app_name} on {platform}: {e}")
+                latest = None
+            if latest:
+                if latest not in candidates and _older_than_all(latest, supported):
+                    # Checked before force too: force means "newer than the
+                    # patches list", not a stale mirror's years-old build.
+                    logging.info(
+                        f"{platform} latest {latest} for {app_name} is older than every "
+                        f"patch-supported version {supported}; not using it"
+                    )
+                elif force:
+                    candidates = [latest] + [v for v in candidates if v != latest]
+                elif latest not in candidates and not (supported_only and supported):
+                    candidates.append(latest)
 
         last_error: Exception | None = None
         for version in candidates:
@@ -253,6 +257,12 @@ def download_platform(
             try:
                 filepath = download_resource(download_link)
                 last_download_from_store = supported is not None and version not in supported
+                if supported and version not in supported:
+                    logging.warning(
+                        f"⚠️ {app_name}: none of the patch-supported versions {supported} "
+                        f"could be downloaded from {platform}; building its latest {version}, "
+                        f"so patches tied to those versions may be skipped"
+                    )
                 return filepath, version, candidates
             except Exception as e:
                 last_error = e
@@ -286,9 +296,11 @@ def _platform_downloader(platform: str):
         override_version: str = None,
         experimental: bool = False,
         force: bool = False,
+        supported_only: bool = False,
     ) -> tuple[Path | None, str | None, list[str]]:
         return download_platform(
-            app_name, platform, cli, patches, arch, override_version, experimental, force
+            app_name, platform, cli, patches, arch, override_version, experimental, force,
+            supported_only,
         )
     download.__name__ = f"download_{platform}"
     return download
