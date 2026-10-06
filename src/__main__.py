@@ -25,6 +25,7 @@ def _should_retry_with_older_version(output: str | None) -> bool:
         or "patch.patchexception" in t
         or ("fingerprint" in t and "failed" in t)
         or "patching aborted" in t
+        or "no patches were applied" in t
     )
 
 _cli_help_cache: dict[str, str] = {}
@@ -209,12 +210,14 @@ def _run_patch(cli: Path, patches: Path, input_apk: Path, output_apk: Path,
                is_morphe: bool, args: list[str]) -> None:
     if is_morphe:
         logging.info("🔧 Using Morphe patching system...")
-        utils.run_process([
+        command = [
             "java", "-jar", str(cli),
             "patch", "--patches", str(patches),
             "--out", str(output_apk), str(input_apk),
             *args
-        ], capture=True, stream=True)
+        ]
+        output = utils.run_process(command, capture=True, stream=True)
+        _reject_empty_patch_run(output, command, output_apk)
         return
 
     logging.info("🔧 Using ReVanced patching system...")
@@ -223,19 +226,30 @@ def _run_patch(cli: Path, patches: Path, input_apk: Path, output_apk: Path,
         'revanced-cli-6' in cli_name or 'revanced-cli-7' in cli_name or 'revanced-cli-8' in cli_name
     )
     if is_revanced_v6_or_newer:
-        utils.run_process([
+        command = [
             "java", "-jar", str(cli),
             "patch", "-p", str(patches), "-b",
             "--out", str(output_apk), str(input_apk),
             *args
-        ], capture=True, stream=True)
+        ]
     else:
-        utils.run_process([
+        command = [
             "java", "-jar", str(cli),
             "patch", "--patches", str(patches),
             "--out", str(output_apk), str(input_apk),
             *args
-        ], capture=True, stream=True)
+        ]
+    output = utils.run_process(command, capture=True, stream=True)
+    _reject_empty_patch_run(output, command, output_apk)
+
+
+def _reject_empty_patch_run(output: str | None, command: list[str], output_apk: Path) -> None:
+    """Some CLIs exit successfully when every selected patch was incompatible."""
+    if re.search(r"\bApplying\s+0\s+patch(?:es)?\b", output or "", re.IGNORECASE):
+        output_apk.unlink(missing_ok=True)
+        message = "No patches were applied; refusing to publish an unpatched APK."
+        logging.error(message)
+        raise subprocess.CalledProcessError(1, command, output=f"{output}\n{message}")
 
 
 def run_build(app_name: str, source: str, arch: str = "universal", settings: dict | None = None,
@@ -351,7 +365,7 @@ def run_build(app_name: str, source: str, arch: str = "universal", settings: dic
         if not downloaded:
             continue
         is_bundle = _is_bundle(downloaded)
-        if not utils.ensure_usable_android_archive(downloaded, bundle=is_bundle):
+        if not utils.ensure_signed_android_archive(downloaded, bundle=is_bundle):
             logging.warning(f"Trying next download source after {method.__name__}")
             continue
         input_apk, version, candidates = downloaded, downloaded_version, downloaded_candidates
@@ -397,7 +411,7 @@ def run_build(app_name: str, source: str, arch: str = "universal", settings: dic
             )
             if input_apk is None:
                 continue
-            if not utils.ensure_usable_android_archive(input_apk, bundle=_is_bundle(input_apk)):
+            if not utils.ensure_signed_android_archive(input_apk, bundle=_is_bundle(input_apk)):
                 logging.warning(f"Re-downloaded archive for {ver} is unusable; trying next version")
                 continue
             version = ver
@@ -450,12 +464,11 @@ def run_build(app_name: str, source: str, arch: str = "universal", settings: dic
         if native_bundle:
             bundle_args = ["--striplibs", KEEP_ARCHES.get(arch, KEEP_ARCHES["universal"])]
         else:
-            _strip_arch_libs(input_apk, arch)
             if arch in ("universal", "arm64-v8a"):
                 _warn_if_32bit_only(input_apk, app_name, arch)
 
-        # Arch stripping and bundle merging can damage an otherwise valid
-        # download. Never send that input to the patcher.
+        # Keep standalone inputs untouched: signature-spoofing patches read
+        # their original signing certificate. Strip libraries only on output.
         if not utils.ensure_usable_android_archive(input_apk, bundle=native_bundle):
             logging.warning(f"Processed archive for {version} is unusable; trying next version")
             continue
@@ -485,7 +498,6 @@ def run_build(app_name: str, source: str, arch: str = "universal", settings: dic
                 output_apk.unlink(missing_ok=True)
                 native_bundle = False
                 input_apk = _merge_bundle(input_apk)
-                _strip_arch_libs(input_apk, arch)
                 if arch in ("universal", "arm64-v8a"):
                     _warn_if_32bit_only(input_apk, app_name, arch)
                 if not utils.ensure_usable_android_archive(input_apk):
@@ -506,7 +518,10 @@ def run_build(app_name: str, source: str, arch: str = "universal", settings: dic
         # Patch succeeded -> cleanup input and sign.
         cli_merged_apk.unlink(missing_ok=True)
         input_apk.unlink(missing_ok=True)
-        if native_bundle and arch in ("universal", "arm64-v8a"):
+        _strip_arch_libs(output_apk, arch)
+        if not utils.ensure_usable_android_archive(output_apk):
+            raise RuntimeError("Patched APK is unusable after architecture processing")
+        if arch in ("universal", "arm64-v8a"):
             _warn_if_32bit_only(output_apk, app_name, arch)
 
         signed_apk = Path(utils.release_safe_filename(f"{app_name}-{arch}-{name}-v{version}.apk"))

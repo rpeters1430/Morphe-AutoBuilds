@@ -30,7 +30,7 @@ def _app_slug_candidates(config: dict) -> list[str]:
 
 
 def _cf_get(url, **kwargs):
-    """Fetch without trying to defeat Cloudflare on a GitHub-hosted runner."""
+    """Reuse the CI browser identity and render each challenged page as needed."""
     global _blocked_by_cloudflare
     if _blocked_by_cloudflare:
         raise ApkMirrorBlocked("APKMirror blocked this runner earlier in the build")
@@ -50,14 +50,16 @@ def _cf_get(url, **kwargs):
                 if rendered:
                     for name, value in rendered.cookies.items():
                         session.cookies.set(name, value, domain=".apkmirror.com")
+                    if rendered.user_agent:
+                        session.headers["User-Agent"] = rendered.user_agent
                     logging.info("APKMirror page obtained through the CI browser service")
                     return rendered
             except Exception as exc:
                 logging.debug("APKMirror browser-service fallback failed: %s", exc)
             _blocked_by_cloudflare = True
             logging.warning(
-                "APKMirror served a Cloudflare challenge; skipping APKMirror "
-                "for this build instead of launching a browser."
+                "APKMirror's Cloudflare challenge could not be resolved by Trawl; "
+                "trying another download provider."
             )
             raise ApkMirrorBlocked("APKMirror Cloudflare challenge")
     return response

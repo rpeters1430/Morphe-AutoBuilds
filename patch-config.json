@@ -291,7 +291,8 @@
     },
     {
       "app_name": "crex",
-      "source": "paresh"
+      "source": "paresh",
+      "supported_only": true
     },
     {
       "app_name": "documentscanner",
@@ -322,7 +323,8 @@
     },
     {
       "app_name": "prompter",
-      "source": "paresh"
+      "source": "paresh",
+      "supported_only": true
     },
     {
       "app_name": "macrodroid",
