@@ -9,6 +9,18 @@ from src import aptoide, utils
 
 
 class DownloadSafetyTests(unittest.TestCase):
+    def test_repository_providers_are_not_synthesized_from_package_ids(self):
+        from src import downloader
+        for provider in ("github", "apkmirror"):
+            with self.subTest(provider=provider), tempfile.TemporaryDirectory() as directory, \
+                    patch.object(downloader, "Path", side_effect=lambda *a: Path(directory, *a)), \
+                    patch.object(utils, "get_supported_versions") as compatible:
+                configs = Path(directory, "apps", "apkpure")
+                configs.mkdir(parents=True)
+                (configs / "example.json").write_text('{"package": "example.app"}')
+                self.assertEqual(downloader.download_platform("example", provider, "cli.jar", "p.mpp"), (None, None, []))
+                compatible.assert_not_called()
+
     def test_apk_and_bundle_require_android_payload(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

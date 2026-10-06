@@ -165,6 +165,11 @@ def download_platform(
             with config_path.open() as json_file:
                 config = json.load(json_file)
         else:
+            # These providers need an explicit repository or publisher slug;
+            # a package ID from another store cannot identify their location.
+            if platform in ("github", "apkmirror"):
+                logging.info(f"Skipping {platform} for {app_name}: no explicit provider config")
+                return None, None, []
             # Fallback: search other platform config directories for this app
             for other_platform in ["apkmirror", "uptodown", "apkpure", "aptoide", "github", "apkcombo"]:
                 if other_platform == platform:
