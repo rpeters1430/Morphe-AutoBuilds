@@ -34,9 +34,13 @@ class PatchPipelineTests(unittest.TestCase):
             stock = root / "stock.apk"
             with zipfile.ZipFile(stock, "w") as archive:
                 archive.writestr("AndroidManifest.xml", b"manifest")
+                archive.writestr("META-INF/CERT.RSA", b"signature metadata fixture")
                 archive.writestr("lib/x86/libexample.so", b"x86")
                 archive.writestr("lib/arm64-v8a/libexample.so", b"arm64")
             original_bytes = stock.read_bytes()
+            unsigned = root / "unsigned.apk"
+            with zipfile.ZipFile(unsigned, "w") as archive:
+                archive.writestr("AndroidManifest.xml", b"manifest")
             cli, patches = root / "morphe-cli.jar", root / "patches.mpp"
             cli.touch()
             patches.touch()
@@ -57,7 +61,8 @@ class PatchPipelineTests(unittest.TestCase):
                 Path(command[command.index("--out") + 1]).write_bytes(apk.read_bytes())
 
             settings = build_config.get_entry("niagara", "Hoo")
-            with patch.object(downloader, "download_apkmirror", return_value=(stock, "1.16.31", ["1.16.31"])), \
+            with patch.object(downloader, "download_apkmirror", __name__="download_apkmirror", return_value=(unsigned, "1.16.31", ["1.16.31"])), \
+                    patch.object(downloader, "download_aptoide", return_value=(stock, "1.16.31", ["1.16.31"])), \
                     patch.object(builder, "_cli_supports", return_value=True), \
                     patch.object(builder, "_new_patches_to_enable", return_value=[]), \
                     patch.object(builder, "_run_patch", side_effect=patch_apk), \
@@ -66,6 +71,7 @@ class PatchPipelineTests(unittest.TestCase):
                     patch.object(utils.shutil, "which", return_value=None):
                 result = builder.run_build("niagara", "Hoo", settings=settings, tools=([cli, patches], "Hoo"))
             self.assertEqual(events, ["patch", "sign"])
+            self.assertFalse(unsigned.exists())
             self.assertTrue(Path(result).exists())
 
 

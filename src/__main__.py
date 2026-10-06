@@ -365,7 +365,7 @@ def run_build(app_name: str, source: str, arch: str = "universal", settings: dic
         if not downloaded:
             continue
         is_bundle = _is_bundle(downloaded)
-        if not utils.ensure_usable_android_archive(downloaded, bundle=is_bundle):
+        if not utils.ensure_signed_android_archive(downloaded, bundle=is_bundle):
             logging.warning(f"Trying next download source after {method.__name__}")
             continue
         input_apk, version, candidates = downloaded, downloaded_version, downloaded_candidates
@@ -411,7 +411,7 @@ def run_build(app_name: str, source: str, arch: str = "universal", settings: dic
             )
             if input_apk is None:
                 continue
-            if not utils.ensure_usable_android_archive(input_apk, bundle=_is_bundle(input_apk)):
+            if not utils.ensure_signed_android_archive(input_apk, bundle=_is_bundle(input_apk)):
                 logging.warning(f"Re-downloaded archive for {ver} is unusable; trying next version")
                 continue
             version = ver

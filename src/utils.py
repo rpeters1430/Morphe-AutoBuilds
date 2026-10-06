@@ -738,6 +738,92 @@ def usable_android_archive(path: Path, bundle: bool = False) -> bool:
         return False
 
 
+def _has_android_signature(stream) -> bool:
+    """Detect signature metadata, not cryptographic validity or signer identity."""
+    import struct
+    try:
+        with zipfile.ZipFile(stream) as archive:
+            if any(name.upper().startswith("META-INF/") and
+                   name.upper().endswith((".RSA", ".DSA", ".EC"))
+                   for name in archive.namelist()):
+                return True
+        stream.seek(0, 2)
+        size = stream.tell()
+        stream.seek(max(0, size - 65557))
+        tail = stream.read()
+        # Locate the real EOCD, not a matching byte sequence in its comment.
+        eocd = len(tail)
+        while True:
+            eocd = tail.rfind(b"PK\x05\x06", 0, eocd)
+            if eocd < 0:
+                return False
+            if eocd + 22 <= len(tail):
+                comment_size = struct.unpack_from("<H", tail, eocd + 20)[0]
+                if eocd + 22 + comment_size == len(tail):
+                    break
+        directory = struct.unpack_from("<I", tail, eocd + 16)[0]
+        if not 32 <= directory <= size:
+            return False
+        stream.seek(directory - 24)
+        footer = stream.read(24)
+        if footer[8:] != b"APK Sig Block 42":
+            return False
+        block_size = struct.unpack_from("<Q", footer)[0]
+        if not 24 <= block_size <= directory - 8:
+            return False
+        start = directory - block_size - 8
+        stream.seek(start)
+        if stream.read(8) != footer[:8]:
+            return False
+        end = directory - 24
+        while stream.tell() < end:
+            if end - stream.tell() < 12:
+                return False
+            pair_size, scheme_id = struct.unpack("<QI", stream.read(12))
+            if pair_size <= 4 or pair_size - 4 > end - stream.tell():
+                return False
+            if scheme_id in {0x7109871A, 0xF05368A0, 0x1B93AD61}:
+                return True
+            stream.seek(pair_size - 4, 1)
+    except (OSError, ValueError, struct.error, zipfile.BadZipFile):
+        return False
+    return False
+
+
+def is_apk_signed(path: Path) -> bool:
+    """Check for v1/v2/v3 signature metadata without changing the stock APK."""
+    try:
+        with path.open("rb") as stream:
+            return _has_android_signature(stream)
+    except OSError:
+        return False
+
+
+def ensure_signed_android_archive(path: Path, bundle: bool = False) -> Path | None:
+    """Validate downloaded stock input; unsigned output APKs use the other check."""
+    if not ensure_usable_android_archive(path, bundle):
+        return None
+    try:
+        if bundle:
+            with zipfile.ZipFile(path) as archive:
+                signed = True
+                for name in archive.namelist():
+                    if name.lower().endswith(".apk"):
+                        with archive.open(name) as stream:
+                            if not _has_android_signature(stream):
+                                signed = False
+                                break
+        else:
+            signed = is_apk_signed(path)
+    except (OSError, ValueError, zipfile.BadZipFile):
+        signed = False
+    if signed:
+        return path
+    logging.warning(f"Stock Android archive has no readable signing metadata: {path}; trying another source")
+    path.unlink(missing_ok=True)
+    return None
+
+
 def ensure_usable_android_archive(path: Path, bundle: bool = False) -> Path | None:
     """Repair a damaged download if possible; discard unusable input."""
     if usable_android_archive(path, bundle):
