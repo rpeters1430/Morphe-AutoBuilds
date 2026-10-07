@@ -1,5 +1,6 @@
 import json
 import logging
+import re
 import time
 from pathlib import Path
 from src import (
@@ -33,6 +34,8 @@ def download_resource(url: str, name: str = None) -> Path:
 
     if not name:
         name = utils.extract_filename(res, fallback_url=final_url)
+        # Store titles end up in names (APKPure: "Strava:+Run,+Bike,+Walk.xapk").
+        name = re.sub(r"[^\w.()-]+", "_", name).strip("_") or "download"
 
     filepath = Path(name)
     total_size = int(res.headers.get('content-length', 0))

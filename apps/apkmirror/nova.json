@@ -1,6 +1,6 @@
 {
-  "org": "nova",
-  "name": "nova",
+  "org": "teslacoilsw",
+  "name": "nova-launcher",
   "type": "APK",
   "arch": "universal",
   "dpi": "nodpi",
