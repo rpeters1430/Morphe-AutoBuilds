@@ -339,10 +339,10 @@ def run_build(app_name: str, source: str, arch: str = "universal", settings: dic
 
     download_methods = [
         downloader.download_apkmirror,
+        downloader.download_apkpure,
         downloader.download_aptoide,
         downloader.download_github,
         downloader.download_uptodown,
-        downloader.download_apkpure,
         downloader.download_apkcombo,
     ]
 
@@ -356,21 +356,33 @@ def run_build(app_name: str, source: str, arch: str = "universal", settings: dic
     version = None
     candidates: list[str] = []
     used_method = None
-    for method in download_methods:
-        downloaded, downloaded_version, downloaded_candidates = method(
-            app_name, str(cli), str(patches), arch,
-            override_version=pinned_version, experimental=experimental, force=force,
-            supported_only=supported_only,
-        )
-        if not downloaded:
-            continue
-        is_bundle = _is_bundle(downloaded)
-        if not utils.ensure_signed_android_archive(downloaded, bundle=is_bundle):
-            logging.warning(f"Trying next download source after {method.__name__}")
-            continue
-        input_apk, version, candidates = downloaded, downloaded_version, downloaded_candidates
-        used_method = method
-        break
+    # Ask every source for a patch-supported version before any source falls
+    # back to its newest build; otherwise an early store's latest would win
+    # over a later store that has the exact version the patches name.
+    passes = [True] if supported_only or pinned_version else [True, False]
+    for only_supported in passes:
+        if not only_supported:
+            logging.warning(
+                f"No source had a patch-supported version of {app_name}; "
+                f"falling back to the stores' latest versions"
+            )
+        for method in download_methods:
+            downloaded, downloaded_version, downloaded_candidates = method(
+                app_name, str(cli), str(patches), arch,
+                override_version=pinned_version, experimental=experimental, force=force,
+                supported_only=only_supported,
+            )
+            if not downloaded:
+                continue
+            is_bundle = _is_bundle(downloaded)
+            if not utils.ensure_signed_android_archive(downloaded, bundle=is_bundle):
+                logging.warning(f"Trying next download source after {method.__name__}")
+                continue
+            input_apk, version, candidates = downloaded, downloaded_version, downloaded_candidates
+            used_method = method
+            break
+        if input_apk is not None:
+            break
 
     if input_apk is None or not used_method or not version:
         logging.error(f"❌ Failed to download APK for {app_name}")
