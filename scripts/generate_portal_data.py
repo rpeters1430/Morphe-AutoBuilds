@@ -260,6 +260,9 @@ def generate_portal_assets(console=None) -> None:
         # Feed item for Obtainium bulk import
         obtainium_apps.append(obtainium_config)
 
+    apps_portal_data.sort(key=lambda a: (a["name"].casefold(), a["source"].casefold()))
+    obtainium_apps.sort(key=lambda a: str(a.get("name", "")).casefold())
+
     payload = {
         "repository": repo_slug,
         "release_tag": "latest",

@@ -196,7 +196,8 @@
     },
     {
       "app_name": "crunchyroll",
-      "source": "Hoo"
+      "source": "Hoo",
+      "enabled": false
     },
     {
       "app_name": "tasker",
@@ -278,7 +279,8 @@
     },
     {
       "app_name": "geocaching",
-      "source": "brosssh"
+      "source": "brosssh",
+      "enabled": false
     },
     {
       "app_name": "nova",
