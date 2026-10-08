@@ -341,7 +341,10 @@
         }
 
         return true;
-      });
+      }).sort((a, b) =>
+        a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }) ||
+        a.source.localeCompare(b.source, undefined, { sensitivity: 'base' })
+      );
     }
 
     function render() {

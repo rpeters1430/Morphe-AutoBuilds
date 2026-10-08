@@ -1,0 +1,9 @@
+{
+  "org": "adobe",
+  "name": "adobe-scan",
+  "type": "APK",
+  "arch": "universal",
+  "dpi": "nodpi",
+  "package": "com.adobe.scan.android",
+  "version": ""
+}

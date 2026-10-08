@@ -1,0 +1,9 @@
+{
+  "org": "aftership-limited",
+  "name": "aftership-package-tracker",
+  "type": "APK",
+  "arch": "universal",
+  "dpi": "nodpi",
+  "package": "com.aftership.AfterShip",
+  "version": ""
+}

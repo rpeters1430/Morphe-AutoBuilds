@@ -1,0 +1,9 @@
+{
+  "org": "adobe",
+  "name": "adobe-acrobat-reader",
+  "type": "APK",
+  "arch": "universal",
+  "dpi": "nodpi",
+  "package": "com.adobe.reader",
+  "version": ""
+}

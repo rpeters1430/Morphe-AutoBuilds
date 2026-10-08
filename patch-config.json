@@ -196,7 +196,8 @@
     },
     {
       "app_name": "crunchyroll",
-      "source": "Hoo"
+      "source": "Hoo",
+      "enabled": false
     },
     {
       "app_name": "tasker",
@@ -278,7 +279,8 @@
     },
     {
       "app_name": "geocaching",
-      "source": "brosssh"
+      "source": "brosssh",
+      "enabled": false
     },
     {
       "app_name": "nova",
@@ -467,6 +469,30 @@
     {
       "app_name": "twitch",
       "source": "ryykitty-twitch"
+    },
+    {
+      "app_name": "anime-depth-wallpapers",
+      "source": "rushiranpise-dev"
+    },
+    {
+      "app_name": "adobe-acrobat",
+      "source": "hoomans"
+    },
+    {
+      "app_name": "adobe-scan",
+      "source": "aidan"
+    },
+    {
+      "app_name": "aftership",
+      "source": "aidan"
+    },
+    {
+      "app_name": "beta-maniac",
+      "source": "rushiranpise-dev"
+    },
+    {
+      "app_name": "brave-beta",
+      "source": "dh6k"
     }
   ]
 }
