@@ -469,6 +469,30 @@
     {
       "app_name": "twitch",
       "source": "ryykitty-twitch"
+    },
+    {
+      "app_name": "anime-depth-wallpapers",
+      "source": "rushiranpise-dev"
+    },
+    {
+      "app_name": "adobe-acrobat",
+      "source": "hoomans"
+    },
+    {
+      "app_name": "adobe-scan",
+      "source": "aidan"
+    },
+    {
+      "app_name": "aftership",
+      "source": "aidan"
+    },
+    {
+      "app_name": "beta-maniac",
+      "source": "rushiranpise-dev"
+    },
+    {
+      "app_name": "brave-beta",
+      "source": "dh6k"
     }
   ]
 }

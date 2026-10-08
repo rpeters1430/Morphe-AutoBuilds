@@ -1,0 +1,10 @@
+{
+  "org": "brave-software",
+  "name": "brave-browser-beta",
+  "release_prefix": "brave-beta",
+  "type": "APK",
+  "arch": "universal",
+  "dpi": "nodpi",
+  "package": "com.brave.browser_beta",
+  "version": ""
+}

@@ -71,6 +71,11 @@ CATEGORIES = {
     "rar": "Productivity",
     "solid": "Productivity",
     "tasker": "Productivity",
+    "adobe-acrobat": "Productivity",
+    "adobe-scan": "Productivity",
+    "aftership": "Productivity",
+    "brave-beta": "Browsers",
+    "anime-depth-wallpapers": "Personalization",
 }
 
 APP_ICONS = {
