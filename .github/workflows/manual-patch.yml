@@ -111,7 +111,7 @@ jobs:
     timeout-minutes: 60
     services:
       trawl:
-        image: ghcr.io/germondai/trawl:latest@sha256:0f1bc8b88edb21dcc10a386bbcc1b852174fa2078dc6fa209c53170be303ebd0
+        image: ghcr.io/germondai/trawl:latest@sha256:44091fc0af5f9a0190d4cb23d944f69207684a28382a921800dda5b73b41ba2f
         ports:
           - 8191:8191
         options: --shm-size=1gb
