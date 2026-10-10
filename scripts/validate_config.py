@@ -121,7 +121,7 @@ def main() -> int:
         if src not in sources:
             errors.append(f"{where}: no sources/{src}.json")
         if not any((APPS_DIR / platform / f"{app}.json").exists() for platform in (
-            "apkmirror", "apkpure", "uptodown", "aptoide", "github", "apkcombo"
+            "apkmirror", "apkpure", "uptodown", "aptoide", "github", "apkcombo", "apkfab"
         )):
             warnings.append(f"{where}: no apps/<platform>/{app}.json, so the APK can't be downloaded")
         if (app, src) in seen:

@@ -288,8 +288,7 @@
     },
     {
       "app_name": "ticktick",
-      "source": "paresh",
-      "enabled": false
+      "source": "paresh"
     },
     {
       "app_name": "crex",
@@ -388,8 +387,7 @@
     },
     {
       "app_name": "pokecardex",
-      "source": "almewty",
-      "enabled": false
+      "source": "almewty"
     },
     {
       "app_name": "gamehub",
