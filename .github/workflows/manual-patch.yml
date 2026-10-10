@@ -115,6 +115,12 @@ jobs:
         ports:
           - 8191:8191
         options: --shm-size=1gb
+      # Cloudflare solver for stores behind a challenge (APKFab).
+      flaresolverr:
+        image: ghcr.io/flaresolverr/flaresolverr:v3.5.2@sha256:c80ae007ce2ccdcd217a12426e4f039ef763ff90738c808d38810c3e59323767
+        ports:
+          - 8192:8191
+        options: --shm-size=1gb
     permissions:
       contents: write
     
@@ -183,6 +189,7 @@ jobs:
           APP_VERSION: ${{ inputs.version }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TRAWL_URL: http://localhost:8191
+          FLARESOLVERR_URL: http://localhost:8192/v1
         run: |
           echo "🔧 Building $APP_NAME with $SOURCE (${{ inputs.architecture }})..."
           python -m src

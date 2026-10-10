@@ -13,6 +13,7 @@ from src import (
     apkmirror,
     github,
     apkcombo,
+    apkfab,
 )
 
 # True when the last successful download_platform() picked a version the
@@ -170,7 +171,7 @@ def download_platform(
         else:
             # These providers need an explicit repository or publisher slug;
             # a package ID from another store cannot identify their location.
-            if platform in ("github", "apkmirror"):
+            if platform in ("github", "apkmirror", "apkfab"):
                 logging.info(f"Skipping {platform} for {app_name}: no explicit provider config")
                 return None, None, []
             # Fallback: search other platform config directories for this app
@@ -319,6 +320,7 @@ download_apkpure = _platform_downloader("apkpure")
 download_aptoide = _platform_downloader("aptoide")
 download_uptodown = _platform_downloader("uptodown")
 download_apkcombo = _platform_downloader("apkcombo")
+download_apkfab = _platform_downloader("apkfab")
 
 def download_apkeditor() -> Path:
     max_retries = 3

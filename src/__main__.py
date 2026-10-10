@@ -344,6 +344,7 @@ def run_build(app_name: str, source: str, arch: str = "universal", settings: dic
         downloader.download_github,
         downloader.download_uptodown,
         downloader.download_apkcombo,
+        downloader.download_apkfab,
     ]
 
     # Newer morphe-cli merges split bundles itself; --striplibs marks those
