@@ -43,7 +43,7 @@ def _get(url: str):
             text = response.text[:5000] if hasattr(response, 'text') else ""
         except Exception:
             text = ""
-        if flaresolverr._is_cloudflare_challenge(response.status_code, text):
+        if flaresolverr._is_available() and flaresolverr._is_cloudflare_challenge(response.status_code, text):
             logging.info(f"Uptodown Cloudflare challenge for {url}, trying FlareSolverr")
             fs_resp = flaresolverr.get_with_bypass(url, session=None, headers=HEADERS, timeout=30)
             if fs_resp:

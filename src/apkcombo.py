@@ -20,8 +20,12 @@ HEADERS = {"User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chr
 
 
 def _page(package: str, suffix: str = ""):
-    resp = flaresolverr.get_with_bypass(f"{BASE_URL}/search/{package}/download{suffix}", session=session, headers=HEADERS, timeout=25)
-    return resp if resp else session.get(f"{BASE_URL}/search/{package}/download{suffix}", headers=HEADERS, timeout=25)
+    url = f"{BASE_URL}/search/{package}/download{suffix}"
+    if flaresolverr._is_available():
+        resp = flaresolverr.get_with_bypass(url, session=session, headers=HEADERS, timeout=25)
+        if resp:
+            return resp
+    return session.get(url, headers=HEADERS, timeout=25)
 
 
 def get_latest_version(app_name: str, config: dict) -> str | None:

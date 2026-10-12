@@ -62,6 +62,9 @@ def _cf_get(url, **kwargs):
                 "trying another download provider."
             )
             raise ApkMirrorBlocked("APKMirror Cloudflare challenge")
+    return response
+
+
 def extract_base_version(version: str) -> str:
     """Extract base version from CLI version string which may include variant.
 
@@ -663,6 +666,8 @@ def get_latest_version(app_name: str, config: dict) -> str:
     url = f"{base_url}/uploads/?appcategory={config['name']}"
     
     response = _cf_get(url)
+    if not response:
+        return None
     response.raise_for_status()
     content_size = len(response.content)
     logging.info(f"URL:{response.url} [{content_size}/{content_size}] -> \"-\" [1]")

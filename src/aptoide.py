@@ -53,7 +53,7 @@ def _fetch_website_versions(slug: str) -> Optional[Tuple[List[Tuple[str, int]], 
             logging.info(f"Aptoide website direct fetch for {slug} returned {res.status_code}; trying FlareSolverr")
     except Exception as e:
         logging.info(f"Aptoide website direct fetch for {slug} failed ({e}); trying FlareSolverr")
-    if html is None:
+    if html is None and flaresolverr._is_available():
         try:
             fres = flaresolverr.get_with_bypass(url, session=session, timeout=45)
             if fres is not None and getattr(fres, "status_code", 0) == 200 and b"vername" in fres.content:
