@@ -4,7 +4,7 @@
   "release_prefix": "soundcloud-the-music-you-love",
   "type": "BUNDLE",
   "arch": "universal",
-  "dpi": "120-640dpi",
+  "dpi": "nodpi",
   "package": "com.soundcloud.android",
   "version": ""
 }

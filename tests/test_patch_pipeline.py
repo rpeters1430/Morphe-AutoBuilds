@@ -25,6 +25,16 @@ class PatchPipelineTests(unittest.TestCase):
         with patch.object(utils, "run_process", return_value="INFO: Applying 4 patches..."):
             builder._run_patch(Path("morphe-cli.jar"), Path("patches.mpp"), Path("input.apk"), Path("output.apk"), True, [])
 
+    def test_version_mismatch_is_rejected(self):
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory, "output.apk")
+            output.write_bytes(b"unpatched")
+            cli_output = "INFO: Filtering patches for com.example.app v2.0.0...\nINFO: Applying 3 patches..."
+            with patch.object(utils, "run_process", return_value=cli_output):
+                with self.assertRaises(subprocess.CalledProcessError):
+                    builder._run_patch(Path("morphe-cli.jar"), Path("patches.mpp"), Path("input.apk"), output, True, [], downloaded_version="1.0.0")
+            self.assertFalse(output.exists())
+
     def test_stock_input_is_unchanged_until_patching_and_output_is_stripped_before_signing(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -46,7 +56,7 @@ class PatchPipelineTests(unittest.TestCase):
             patches.touch()
             events = []
 
-            def patch_apk(cli, patches, input_apk, output_apk, is_morphe, args):
+            def patch_apk(cli, patches, input_apk, output_apk, is_morphe, args, *extra, **kwargs):
                 self.assertEqual(input_apk.read_bytes(), original_bytes)
                 events.append("patch")
                 output_apk.write_bytes(input_apk.read_bytes())
@@ -60,19 +70,22 @@ class PatchPipelineTests(unittest.TestCase):
                     self.assertIn("lib/arm64-v8a/libexample.so", archive.namelist())
                 Path(command[command.index("--out") + 1]).write_bytes(apk.read_bytes())
 
-            settings = build_config.get_entry("niagara", "Hoo")
-            with patch.object(downloader, "download_apkmirror", __name__="download_apkmirror", return_value=(unsigned, "1.16.31", ["1.16.31"])), \
-                    patch.object(downloader, "download_aptoide", return_value=(stock, "1.16.31", ["1.16.31"])), \
-                    patch.object(builder, "_cli_supports", return_value=True), \
-                    patch.object(builder, "_new_patches_to_enable", return_value=[]), \
-                    patch.object(builder, "_run_patch", side_effect=patch_apk), \
-                    patch.object(utils, "find_apksigner", return_value="apksigner"), \
-                    patch.object(utils, "run_process", side_effect=sign), \
-                    patch.object(utils.shutil, "which", return_value=None):
-                result = builder.run_build("niagara", "Hoo", settings=settings, tools=([cli, patches], "Hoo"))
-            self.assertEqual(events, ["patch", "sign"])
-            self.assertFalse(unsigned.exists())
-            self.assertTrue(Path(result).exists())
+            try:
+                settings = build_config.get_entry("niagara", "Hoo")
+                with patch.object(downloader, "download_apkmirror", __name__="download_apkmirror", return_value=(unsigned, "1.16.31", ["1.16.31"])), \
+                        patch.object(downloader, "download_aptoide", return_value=(stock, "1.16.31", ["1.16.31"])), \
+                        patch.object(builder, "_cli_supports", return_value=True), \
+                        patch.object(builder, "_new_patches_to_enable", return_value=[]), \
+                        patch.object(builder, "_run_patch", side_effect=patch_apk), \
+                        patch.object(utils, "find_apksigner", return_value="apksigner"), \
+                        patch.object(utils, "run_process", side_effect=sign), \
+                        patch.object(utils.shutil, "which", return_value=None):
+                    result = builder.run_build("niagara", "Hoo", settings=settings, tools=([cli, patches], "Hoo"))
+                self.assertEqual(events, ["patch", "sign"])
+                self.assertFalse(unsigned.exists())
+                self.assertTrue(Path(result).exists())
+            finally:
+                os.chdir(original_cwd)
 
 
 if __name__ == "__main__":

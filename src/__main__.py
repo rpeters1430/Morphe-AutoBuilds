@@ -206,8 +206,20 @@ def _strip_arch_libs(apk: Path, arch: str) -> None:
         utils.strip_zip_entries(apk, ["lib/x86/*", "lib/x86_64/*"])
 
 
+_FILTERING_PATCHES = re.compile(
+    r"Filtering patches for\s+(\S+)\s+v(\S+(?:\s+build\s+\d+|\s*\(\d+\))?)",
+    re.IGNORECASE,
+)
+_BUILD_SUFFIX = re.compile(r"(?:\s+build\s+\d+|\s*\(\d+\))\s*$", re.IGNORECASE)
+
+
+def _version_without_build(version: str) -> str:
+    """Drop a trailing `` build <digits>`` or parenthetical build number."""
+    return _BUILD_SUFFIX.sub("", version).strip()
+
+
 def _run_patch(cli: Path, patches: Path, input_apk: Path, output_apk: Path,
-               is_morphe: bool, args: list[str]) -> None:
+               is_morphe: bool, args: list[str], downloaded_version: str | None = None) -> None:
     if is_morphe:
         logging.info("🔧 Using Morphe patching system...")
         command = [
@@ -217,7 +229,7 @@ def _run_patch(cli: Path, patches: Path, input_apk: Path, output_apk: Path,
             *args
         ]
         output = utils.run_process(command, capture=True, stream=True)
-        _reject_empty_patch_run(output, command, output_apk)
+        _reject_empty_patch_run(output, command, output_apk, downloaded_version=downloaded_version)
         return
 
     logging.info("🔧 Using ReVanced patching system...")
@@ -240,16 +252,34 @@ def _run_patch(cli: Path, patches: Path, input_apk: Path, output_apk: Path,
             *args
         ]
     output = utils.run_process(command, capture=True, stream=True)
-    _reject_empty_patch_run(output, command, output_apk)
+    _reject_empty_patch_run(output, command, output_apk, downloaded_version=downloaded_version)
 
 
-def _reject_empty_patch_run(output: str | None, command: list[str], output_apk: Path) -> None:
+def _reject_empty_patch_run(
+    output: str | None,
+    command: list[str],
+    output_apk: Path,
+    downloaded_version: str | None = None,
+) -> None:
     """Some CLIs exit successfully when every selected patch was incompatible."""
     if re.search(r"\bApplying\s+0\s+patch(?:es)?\b", output or "", re.IGNORECASE):
         output_apk.unlink(missing_ok=True)
         message = "No patches were applied; refusing to publish an unpatched APK."
         logging.error(message)
         raise subprocess.CalledProcessError(1, command, output=f"{output}\n{message}")
+
+    if downloaded_version and output:
+        downloaded = utils.normalize_version(_version_without_build(downloaded_version))
+        for match in _FILTERING_PATCHES.finditer(output):
+            package, filtered = match.group(1), match.group(2).strip().rstrip(".")
+            if utils.normalize_version(_version_without_build(filtered)) != downloaded:
+                output_apk.unlink(missing_ok=True)
+                message = (
+                    f"Patch CLI filtered {package} v{filtered}, "
+                    f"which is not the downloaded v{downloaded_version}."
+                )
+                logging.error(message)
+                raise subprocess.CalledProcessError(1, command, output=f"{output}\n{message}")
 
 
 def run_build(app_name: str, source: str, arch: str = "universal", settings: dict | None = None,
@@ -497,7 +527,8 @@ def run_build(app_name: str, source: str, arch: str = "universal", settings: dic
         try:
             try:
                 _run_patch(cli, patches, input_apk, output_apk, is_morphe,
-                           [*patch_args, *force_args, *extra_flags, *bundle_args])
+                           [*patch_args, *force_args, *extra_flags, *bundle_args],
+                           downloaded_version=version)
             except subprocess.CalledProcessError as e:
                 # A fingerprint mismatch is the app version's fault, not the
                 # bundle handling's: leave it to the older-version retry below.
@@ -517,7 +548,8 @@ def run_build(app_name: str, source: str, arch: str = "universal", settings: dic
                     logging.warning(f"Fallback merge for {version} is unusable; trying next version")
                     continue
                 _run_patch(cli, patches, input_apk, output_apk, is_morphe,
-                           [*patch_args, *force_args, *extra_flags])
+                           [*patch_args, *force_args, *extra_flags],
+                           downloaded_version=version)
         except subprocess.CalledProcessError as e:
             # Remove temp input apk; we'll re-download if retrying.
             cli_merged_apk.unlink(missing_ok=True)

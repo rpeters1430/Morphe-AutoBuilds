@@ -10,7 +10,7 @@ import re
 
 from bs4 import BeautifulSoup
 
-from src import session, utils
+from src import session, flaresolverr, utils
 
 # Define a standard browser User-Agent to avoid 403 Forbidden errors
 HEADERS = {
@@ -113,8 +113,7 @@ def get_latest_version(app_name: str, config: str) -> str:
     url = f"https://apkpure.net/{config['name']}/{config['package']}/versions"
 
     try:
-        # Added headers to the request
-        response = session.get(url, headers=HEADERS)
+        response = flaresolverr.get_with_bypass(url, session=session, headers=HEADERS, timeout=60) or session.get(url, headers=HEADERS)
         response.raise_for_status()
 
         content_size = len(response.content)
@@ -141,11 +140,11 @@ def get_download_link(version: str, app_name: str, config: str) -> str:
             return _api_download_url(entry)
         logging.info(f"APKPure API has no downloadable {version} for {app_name}; trying the website")
 
-    # APKPure often uses a specific structure for download pages
+    # Fallback: scrape the download page via FlareSolverr (for older versions).
     url = f"https://apkpure.net/{config['name']}/{config['package']}/download/{version}"
 
     try:
-        response = session.get(url, headers=HEADERS)
+        response = flaresolverr.get_with_bypass(url, session=session, headers=HEADERS, timeout=60) or session.get(url, headers=HEADERS)
         response.raise_for_status()
 
         content_size = len(response.content)
@@ -155,8 +154,17 @@ def get_download_link(version: str, app_name: str, config: str) -> str:
 
         # Look for the download link; APKPure sometimes uses 'download_link' or 'fast-download'
         download_link = soup.find('a', id='download_link')
-        if download_link:
-            return download_link['href']
+        if download_link and download_link.get('href'):
+            href = download_link['href']
+            if 'd.apkpure.com' in href:
+                return href
+
+        html = response.text
+        match = re.search(r'href="(https://d\.apkpure\.com/b/(?:XAPK|APK)/[^"]+)"', html)
+        if match:
+            dl_url = match.group(1).replace("&amp;", "&")
+            logging.info(f"APKPure direct link found via regex for {app_name}")
+            return dl_url
 
     except Exception as e:
         logging.error(f"Failed to fetch download link for {app_name} v{version}: {e}")

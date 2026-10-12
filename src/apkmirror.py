@@ -62,7 +62,20 @@ def _cf_get(url, **kwargs):
                 "trying another download provider."
             )
             raise ApkMirrorBlocked("APKMirror Cloudflare challenge")
-    return response
+def extract_base_version(version: str) -> str:
+    """Extract base version from CLI version string which may include variant.
+
+    E.g., "18.0.3.954559732-release-arm64-v8a" -> "18.0.3.954559732"
+    """
+    m = re.match(r'^(\d[\d.]*\d)(?:-(?:release|beta|alpha|arm64|armeabi|universal|x86|noarch|dpi).*)?$', version, re.IGNORECASE)
+    if m:
+        return m.group(1)
+    for marker in ['-release-', '-beta-', '-alpha-', '-arm64', '-armeabi', '-universal-', '-x86', '-noarch']:
+        if marker in version.lower():
+            idx = version.lower().find(marker)
+            return version[:idx]
+    return version
+
 
 def get_build_number_for_version(version: str, config: dict) -> tuple[str | None, str]:
     """Fetch build number for a specific version from APKMirror.
@@ -208,6 +221,9 @@ def _scrape_release_url_from_soup(soup, version: str, config: dict, build_number
                 # Check version pattern properly bounded
                 ver_pattern = re.escape(current_ver_dash)
                 if re.search(rf'(?:^|[/-]){ver_pattern}(?:[/-]|$)', href):
+                    exclude = config.get('exclude_variant', '')
+                    if exclude and exclude.lower() in href.lower():
+                        continue
                     priority = 0 if href.rstrip('/').endswith('-release') else 1
                     candidates.append((priority, link['href']))
             
@@ -275,6 +291,12 @@ def get_download_link(version: str, app_name: str, config: dict, arch: str = Non
     if not version:
         logging.error(f"No version provided for {app_name}")
         return None
+
+    # Strip variant suffix from CLI version string (e.g., "18.0.3.954559732-release-arm64-v8a" -> "18.0.3.954559732")
+    original_version = version
+    version = extract_base_version(version)
+    if version != original_version:
+        logging.info(f"Stripped variant from version: {original_version} -> {version}")
         
     target_arch = arch if (arch and arch != "universal") else config.get('arch', 'universal')
     

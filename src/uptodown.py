@@ -14,7 +14,7 @@ from urllib.parse import urljoin
 import requests as plain_requests
 from bs4 import BeautifulSoup
 
-from src import session, utils
+from src import session, flaresolverr, utils
 
 
 LOCALES = ("en", "de", "fr", "in", "it", "ru", "jp", "kr")
@@ -34,11 +34,20 @@ def _is_app_page(response) -> bool:
 
 
 def _get(url: str):
-    """Use curl-cffi first, then standard requests if that edge rejects it."""
+    """Use curl-cffi first, then FlareSolverr for Cloudflare bypass, then plain requests."""
     try:
         response = session.get(url, headers=HEADERS, timeout=15)
         if _is_app_page(response) or response.status_code == 200 and "/apps/" in url:
             return response
+        try:
+            text = response.text[:5000] if hasattr(response, 'text') else ""
+        except Exception:
+            text = ""
+        if flaresolverr._is_cloudflare_challenge(response.status_code, text):
+            logging.info(f"Uptodown Cloudflare challenge for {url}, trying FlareSolverr")
+            fs_resp = flaresolverr.get_with_bypass(url, session=None, headers=HEADERS, timeout=30)
+            if fs_resp:
+                return fs_resp
         status = response.status_code
     except Exception as exc:
         status = type(exc).__name__
@@ -257,6 +266,12 @@ def get_download_link(version: str, app_name: str, config: dict) -> str | None:
     return None
 
 
+# Apps whose Uptodown slug differs from the config name/package guesses.
+_SLUG_OVERRIDES = {
+    "com.google.android.inputmethod.latin": ["gboard-go"],
+}
+
+
 def generate_possible_uptodown_names(config: dict) -> list[str]:
     """Return deterministic candidates, with the configured slug first."""
     app_name = (config.get("slug") or config.get("name") or "").strip().lower()
@@ -268,6 +283,8 @@ def generate_possible_uptodown_names(config: dict) -> list[str]:
         if len(value) > 1 and value not in candidates:
             candidates.append(value)
 
+    for override in _SLUG_OVERRIDES.get(package, []):
+        add(override)
     add(app_name)
     add(app_name.replace("-", ""))
     add(app_name.replace("-plus", "plus"))

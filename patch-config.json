@@ -63,7 +63,7 @@
     },
     {
       "app_name": "niagara",
-      "source": "Hoo"
+      "source": "d0nj"
     },
     {
       "app_name": "lightroom",
@@ -109,7 +109,7 @@
     },
     {
       "app_name": "messenger",
-      "source": "rushiranpise-dev"
+      "source": "hushmessenger"
     },
     {
       "app_name": "photomath",
@@ -350,7 +350,7 @@
     },
     {
       "app_name": "letterboxd",
-      "source": "hakim"
+      "source": "kim20598"
     },
     {
       "app_name": "kakaotalk",
@@ -491,6 +491,14 @@
     {
       "app_name": "brave-beta",
       "source": "dh6k"
+    },
+    {
+      "app_name": "google-maps",
+      "source": "bearinmindcat"
+    },
+    {
+      "app_name": "aiscore",
+      "source": "rushiranpise"
     }
   ]
 }
