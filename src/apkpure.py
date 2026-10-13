@@ -164,6 +164,7 @@ def _website_download_link(response) -> str | None:
             return html.unescape(candidate.strip())
     return None
 
+
 def get_download_link(version: str, app_name: str, config: str) -> str:
     versions = _api_versions(config.get("package", ""))
     if versions:
