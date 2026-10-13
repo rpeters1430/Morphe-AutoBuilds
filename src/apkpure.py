@@ -5,8 +5,10 @@ the website's Cloudflare wall and returns direct download URLs for the ~20
 newest builds. The website scrape stays as the fallback for older versions.
 """
 
+import html
 import logging
 import re
+from urllib.parse import urlparse
 
 from bs4 import BeautifulSoup
 
@@ -130,6 +132,38 @@ def get_latest_version(app_name: str, config: str) -> str:
 
     return None
 
+
+def _is_direct_download_url(candidate: str) -> bool:
+    """Accept APKPure's direct APK/XAPK delivery endpoints only."""
+    candidate = html.unescape((candidate or "").strip())
+    parsed = urlparse(candidate)
+    return (
+        parsed.scheme == "https"
+        and parsed.hostname == "d.apkpure.com"
+        and re.match(r"^/b/(?:APK|XAPK)/", parsed.path, re.IGNORECASE) is not None
+    )
+
+
+def _website_download_link(response) -> str | None:
+    """Find a direct APKPure APK/XAPK URL in a version download page."""
+    soup = BeautifulSoup(response.content, "html.parser")
+
+    candidates = []
+    anchor = soup.find("a", id="download_link")
+    if anchor:
+        candidates.append(anchor.get("href"))
+    candidates.extend(element.get("data-href") for element in soup.find_all(attrs={"data-href": True}))
+    candidates.extend(re.findall(
+        r"""https?://d\.apkpure\.com/b/(?:APK|XAPK)/[^\s"'<>]+""",
+        response.text,
+        flags=re.IGNORECASE,
+    ))
+
+    for candidate in candidates:
+        if _is_direct_download_url(candidate):
+            return html.unescape(candidate.strip())
+    return None
+
 def get_download_link(version: str, app_name: str, config: str) -> str:
     versions = _api_versions(config.get("package", ""))
     if versions:
@@ -150,20 +184,9 @@ def get_download_link(version: str, app_name: str, config: str) -> str:
         content_size = len(response.content)
         logging.info(f"URL:{response.url} [{content_size}/{content_size}] -> \"-\" [1]")
 
-        soup = BeautifulSoup(response.content, "html.parser")
-
-        # Look for the download link; APKPure sometimes uses 'download_link' or 'fast-download'
-        download_link = soup.find('a', id='download_link')
-        if download_link and download_link.get('href'):
-            href = download_link['href']
-            if 'd.apkpure.com' in href:
-                return href
-
-        html = response.text
-        match = re.search(r'href="(https://d\.apkpure\.com/b/(?:XAPK|APK)/[^"]+)"', html)
-        if match:
-            dl_url = match.group(1).replace("&amp;", "&")
-            logging.info(f"APKPure direct link found via regex for {app_name}")
+        dl_url = _website_download_link(response)
+        if dl_url:
+            logging.info(f"APKPure direct APK/XAPK link found for {app_name}")
             return dl_url
 
     except Exception as e:
