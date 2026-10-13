@@ -22,6 +22,8 @@ Because of these architectural divergences, upstream commits are **reviewed, cur
 | Upstream Commit | Date | Summary | Category | Status in Our Repo | Notes / Rationale |
 | :--- | :--- | :--- | :--- | :---: | :--- |
 | `c0856e2` | 2026-10-13 | Detect APKPure XAPK and archive download links | Scrapers | ✅ Adapted | Added direct APK/XAPK discovery from download anchors, `data-href`, and embedded URLs; only accepts HTTPS `d.apkpure.com/b/{APK,XAPK}/` endpoints and adds regression tests. |
+| `37ab7e7` | 2026-10-13 | Refresh APKMirror Gboard config | App Config | ✅ Ported | Switched to the APK/nodpi listing and removed the stale version pin and beta filter. |
+| `b1539df` | 2026-10-13 | Refresh APKMirror Google Maps config | App Config | ✅ Ported | Switched from the arm64 bundle listing to the universal APK/nodpi listing. |
 | `461a086` / `77afad5` | 2026-10-13 | Add HushPinterest patch source and switch Pinterest | Sources / App | ✅ Ported | Added `sources/hushpinterest.json`, switched Pinterest from `adobo`, and moved the existing ad-removal override to HushPinterest's `Hide ads` patch. APKPure app config already existed. |
 | `c0a7dc1` | 2026-10-13 | Remove duplicate Gboard entry | Config | ⏭️ Not needed | Our `patch-config.json` already contains a single Gboard entry (`morning-entree`); upstream's extra `3r01` entry is not present. |
 | `3dcc9bb` | 2026-10-11 | Add new mods and fixed Gboard apk version (PR #147) | Apps / Configs | ✅ Ported | Added `google-maps` (bearinmindcat), `3r01` (Gboard), and Gboard exclusion fixes. |
