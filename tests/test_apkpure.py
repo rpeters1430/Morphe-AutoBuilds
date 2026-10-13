@@ -1,4 +1,5 @@
 import unittest
+from types import SimpleNamespace
 from unittest.mock import patch
 
 from src import apkpure
@@ -38,6 +39,37 @@ class ApkPureApiTests(unittest.TestCase):
             link = apkpure.get_download_link("1.0", "example", {"name": "example", "package": "example.app"})
         self.assertEqual(link, "https://example/1.0/arm64-v8a")
         website.assert_not_called()
+
+
+
+class ApkPureWebsiteTests(unittest.TestCase):
+    def response(self, html):
+        return SimpleNamespace(content=html.encode(), text=html)
+
+    def test_extracts_xapk_link_from_download_anchor_and_unescapes_query(self):
+        response = self.response(
+            '<a id="download_link" href="https://d.apkpure.com/b/XAPK/com.example?x=1&amp;y=2">download</a>'
+        )
+        self.assertEqual(
+            apkpure._website_download_link(response),
+            "https://d.apkpure.com/b/XAPK/com.example?x=1&y=2",
+        )
+
+    def test_extracts_direct_xapk_from_data_href(self):
+        response = self.response(
+            '<div data-href="https://d.apkpure.com/b/XAPK/com.example"></div>'
+        )
+        self.assertEqual(
+            apkpure._website_download_link(response),
+            "https://d.apkpure.com/b/XAPK/com.example",
+        )
+
+    def test_ignores_non_apkpure_or_non_direct_links(self):
+        response = self.response(
+            '<a id="download_link" href="https://evil.example/app.xapk">download</a>'
+            '<div data-href="https://d.apkpure.com/not-a-direct-download"></div>'
+        )
+        self.assertIsNone(apkpure._website_download_link(response))
 
 
 if __name__ == "__main__":
