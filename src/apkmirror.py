@@ -202,6 +202,10 @@ def _scrape_release_url_from_soup(soup, version: str, config: dict, build_number
     # "6.6 build 020" style versions: the bare "6-6" also matches unrelated
     # releases such as "6-6-5-build-008", so require the exact build token.
     build_token = f"build-{build_number}" if build_number and build_format == 'build_suffix' else None
+    # exclude_variant is one string or a list, e.g. ["alpha", "beta"] for apps
+    # that ship every channel under the same version number.
+    exclude = config.get('exclude_variant') or []
+    excludes = [e.lower() for e in ([exclude] if isinstance(exclude, str) else exclude) if e]
 
     for v in version_variants:
         version_parts = v.split('.')
@@ -224,8 +228,7 @@ def _scrape_release_url_from_soup(soup, version: str, config: dict, build_number
                 # Check version pattern properly bounded
                 ver_pattern = re.escape(current_ver_dash)
                 if re.search(rf'(?:^|[/-]){ver_pattern}(?:[/-]|$)', href):
-                    exclude = config.get('exclude_variant', '')
-                    if exclude and exclude.lower() in href.lower():
+                    if any(e in href for e in excludes):
                         continue
                     priority = 0 if href.rstrip('/').endswith('-release') else 1
                     candidates.append((priority, link['href']))

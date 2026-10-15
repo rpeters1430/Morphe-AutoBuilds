@@ -108,6 +108,19 @@ class StockSignatureTests(unittest.TestCase):
         self.assertEqual(apkmirror._scrape_release_url_from_soup(soup, "26.04.05", {"name": "app"}, None, None),
                          "https://www.apkmirror.com/apk/publisher/app/app-26-4-5-release/")
 
+    def test_exclude_variant_list_skips_prerelease_channels(self):
+        soup = BeautifulSoup(
+            '<a href="/apk/discord/discord-chat-for-gamers/discord-talk-play-hang-out-348-10-beta-release/">b</a>'
+            '<a href="/apk/discord/discord-chat-for-gamers/discord-talk-play-hang-out-348-10-alpha-release/">a</a>'
+            '<a href="/apk/discord/discord-chat-for-gamers/discord-talk-play-hang-out-348-10-stable-release/">s</a>',
+            "html.parser",
+        )
+        config = {"name": "discord-chat-for-gamers", "exclude_variant": ["alpha", "beta"]}
+        self.assertEqual(
+            apkmirror._scrape_release_url_from_soup(soup, "348.10", config, None, None),
+            "https://www.apkmirror.com/apk/discord/discord-chat-for-gamers/"
+            "discord-talk-play-hang-out-348-10-stable-release/",
+        )
 
 if __name__ == "__main__":
     unittest.main()
