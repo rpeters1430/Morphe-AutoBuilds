@@ -288,7 +288,7 @@
     },
     {
       "app_name": "nova",
-      "source": "rushiranpise-dev"
+      "source": "dropped"
     },
     {
       "app_name": "ticktick",
@@ -421,8 +421,7 @@
     },
     {
       "app_name": "facebook",
-      "source": "devanced",
-      "version": "581.0.0.24.58"
+      "source": "hushfacebook"
     },
     {
       "app_name": "1-1-1-1",
