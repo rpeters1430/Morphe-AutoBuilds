@@ -421,7 +421,8 @@
     },
     {
       "app_name": "facebook",
-      "source": "hushfacebook"
+      "source": "hushfacebook",
+      "continue_on_error": true
     },
     {
       "app_name": "1-1-1-1",
