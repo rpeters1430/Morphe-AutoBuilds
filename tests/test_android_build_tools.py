@@ -39,6 +39,10 @@ class AndroidBuildToolsTests(unittest.TestCase):
             self.assertTrue(data["verified"])
             self.assertEqual(len(data["sha256"]), 64)
             self.assertTrue(data["signer_sha256"])
+            tree = subprocess.run([apk_metadata.find_build_tool("aapt"), "dump", "xmltree", str(apk), "AndroidManifest.xml"],
+                                  capture_output=True, text=True, check=True)
+            self.assertEqual(apk_metadata.parse_manifest_tree(tree.stdout), {
+                key: data[key] for key in ("package", "version_name", "version_code", "min_sdk", "target_sdk")})
             with zipfile.ZipFile(apk, "a") as archive:
                 archive.writestr("assets/tampered.txt", b"modified after signing")
             with self.assertRaises(subprocess.CalledProcessError):

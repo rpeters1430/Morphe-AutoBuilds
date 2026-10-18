@@ -111,6 +111,7 @@ def get_download_link(version: str, app_name: str, config: Dict) -> Optional[str
         return None
 
     target_sha1 = None
+    candidates = []
     for entry in soup.select(".version_history > div.list"):
         ver_el = entry.select_one(".package_info .title .version")
         if not ver_el:
@@ -120,8 +121,15 @@ def get_download_link(version: str, app_name: str, config: Dict) -> Optional[str
             if link and link.get("href"):
                 m = re.search(r"sha1=([a-f0-9]{40})", link["href"])
                 if m:
-                    target_sha1 = m.group(1)
-                    break
+                    abis = set(re.findall(r"arm64-v8a|armeabi-v7a|x86_64|\bx86\b|\barmeabi\b", entry.get_text().lower()))
+                    arch = config.get("arch") or "universal"
+                    allowed = {"arm64-v8a", "armeabi-v7a"} if arch == "universal" else {arch}
+                    if abis and not abis.intersection(allowed):
+                        continue
+                    rank = 0 if "arm64-v8a" in abis else 1 if not abis else 2
+                    candidates.append((rank, m.group(1)))
+    if candidates:
+        target_sha1 = min(candidates, key=lambda item: item[0])[1]
     if not target_sha1:
         logging.warning(f"Version {version} not found on APKFab for {app_name}")
         return None

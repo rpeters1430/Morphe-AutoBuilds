@@ -209,9 +209,8 @@ def _scrape_release_url_from_soup(soup, version: str, config: dict, build_number
 
     for v in version_variants:
         version_parts = v.split('.')
-        min_depth = 2 if len(version_parts) >= 2 else 1
         
-        for i in range(len(version_parts), min_depth - 1, -1):
+        for i in [len(version_parts)]:
             current_ver = ".".join(version_parts[:i])
             current_ver_dash = "-".join(version_parts[:i])
             
@@ -227,7 +226,7 @@ def _scrape_release_url_from_soup(soup, version: str, config: dict, build_number
                     continue
                 # Check version pattern properly bounded
                 ver_pattern = re.escape(current_ver_dash)
-                if re.search(rf'(?:^|[/-]){ver_pattern}(?:[/-]|$)', href):
+                if re.search(rf'(?:^|[/-]){ver_pattern}(?!-\d)(?:[/-]|$)', href):
                     if any(e in href for e in excludes):
                         continue
                     priority = 0 if href.rstrip('/').endswith('-release') else 1
@@ -568,14 +567,14 @@ def get_download_link(version: str, app_name: str, config: dict, arch: str = Non
             return base_url + link['href']
         return None
 
-    # Exact version first (each type in order), then any variant that
-    # matches the criteria (each type in order).
+    # Match the exact requested version for each configured file type.
+    # Never substitute a different release from a fallback listing.
     for c_type in type_order:
         for row in rows:
             row_text = row.get_text()
             if 'variant' in row_text.lower() and 'arch' in row_text.lower():
                 continue
-            if version in row_text or version.replace('.', '-') in row_text:
+            if _exact_version_in_text(row_text, version):
                 if _row_matches(row_text, c_type):
                     download_page_url = _extract_row_link(row)
                     if download_page_url:
@@ -584,25 +583,6 @@ def get_download_link(version: str, app_name: str, config: dict, arch: str = Non
             if c_type and c_type != type_order[0]:
                 logging.warning(f"No {type_order[0]} variant of {app_name} {version} on APKMirror; using the {c_type}")
             break
-
-    if not download_page_url:
-        for c_type in type_order:
-            for row in rows:
-                row_text = row.get_text()
-                if 'variant' in row_text.lower() and 'arch' in row_text.lower():
-                    continue
-                if _row_matches(row_text, c_type):
-                    # Check if this looks like a variant row (has version numbers)
-                    if re.search(r'\d+(\.\d+)+', row_text):
-                        download_page_url = _extract_row_link(row)
-                        if download_page_url:
-                            match = re.search(r'(\d+(\.\d+)+(\.\w+)*)', row_text)
-                            if match:
-                                actual_version = match.group(1)
-                                logging.warning(f"Using variant {actual_version} ({c_type or 'any type'}, criteria match)")
-                            break
-            if download_page_url:
-                break
 
     if not download_page_url:
         logging.error(f"No variant found for {app_name} {version} with criteria {[' or '.join(type_order) or 'any type', *criteria[1:]]}")
@@ -636,6 +616,10 @@ def get_download_link(version: str, app_name: str, config: dict, arch: str = Non
         logging.error(f"Error in download flow: {e}")
 
     return None
+
+def _exact_version_in_text(text: str, version: str) -> bool:
+    return bool(re.search(rf"(?<![\d.]){re.escape(version)}(?![\d.]|-[0-9])", text))
+
 
 def get_architecture_criteria(arch: str) -> dict:
     """Map architecture names to APKMirror criteria"""

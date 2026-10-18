@@ -9,6 +9,7 @@ import re
 import shutil
 import subprocess
 import zipfile
+import logging
 from pathlib import Path
 
 
@@ -67,11 +68,7 @@ def verify_apk(apk: Path, arch: str) -> dict:
         [find_build_tool("apksigner"), "verify", "--verbose", "--print-certs", str(apk)],
         capture_output=True, text=True, check=True, timeout=120,
     )
-    badging = subprocess.run(
-        [find_build_tool("aapt"), "dump", "badging", str(apk)],
-        capture_output=True, text=True, check=True, timeout=120,
-    )
-    data = parse_badging(badging.stdout)
+    data = read_manifest_metadata(apk)
     data["native_abis"] = inspect_abis(apk, arch)
     data["signer_sha256"] = re.findall(
         r"certificate SHA-256 digest:\s*([0-9a-fA-F]{64})", signature.stdout,
@@ -83,3 +80,34 @@ def verify_apk(apk: Path, arch: str) -> dict:
     data["size_bytes"] = apk.stat().st_size
     data["verified"] = True
     return data
+
+
+def read_manifest_metadata(apk: Path) -> dict:
+    aapt = find_build_tool("aapt")
+    badging = subprocess.run([aapt, "dump", "badging", str(apk)],
+                             capture_output=True, text=True, check=False, timeout=120)
+    if badging.returncode == 0:
+        return parse_badging(badging.stdout)
+    # Badging also resolves labels/icons and can fail on an otherwise readable
+    # obfuscated resource table. Read only required binary-manifest attributes.
+    logging.warning("aapt badging failed: %s; reading manifest attributes directly", badging.stderr.strip()[:800])
+    tree = subprocess.run([aapt, "dump", "xmltree", str(apk), "AndroidManifest.xml"],
+                          capture_output=True, text=True, check=True, timeout=120)
+    return parse_manifest_tree(tree.stdout)
+
+
+def parse_manifest_tree(output: str) -> dict:
+    def string(name):
+        match = re.search(rf'\b{re.escape(name)}(?:\(0x[0-9a-f]+\))?="([^"\n]+)"', output)
+        return match[1] if match else ""
+
+    def number(name):
+        match = re.search(rf'\b{re.escape(name)}\(0x[0-9a-f]+\)=\(type 0x1[01]\)(0x[0-9a-f]+|\d+)', output)
+        return int(match[1], 16 if match[1].startswith("0x") else 10) if match else None
+
+    package, version = string("package"), string("android:versionName")
+    code, minimum = number("android:versionCode"), number("android:minSdkVersion")
+    if not package or not version or code is None or minimum is None:
+        raise ValueError("APK binary manifest lacks required package, version or minimum Android attributes")
+    return {"package": package, "version_name": version, "version_code": str(code),
+            "min_sdk": minimum, "target_sdk": number("android:targetSdkVersion")}

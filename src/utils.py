@@ -264,6 +264,9 @@ def get_supported_versions(
 
     lines = output.splitlines()
     logging.info(f"CLI raw output lines: {lines}")
+    if re.search(r"failed to load patches|NoClassDefFoundError|ClassNotFoundException", output, re.IGNORECASE):
+        logging.error("Patch bundle could not load; CLI and patcher API versions must be compatible")
+        return None
 
     # Detect CLI error/usage output (wrong syntax, unrecognized args, etc.)
     first_line = lines[0].strip().lower()
