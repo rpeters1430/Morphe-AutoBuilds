@@ -44,6 +44,17 @@ jobs:
           node scripts/check_catalog_syntax.cjs
       - name: Compile Python modules
         run: python -m compileall -q src scripts
+      - name: Setup Java for Android verification smoke test
+        if: matrix.python == '3.15'
+        uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6
+        with:
+          distribution: temurin
+          java-version: '25'
+      - name: Verify a real signed APK and reject tampering
+        if: matrix.python == '3.15'
+        env:
+          MORPHE_ANDROID_INTEGRATION: '1'
+        run: python -m unittest discover -s tests -p test_android_build_tools.py -v
 
   workflows:
     name: Validate GitHub Actions
