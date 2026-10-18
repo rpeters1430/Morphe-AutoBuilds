@@ -34,7 +34,7 @@ API_HEADERS = {
 
 # Pre-release or form-factor builds that share a version number with the
 # phone release (e.g. "2026.08.13-beta", "2026.08.03-tv-release").
-_OTHER_CHANNEL = re.compile(r"\b(alpha|beta|tv|wear|auto)\b", re.IGNORECASE)
+_OTHER_CHANNEL = re.compile(r"\b(alpha|beta|tv|wear|auto|cros|chromeos)\b", re.IGNORECASE)
 
 
 def _api_versions(package: str) -> list[dict]:
@@ -87,6 +87,9 @@ def _api_match(versions: list[dict], version: str, arch: str) -> dict | None:
     wanted = (version or "").strip()
     wanted_norm = utils.normalize_version(wanted)
     downloadable = [v for v in versions if _api_download_url(v)]
+    allowed = {"arm64-v8a", "armeabi-v7a"} if arch == "universal" else {arch}
+    downloadable = [v for v in downloadable if not v.get("native_code")
+                    or set(v["native_code"]).intersection(allowed)]
 
     def name(entry: dict) -> str:
         return (entry.get("version_name") or "").strip()
@@ -107,6 +110,8 @@ def _api_match(versions: list[dict], version: str, arch: str) -> dict | None:
 
 def get_latest_version(app_name: str, config: str) -> str:
     versions = _api_versions(config.get("package", ""))
+    versions = [v for v in versions if not _OTHER_CHANNEL.search(v.get("version_name") or "")
+                and _api_match([v], v.get("version_name") or "", config.get("arch") or "universal")]
     if versions:
         latest = (versions[0].get("version_name") or "").strip()
         if latest:

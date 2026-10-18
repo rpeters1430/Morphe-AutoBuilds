@@ -32,7 +32,7 @@
   {
     "app_name": "messenger",
     "source": "hushmessenger",
-    "arches": ["arm64-v8a", "armeabi-v7a"]
+    "arches": ["arm64-v8a"]
   },
   {
     "app_name": "brave-beta",

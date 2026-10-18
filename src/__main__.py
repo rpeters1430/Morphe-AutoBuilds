@@ -200,15 +200,9 @@ def _strip_arch_libs(apk: Path, arch: str) -> None:
     """Remove native libraries the target architecture doesn't need."""
     # Check before stripping: removing every library from a wrong-ABI APK
     # does not turn that APK into a platform-independent app.
-    apk_metadata.inspect_abis(apk, arch, allow_extra=True)
-    if arch == "arm64-v8a":
-        logging.info(f"Processing APK for {arch} architecture...")
-        utils.strip_zip_entries(apk, ["lib/x86/*", "lib/x86_64/*", "lib/armeabi-v7a/*"])
-    elif arch == "armeabi-v7a":
-        logging.info(f"Processing APK for {arch} architecture...")
-        utils.strip_zip_entries(apk, ["lib/x86/*", "lib/x86_64/*", "lib/arm64-v8a/*"])
-    else:
-        utils.strip_zip_entries(apk, ["lib/x86/*", "lib/x86_64/*"])
+    abis = apk_metadata.inspect_abis(apk, arch, allow_extra=True)
+    keep = set(KEEP_ARCHES[arch].split(","))
+    utils.strip_zip_entries(apk, [f"lib/{abi}/*" for abi in abis if abi not in keep])
 
 
 _FILTERING_PATCHES = re.compile(
@@ -267,6 +261,10 @@ def _reject_empty_patch_run(
     downloaded_version: str | None = None,
 ) -> None:
     """Some CLIs exit successfully when every selected patch was incompatible."""
+    if re.search(r"failed to load patches|NoClassDefFoundError|ClassNotFoundException", output or "", re.IGNORECASE):
+        output_apk.unlink(missing_ok=True)
+        message = "Patch bundle could not load; check CLI/patcher API compatibility. Refusing to publish."
+        raise subprocess.CalledProcessError(1, command, output=f"{output}\n{message}")
     if re.search(r"\bApplying\s+0\s+patch(?:es)?\b", output or "", re.IGNORECASE):
         output_apk.unlink(missing_ok=True)
         message = "No patches were applied; refusing to publish an unpatched APK."
@@ -413,6 +411,12 @@ def run_build(app_name: str, source: str, arch: str = "universal", settings: dic
             is_bundle = _is_bundle(downloaded)
             if not utils.ensure_signed_android_archive(downloaded, bundle=is_bundle):
                 logging.warning(f"Trying next download source after {method.__name__}")
+                continue
+            try:
+                apk_metadata.inspect_abis(downloaded, arch, allow_extra=True, bundle=is_bundle)
+            except (ValueError, OSError) as error:
+                logging.warning(f"Rejecting {method.__name__} input: {error}; trying next source")
+                downloaded.unlink(missing_ok=True)
                 continue
             input_apk, version, candidates = downloaded, downloaded_version, downloaded_candidates
             used_method = method
