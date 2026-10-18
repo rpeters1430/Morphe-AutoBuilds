@@ -200,12 +200,13 @@ jobs:
           APP_NAME: ${{ matrix.app_name }}
           SOURCE: ${{ matrix.source }}
         run: |
+          python scripts/collect_verified_apks.py
           mkdir -p build_records
           # Record every produced APK so manifest can map (app, source, arch) -> filename
-          for apk in *.apk; do
+          for apk in verified-apks/*.apk; do
             [ -e "$apk" ] || continue
             # record_build.py now detects arch from filename automatically
-            APK_PATH="$apk" python scripts/record_build.py || true
+            APK_PATH="$apk" python scripts/record_build.py
           done
           echo "Records produced:"
           ls -la build_records/ 2>/dev/null || echo "(no records)"
@@ -224,10 +225,12 @@ jobs:
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        if: always()
         with:
           name: apk-${{ matrix.app_name }}-${{ matrix.source }}
-          path: "*.apk"
+          path: verified-apks/*
           retention-days: 3
+          if-no-files-found: ignore
 
       - name: Upload Build Records
         if: always()
@@ -270,6 +273,13 @@ jobs:
           path: ./all-records
           pattern: build-records-*
         continue-on-error: true
+
+      - name: Collect Build Records
+        run: |
+          mkdir -p build_records all-apks
+          if [ -d ./all-records ]; then
+            find ./all-records -name "*.json" -exec cp {} build_records/ \;
+          fi
 
       - name: Check if Any APKs Were Built
         id: check-apks
@@ -316,7 +326,7 @@ jobs:
         run: |
           mkdir -p ./release-apks
           echo "📦 Collecting rebuilt APKs..."
-          find ./all-apks -name "*.apk" -exec cp -f {} ./release-apks/ \; 2>/dev/null || true
+          find ./all-apks -type f -name "*.apk*" -exec cp -f {} ./release-apks/ \; 2>/dev/null || true
 
           echo "📁 APKs ready for release:"
           ls -la ./release-apks/
@@ -337,10 +347,7 @@ jobs:
           if [ -d ./all-records ]; then
             find ./all-records -name "*.json" -exec cp {} build_records/ \; 2>/dev/null || true
           fi
-          python scripts/merge_manifest.py || {
-            echo "⚠️ merge_manifest.py failed; continuing without manifest update."
-            rm -f manifest.json
-          }
+          python scripts/merge_manifest.py
           if [ -f manifest.json ]; then
             echo "✅ manifest.json built:"
             jq '.entries | length' manifest.json || true
@@ -386,18 +393,17 @@ jobs:
 
           echo "📦 Releasing $apk_count APK(s)..."
 
-          # Build the asset list: APKs + optional manifest.json
-          ASSETS=( ./release-apks/*.apk )
-          if [ -f ./release-apks/manifest.json ]; then
-            ASSETS+=( ./release-apks/manifest.json )
-            echo "📎 Including manifest.json"
-          fi
+          # APK uploads can fail independently. Publish the manifest only
+          # after every staged APK and checksum upload has succeeded.
+          test -s ./release-apks/manifest.json
+          ASSETS=( ./release-apks/*.apk ./release-apks/*.apk.sha256 )
 
           if [ "${{ steps.check-release.outputs.release_exists }}" = "true" ]; then
             # Upload first, then delete superseded versions: if the upload
             # fails, the previous APKs are still there to download.
             echo "⬆️ Uploading rebuilt assets in place..."
-            gh release upload latest "${ASSETS[@]}" --clobber
+            python scripts/upload_apks.py "${ASSETS[@]}"
+            gh release upload latest ./release-apks/manifest.json --clobber
 
             # APK names embed the version, so --clobber never replaces an older
             # version (v2.4.0 next to the new v2.5.0). cleanup_old_apks.py deletes
@@ -419,6 +425,7 @@ jobs:
               --notes "Publishing..." \
               "${ASSETS[@]}" \
               --latest
+            gh release upload latest ./release-apks/manifest.json --clobber
           fi
 
           echo "✅ Release publish step completed successfully!"

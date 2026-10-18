@@ -37,7 +37,7 @@ never need to download the heavy APK files.
 
 Safety
 ------
-- Only ``.apk`` assets are ever considered for deletion.
+- Only ``.apk`` assets and their ``.apk.sha256`` checksums are considered.
 - Anything in the keep-set is always preserved.
 - A failed listing or deletion is logged and makes the script exit non-zero.
 - A ``--dry-run`` flag prints what would be deleted without deleting.
@@ -71,7 +71,7 @@ def gh_release_assets(release: str) -> List[dict]:
         )
         assets = json.loads(result.stdout or "{}").get("assets", []) or []
         return [a for a in assets if isinstance(a, dict)
-                and str(a.get("name", "")).endswith(".apk")]
+                and str(a.get("name", "")).endswith((".apk", ".apk.sha256"))]
     except Exception as e:
         raise RuntimeError(f"could not list release assets: {e}") from e
 
@@ -80,6 +80,7 @@ def identity_prefix(apk_name: str) -> str:
     """Return the identity prefix of an APK filename (everything before the
     version marker). E.g. ``youtube-arm64-v8a-morphe-v2.5.0.apk`` ->
     ``youtube-arm64-v8a-morphe``. Falls back to the stem if no version is found."""
+    apk_name = apk_name.removesuffix(".sha256")
     stem = apk_name[:-4] if apk_name.lower().endswith(".apk") else apk_name
     version = extract_version_from_filename(apk_name)
     if version and stem.endswith(f"-v{version}"):
@@ -225,7 +226,7 @@ def main() -> int:
     to_delete = []  # list of asset dicts
     for asset in assets:
         name = str(asset.get("name", ""))
-        if not name or name in keep:
+        if not name or name.removesuffix(".sha256") in keep:
             continue  # explicitly kept (or unnamed)
         if is_superseded(name, keep_prefixes, keep_app_arches):
             to_delete.append(asset)  # same app/arch, older version or old source

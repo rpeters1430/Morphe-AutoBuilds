@@ -58,6 +58,13 @@ def main() -> int:
                     "built_version": "",
                 }
                 entries[key] = entry
+            for field in ("last_attempt_at", "run_url"):
+                if field in rec:
+                    entry[field] = rec[field]
+            if rec.get("status") == "failed":
+                entry["last_error"] = rec.get("error") or "Build failed; see build logs."
+                # Leave pending_source_sig for the failure counter below.
+                continue
             if apk:
                 entry["apk"] = apk
             if resolved_version:
@@ -67,7 +74,7 @@ def main() -> int:
             entry["follows_store"] = bool(rec.get("follows_store"))
             # Patches this build saw and the new ones it turned on; the next
             # build enables patches missing from known_patches.
-            for fkey in ("known_patches", "auto_patches"):
+            for fkey in ("known_patches", "auto_patches", "artifact", "last_success_at"):
                 if fkey in rec:
                     entry[fkey] = rec[fkey]
             pending_store = entry.pop("pending_store_version", "")
@@ -83,7 +90,7 @@ def main() -> int:
                 entry["source_sig"] = pending_sig
                 del entry["pending_source_sig"]
             # A scheduled build replaced any manual build's APK.
-            for fkey in ("failed_sig", "failed_attempts", "last_failed_at", "manual_build"):
+            for fkey in ("failed_sig", "failed_attempts", "last_failed_at", "manual_build", "last_error"):
                 entry.pop(fkey, None)
             print(f"  merged {key} -> apk={apk!r} built_version={resolved_version!r}")
     # Entries still holding pending_source_sig were planned for a rebuild but
@@ -104,6 +111,8 @@ def main() -> int:
             entry["failed_sig"] = pending_sig
             entry["failed_attempts"] = 1
         entry["last_failed_at"] = today
+        entry.setdefault("last_attempt_at", datetime.datetime.now(datetime.timezone.utc).isoformat())
+        entry.setdefault("last_error", "Build did not produce a verified APK; see workflow logs.")
         print(f"  failed {key} (attempt {entry['failed_attempts']} with these inputs)")
 
     with open("manifest.json", "w", encoding="utf-8") as f:

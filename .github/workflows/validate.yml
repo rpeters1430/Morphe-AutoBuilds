@@ -1,0 +1,60 @@
+name: Validate Changes
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: validate-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  tests:
+    name: Tests (Python ${{ matrix.python }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ['3.11', '3.15']
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: ${{ matrix.python }}
+          cache: pip
+          cache-dependency-path: |
+            requirements.txt
+            scripts/requirements.txt
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt -r scripts/requirements.txt
+      - name: Validate app configuration
+        run: python scripts/validate_config.py
+      - name: Run Python regression tests
+        run: python -m unittest discover -s tests -v
+      - name: Check catalog JavaScript syntax and rendering
+        run: |
+          node --check docs/catalog-ui.js
+          node --test tests/test_catalog_ui.cjs
+          node scripts/check_catalog_syntax.cjs
+      - name: Compile Python modules
+        run: python -m compileall -q src scripts
+
+  workflows:
+    name: Validate GitHub Actions
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - name: Install actionlint
+        env:
+          # renovate: datasource=github-releases depName=rhysd/actionlint
+          ACTIONLINT_VERSION: v1.7.12
+        run: go install "github.com/rhysd/actionlint/cmd/actionlint@${ACTIONLINT_VERSION}"
+      - name: Validate workflows
+        run: '"$(go env GOPATH)/bin/actionlint" -shellcheck=""'

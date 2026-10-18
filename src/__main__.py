@@ -6,12 +6,14 @@ from sys import exit
 from pathlib import Path
 from os import getenv
 import subprocess
+import datetime
 from src import (
     r2,
     utils,
     release,
     downloader,
     build_config,
+    apk_metadata,
 )
 
 def _should_retry_with_older_version(output: str | None) -> bool:
@@ -196,6 +198,9 @@ def _merge_bundle(bundle: Path) -> Path:
 
 def _strip_arch_libs(apk: Path, arch: str) -> None:
     """Remove native libraries the target architecture doesn't need."""
+    # Check before stripping: removing every library from a wrong-ABI APK
+    # does not turn that APK into a platform-independent app.
+    apk_metadata.inspect_abis(apk, arch, allow_extra=True)
     if arch == "arm64-v8a":
         logging.info(f"Processing APK for {arch} architecture...")
         utils.strip_zip_entries(apk, ["lib/x86/*", "lib/x86_64/*", "lib/armeabi-v7a/*"])
@@ -505,6 +510,7 @@ def run_build(app_name: str, source: str, arch: str = "universal", settings: dic
         # be stripped here; morphe-cli strips them after merging (--striplibs).
         bundle_args: list[str] = []
         if native_bundle:
+            apk_metadata.inspect_abis(input_apk, arch, allow_extra=True, bundle=True)
             bundle_args = ["--striplibs", KEEP_ARCHES.get(arch, KEEP_ARCHES["universal"])]
         else:
             if arch in ("universal", "arm64-v8a"):
@@ -599,19 +605,71 @@ def run_build(app_name: str, source: str, arch: str = "universal", settings: dic
             ], capture=True, stream=True)
 
         output_apk.unlink(missing_ok=True)
+        artifact = _verify_output(signed_apk, arch)
+        # Different patch builds of the same app version must not overwrite
+        # the working release asset before a replacement upload completes.
+        immutable = Path(utils.release_safe_filename(
+            f"{app_name}-{arch}-{source}-r{artifact['sha256'][:16]}-v{version}.apk"))
+        meta_path = Path("build_meta") / f"{signed_apk.name}.json"
+        try:
+            signed_apk.replace(immutable)
+            meta_path.replace(Path("build_meta") / f"{immutable.name}.json")
+        except Exception:
+            signed_apk.unlink(missing_ok=True)
+            immutable.unlink(missing_ok=True)
+            meta_path.unlink(missing_ok=True)
+            raise
+        signed_apk = immutable
         print(f"✅ APK built: {signed_apk.name}")
         return str(signed_apk)
 
     # If we got here, every candidate version failed.
     return None
 
+def _run_url() -> str:
+    repo, run = getenv("GITHUB_REPOSITORY"), getenv("GITHUB_RUN_ID")
+    return f"{getenv('GITHUB_SERVER_URL', 'https://github.com')}/{repo}/actions/runs/{run}" if repo and run else ""
+
+
+def _verify_output(apk: Path, arch: str) -> dict:
+    try:
+        artifact = apk_metadata.verify_apk(apk, arch)
+    except Exception:
+        # Release workflows collect *.apk, including partial outputs. Never
+        # leave a rejected signed artifact where those globs can pick it up.
+        apk.unlink(missing_ok=True)
+        raise
+    now = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    meta_dir = Path("build_meta")
+    meta_dir.mkdir(exist_ok=True)
+    (meta_dir / f"{apk.name}.json").write_text(json.dumps({
+        "artifact": artifact, "last_success_at": now,
+        "last_attempt_at": now, "run_url": _run_url(),
+    }), encoding="utf-8")
+    return artifact
+
+
+def _record_failure(app: str, source: str, arch: str, error: str) -> None:
+    directory = Path("build_records")
+    directory.mkdir(exist_ok=True)
+    safe = f"{app}__{source}__{arch}".replace("/", "_")
+    (directory / f"{safe}.json").write_text(json.dumps({
+        "key": f"{app}|{source}|{arch}", "app_name": app, "source": source,
+        "arch": arch, "status": "failed", "error": error[:500],
+        "last_attempt_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        "run_url": _run_url(),
+    }), encoding="utf-8")
+
+
 def _write_build_meta(apk_path: str, follows_store: bool) -> None:
     """Sidecar for scripts/record_build.py: facts about the build that the APK
     filename doesn't carry."""
     meta_dir = Path("build_meta")
     meta_dir.mkdir(exist_ok=True)
-    (meta_dir / f"{Path(apk_path).name}.json").write_text(
-        json.dumps({"follows_store": follows_store, **(last_patch_state or {})}),
+    path = meta_dir / f"{Path(apk_path).name}.json"
+    meta = json.loads(path.read_text(encoding="utf-8"))
+    path.write_text(
+        json.dumps({**meta, "follows_store": follows_store, **(last_patch_state or {})}),
         encoding="utf-8")
 
 
@@ -647,11 +705,14 @@ def main():
         )
     except Exception as e:
         logging.error(f"❌ Could not download the patch tools for {source}: {e}")
+        for arch in arches:
+            _record_failure(app_name, source, arch, f"Patch tool download failed: {e}")
         exit(1)
 
     built_apks = []
     failed_arches = []
     for arch in arches:
+        error = "No compatible APK could be downloaded or patched; see build logs."
         logging.info(f"🔨 Building {app_name} for {arch} architecture...")
         # One arch failing (e.g. a patch error) must not throw away the arches
         # that already built.
@@ -659,12 +720,14 @@ def main():
             apk_path = run_build(app_name, source, arch, settings, tools)
         except Exception as e:
             logging.error(f"❌ {app_name}/{source}/{arch} failed: {e}")
+            error = str(e)
             apk_path = None
         if apk_path:
             built_apks.append(apk_path)
             _write_build_meta(apk_path, follows_store=force_follows or downloader.last_download_from_store)
             print(f"✅ Built {arch} version: {Path(apk_path).name}")
         else:
+            _record_failure(app_name, source, arch, error)
             failed_arches.append(arch)
 
     print(f"\n🎯 Built {len(built_apks)} APK(s) for {app_name}:")

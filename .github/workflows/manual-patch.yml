@@ -194,11 +194,15 @@ jobs:
           echo "🔧 Building $APP_NAME with $SOURCE (${{ inputs.architecture }})..."
           python -m src
       
+      - name: Collect Verified Outputs
+        if: always()
+        run: python scripts/collect_verified_apks.py
+
       - name: Find Built APK
         id: find-apk
         run: |
           # Find the built APK file(s)
-          apk_files=$(ls -1 *.apk 2>/dev/null)
+          apk_files=$(ls -1 verified-apks/*.apk 2>/dev/null)
           if [ -z "$apk_files" ]; then
             echo "❌ No APK files found"
             exit 1
@@ -221,7 +225,7 @@ jobs:
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: manual-apk-${{ inputs.app_name }}-${{ inputs.architecture }}
-          path: "*.apk"
+          path: verified-apks/*
           retention-days: 3
       
       - name: Check Existing Release
@@ -239,6 +243,7 @@ jobs:
           fi
       
       - name: Update Release
+        id: publish
         if: ${{ inputs.replace_in_release == true }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -248,35 +253,64 @@ jobs:
         run: |
           echo "🔄 Updating release efficiently..."
 
-          # 1. UPLOAD (CLOBBER) OR CREATE
+          # 1. UPLOAD IMMUTABLE ASSETS OR CREATE
           if [ "${{ steps.check-release.outputs.release_exists }}" == "true" ]; then
             # Upload first, then delete superseded versions: if the upload
             # fails, the previous APKs are still there to download.
-            echo "⬆️ Uploading new assets (clobbering existing)..."
-            gh release upload latest *.apk --clobber
+            echo "⬆️ Uploading immutable assets..."
+            python scripts/upload_apks.py verified-apks/*
 
-            # APK names embed the version, so --clobber never replaces an older
-            # version (v2.4.0 next to the new v2.5.0). cleanup_old_apks.py
-            # removes any release APK that shares an {app}-{arch}-{name} identity
-            # with a freshly built APK but has a different version.
-            : > keep_apks.txt
-            for apk in *.apk; do
-              [ -f "$apk" ] || continue
-              echo "$apk" >> keep_apks.txt
-            done
-            # The new APKs are already uploaded, so don't stop publishing over a
-            # failed cleanup, but flag it on the run instead of a quiet warning.
-            python scripts/cleanup_old_apks.py --release latest --keep-file keep_apks.txt || \
-              echo "::error title=Superseded APKs remain::cleanup_old_apks.py failed; older APK versions are still attached to the release"
           else
             echo "🚀 Creating new release..."
             gh release create "latest" \
               --title "Morphe APKs - $(date +'%Y-%m-%d %H:%M')" \
               --notes "Publishing..." \
-              *.apk \
+              verified-apks/* \
               --latest
           fi
 
+      - name: Record Build in Manifest
+        id: record-manifest
+        # Lets the daily run know about this APK: a build with the configured
+        # settings counts as up to date; one with overrides is kept until the
+        # patches or settings change.
+        if: ${{ always() && inputs.replace_in_release == true }}
+        env:
+          BUILD_PUBLISHED: ${{ steps.publish.outcome == 'success' }}
+          APP_NAME: ${{ inputs.app_name }}
+          SOURCE: ${{ steps.resolve.outputs.source }}
+          PATCHES_CHANNEL: ${{ inputs.patches_tag || inputs.patches_channel }}
+          CLI_CHANNEL: ${{ inputs.cli_channel }}
+          EXPERIMENTAL: ${{ inputs.experimental }}
+          FORCE_PATCH: ${{ inputs.force }}
+          CONTINUE_ON_ERROR: ${{ inputs.continue_on_error }}
+          INCLUDE_PATCHES: ${{ inputs.include_patches }}
+          EXCLUDE_PATCHES: ${{ inputs.exclude_patches }}
+          APP_VERSION: ${{ inputs.version }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python scripts/record_manual_build.py
+
+      - name: Remove Superseded APKs
+        if: ${{ success() && steps.record-manifest.outputs.manifest_updated == 'true' }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          : > keep_apks.txt
+          for apk in verified-apks/*.apk; do
+            [ -f "$apk" ] || continue
+            basename "$apk" >> keep_apks.txt
+          done
+          python scripts/cleanup_old_apks.py --release latest --keep-file keep_apks.txt
+
+      - name: Update Release Notes
+        if: ${{ always() && steps.publish.outcome == 'success' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          APP_NAME: ${{ inputs.app_name }}
+          ARCH_INPUT: ${{ inputs.architecture }}
+          SOURCE: ${{ steps.resolve.outputs.source }}
+        run: |
           # 2. RELEASE NOTES
           # Listed after upload + cleanup so the notes match what is actually
           # attached (no superseded versions, nothing missing).
@@ -312,25 +346,6 @@ jobs:
 
           echo "✅ Release updated successfully!"
 
-      - name: Record Build in Manifest
-        # Lets the daily run know about this APK: a build with the configured
-        # settings counts as up to date; one with overrides is kept until the
-        # patches or settings change.
-        if: ${{ inputs.replace_in_release == true }}
-        env:
-          APP_NAME: ${{ inputs.app_name }}
-          SOURCE: ${{ steps.resolve.outputs.source }}
-          PATCHES_CHANNEL: ${{ inputs.patches_tag || inputs.patches_channel }}
-          CLI_CHANNEL: ${{ inputs.cli_channel }}
-          EXPERIMENTAL: ${{ inputs.experimental }}
-          FORCE_PATCH: ${{ inputs.force }}
-          CONTINUE_ON_ERROR: ${{ inputs.continue_on_error }}
-          INCLUDE_PATCHES: ${{ inputs.include_patches }}
-          EXCLUDE_PATCHES: ${{ inputs.exclude_patches }}
-          APP_VERSION: ${{ inputs.version }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: python scripts/record_manual_build.py
 
       - name: Show Download Links
         if: ${{ inputs.replace_in_release == true }}
@@ -341,7 +356,7 @@ jobs:
           echo "🔗 Updated Release URL: $release_url"
           echo ""
           echo "📦 Direct APK links:"
-          for apk in *.apk; do
-            echo "  - $release_url/download/$apk"
+          for apk in verified-apks/*.apk; do
+            echo "  - $release_url/download/$(basename "$apk")"
           done
       

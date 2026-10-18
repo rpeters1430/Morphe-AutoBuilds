@@ -7,6 +7,8 @@ import json
 import os
 import re
 import subprocess
+import tempfile
+import datetime
 from pathlib import Path
 from typing import Any
 
@@ -133,6 +135,44 @@ def _regex_literal(text: str) -> str:
     return re.escape(text).replace("\\-", "-")
 
 
+def fetch_release_manifest(repo_slug: str) -> dict:
+    """Download only release metadata; never download the APK collection."""
+    try:
+        with tempfile.TemporaryDirectory() as directory:
+            subprocess.run(
+                ["gh", "release", "download", "latest", "--repo", repo_slug,
+                 "--pattern", "manifest.json", "--dir", directory],
+                capture_output=True, text=True, check=True, timeout=120,
+            )
+            data = json.loads(Path(directory, "manifest.json").read_text(encoding="utf-8"))
+            return data if isinstance(data.get("entries"), dict) else {}
+    except (OSError, ValueError, subprocess.SubprocessError):
+        return {}
+
+
+def source_output_name(source: str) -> str:
+    try:
+        data = json.loads((REPO_ROOT / "sources" / f"{source}.json").read_text(encoding="utf-8"))
+        return (data[0] if isinstance(data, list) else data).get("name") or source
+    except (OSError, ValueError, IndexError, AttributeError):
+        return source
+
+
+def build_health(arch: str, record: dict, available: bool, lookup_ok: bool) -> dict:
+    failed = bool(record.get("last_error") or record.get("failed_attempts"))
+    status = ("retained" if failed else "available") if available else (
+        "unknown" if not lookup_ok else "unavailable" if record.get("apk") or failed else "not_built")
+    retry_after = ""
+    if available and int(record.get("failed_attempts") or 0) >= 2:
+        try:
+            retry_after = (datetime.date.fromisoformat(record["last_failed_at"]) + datetime.timedelta(days=7)).isoformat()
+        except (KeyError, ValueError):
+            pass
+    return {"arch": arch, "status": status, "last_success_at": record.get("last_success_at", ""),
+            "last_attempt_at": record.get("last_attempt_at", ""), "last_error": record.get("last_error", ""),
+            "run_url": record.get("run_url", ""), "retry_after": retry_after}
+
+
 def parse_app_packages() -> dict[str, str]:
     """Find package name for each app."""
     packages = {}
@@ -162,6 +202,12 @@ def generate_portal_assets(console=None) -> None:
     packages = parse_app_packages()
     release_data, published_at = fetch_release_assets(repo_slug)
     assets = release_data.get("assets", [])
+    manifest = fetch_release_manifest(repo_slug).get("entries", {})
+    lookup_ok = "assets" in release_data
+    output_sources: dict[str, set[str]] = {}
+    for path in (REPO_ROOT / "sources").glob("*.json"):
+        output_sources.setdefault(source_output_name(path.stem), set()).add(path.stem)
+    asset_owners = {record.get("apk"): key for key, record in manifest.items() if record.get("apk")}
 
     # Asset map: app_name -> list of assets
     # Format of asset name typically: {app_name}-{arch}-patch-v{version}.apk or {app_name}-{arch}.apk
@@ -193,6 +239,7 @@ def generate_portal_assets(console=None) -> None:
                 "arch": arch,
                 "download_url": download_url,
                 "size": size_mb,
+                "uploaded_at": a.get("updatedAt") or a.get("createdAt") or "",
             })
 
     apps_portal_data = []
@@ -216,21 +263,37 @@ def generate_portal_assets(console=None) -> None:
         )
         icon = APP_ICONS.get(app_name, "")
 
-        app_assets = assets_by_app.get(app_name, [])
+        # Match by manifest identity, with exact legacy filename fallback.
+        # Grouping by app alone mixes APKs from different patch sources.
+        output_name = source_output_name(source)
+        app_assets = []
+        health = []
+        for arch in entry["arches"]:
+            record = manifest.get(f"{app_name}|{source}|{arch}", {})
+            candidates = [a for a in assets_by_app.get(app_name, []) if a["arch"] == arch]
+            recorded = next((a for a in candidates if a["filename"] == record.get("apk")), None)
+            selected = [recorded] if recorded else [a for a in candidates
+                if a["filename"] not in asset_owners and (
+                    re.fullmatch(f"{re.escape(app_name)}-{re.escape(arch)}-{re.escape(source)}-r[0-9a-f]{{16}}-v.+\\.apk", a["filename"])
+                    or len(output_sources.get(output_name, {source})) == 1
+                    and a["filename"].startswith(f"{app_name}-{arch}-{output_name}-v"))]
+            health.append(build_health(arch, record, bool(selected), lookup_ok))
+            for asset in selected:
+                metadata = record.get("artifact", {}) if record.get("apk") == asset["filename"] else {}
+                app_assets.append({**asset, "metadata": metadata})
 
-        # Default fallbacks if no release assets exist yet
-        if not app_assets:
-            for t_arch in entry["arches"]:
-                app_assets.append({
-                    "filename": f"{app_name}-{t_arch}.apk",
-                    "arch": t_arch,
-                    "download_url": f"https://github.com/{repo_slug}/releases/download/latest/{app_name}-{t_arch}.apk",
-                    "size": "Auto",
-                })
+        actual_packages = {a["metadata"]["package"] for a in app_assets if a["metadata"].get("package")}
+        if len(actual_packages) == 1:
+            pkg = next(iter(actual_packages))
 
         # Only this app's APKs, not e.g. youtube-music's when app_name is youtube
-        arch_alt = "|".join(build_config.VALID_ARCHES)
-        apk_filter = f"^{_regex_literal(app_name)}-({arch_alt})-.*\\.apk$"
+        # Future immutable builds encode the real source, even when several
+        # sources share a legacy output name. Include only available arches
+        # and exactly the legacy assets attributed above, never every old APK.
+        arch_alt = "|".join(sorted({a["arch"] for a in app_assets})) or "(?!)"
+        future = f"{_regex_literal(app_name)}-({arch_alt})-{_regex_literal(source)}-r[0-9a-f]{{16}}-v.*\\.apk"
+        legacy = [_regex_literal(a["filename"]) for a in app_assets if not re.fullmatch(future, a["filename"])]
+        apk_filter = "^(?:" + "|".join([future, *legacy]) + ")$"
 
         # Obtainium app JSON, used for both the deep link
         # (obtainium://app/{...}) and the bulk import feed. Obtainium only reads
@@ -250,6 +313,9 @@ def generate_portal_assets(console=None) -> None:
             }),
         }
 
+        if len(actual_packages) > 1:
+            obtainium_config = None
+
         app_entry = {
             "name": display_name,
             "slug": app_name,
@@ -261,11 +327,19 @@ def generate_portal_assets(console=None) -> None:
             "channel": entry["patches_channel"],
             "downloads": app_assets,
             "obtainium_config": obtainium_config,
+            "health": health,
+            "status": ("retained" if any(h["status"] == "retained" for h in health)
+                       else "partial" if app_assets and any(h["status"] != "available" for h in health)
+                       else "available" if app_assets
+                       else "unknown" if not lookup_ok
+                       else "unavailable" if any(h["status"] == "unavailable" for h in health)
+                       else "not_built"),
         }
         apps_portal_data.append(app_entry)
 
         # Feed item for Obtainium bulk import
-        obtainium_apps.append(obtainium_config)
+        if enabled and app_assets and len(actual_packages) <= 1:
+            obtainium_apps.append(obtainium_config)
 
     apps_portal_data.sort(key=lambda a: (a["name"].casefold(), a["source"].casefold()))
     obtainium_apps.sort(key=lambda a: str(a.get("name", "")).casefold())

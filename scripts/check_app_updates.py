@@ -851,9 +851,17 @@ def _recover_apk_from_release(app: str, source: str, arch: str,
     name = _source_output_name(source).lower()
     prefix = f"{app}-{arch}-{name}-v" if name else f"{app}-{arch}-"
     prefix = prefix.lower()
+    immutable = re.compile(rf"^{re.escape(app)}-{re.escape(arch)}-{re.escape(source)}-r[0-9a-f]{{16}}-v.+\.apk$", re.IGNORECASE)
+    # Legacy generic names (e.g. morphe-patches) cannot identify a source
+    # after a source switch. A manifest pointer is required for those files.
+    legacy_unique = bool(name) and all(
+        path.stem == source or _source_output_name(path.stem).lower() != name
+        for path in SOURCES_DIR.glob("*.json")
+    )
     candidates = [
         n for n in existing_apks
-        if n and n.lower().endswith(".apk") and n.lower().startswith(prefix)
+        if n and n.lower().endswith(".apk") and (immutable.fullmatch(n)
+            or legacy_unique and n.lower().startswith(prefix))
     ]
     return max(candidates, key=_version_key) if candidates else ""
 
@@ -971,9 +979,15 @@ def plan_incremental(full_matrix: List[dict], old_manifest: Optional[dict],
         # builds); merge_manifest.py updates it after the build.
         for fkey in ("failed_sig", "failed_attempts", "last_failed_at",
                      "follows_store", "store_version_seen", "manual_build",
-                     "known_patches", "auto_patches"):
+                     "known_patches", "auto_patches", "artifact", "last_success_at",
+                     "last_attempt_at", "last_error", "run_url"):
             if old and fkey in old:
                 new_entries[mkey][fkey] = old[fkey]
+        if old and carried_apk != old.get("apk"):
+            # Recovery adopted a different release file. Its bytes and build
+            # time are unknown until rebuilt; do not reuse the old checksum.
+            new_entries[mkey].pop("artifact", None)
+            new_entries[mkey].pop("last_success_at", None)
 
         reasons: List[str] = []
         store_target = ""
