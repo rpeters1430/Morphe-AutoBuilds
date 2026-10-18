@@ -10,6 +10,16 @@ from src import __main__ as builder, build_config, downloader, utils
 
 
 class PatchPipelineTests(unittest.TestCase):
+    def test_stripping_rejects_wrong_arch_before_removing_its_libraries(self):
+        with tempfile.TemporaryDirectory() as directory:
+            apk = Path(directory, "wrong.apk")
+            with zipfile.ZipFile(apk, "w") as archive:
+                archive.writestr("lib/armeabi-v7a/lib.so", b"32-bit code")
+            original = apk.read_bytes()
+            with self.assertRaisesRegex(ValueError, "architecture"):
+                builder._strip_arch_libs(apk, "arm64-v8a")
+            self.assertEqual(apk.read_bytes(), original)
+
     def test_zero_patch_success_is_rejected_and_output_deleted(self):
         for cli, morphe in (("morphe-cli.jar", True), ("revanced-cli-6.jar", False)):
             with self.subTest(cli=cli), tempfile.TemporaryDirectory() as directory:
@@ -77,6 +87,7 @@ class PatchPipelineTests(unittest.TestCase):
                         patch.object(builder, "_cli_supports", return_value=True), \
                         patch.object(builder, "_new_patches_to_enable", return_value=[]), \
                         patch.object(builder, "_run_patch", side_effect=patch_apk), \
+                        patch.object(builder.apk_metadata, "verify_apk", return_value={"verified": True, "version_name": "1.16.31", "sha256": "a" * 64}), \
                         patch.object(utils, "find_apksigner", return_value="apksigner"), \
                         patch.object(utils, "run_process", side_effect=sign), \
                         patch.object(utils.shutil, "which", return_value=None):
@@ -84,8 +95,33 @@ class PatchPipelineTests(unittest.TestCase):
                 self.assertEqual(events, ["patch", "sign"])
                 self.assertFalse(unsigned.exists())
                 self.assertTrue(Path(result).exists())
+                self.assertIn("-Hoo-r" + "a" * 16 + "-v", result)
+                self.assertTrue(Path("build_meta", f"{Path(result).name}.json").exists())
             finally:
                 os.chdir(original_cwd)
+
+    def test_rejected_signed_apk_is_deleted_and_never_recorded(self):
+        with tempfile.TemporaryDirectory() as directory:
+            apk = Path(directory, "rejected.apk")
+            apk.write_bytes(b"invalid signed artifact")
+            with patch.object(builder.apk_metadata, "verify_apk", side_effect=ValueError("architecture mismatch")):
+                with self.assertRaisesRegex(ValueError, "architecture mismatch"):
+                    builder._verify_output(apk, "arm64-v8a")
+            self.assertFalse(apk.exists())
+
+    def test_build_meta_keeps_verified_metadata_when_patch_state_is_added(self):
+        with tempfile.TemporaryDirectory() as directory:
+            old = Path.cwd()
+            os.chdir(directory)
+            self.addCleanup(os.chdir, old)
+            with patch.object(builder.apk_metadata, "verify_apk", return_value={"package": "actual.package", "verified": True}):
+                builder._verify_output(Path("app.apk"), "universal")
+            builder._write_build_meta("app.apk", follows_store=True)
+            import json
+            data = json.loads(Path("build_meta/app.apk.json").read_text())
+            self.assertEqual(data["artifact"]["package"], "actual.package")
+            self.assertTrue(data["follows_store"])
+            self.assertIn("last_success_at", data)
 
 
 if __name__ == "__main__":

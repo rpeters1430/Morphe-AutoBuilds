@@ -99,9 +99,11 @@ def main() -> int:
         except Exception:
             pass
     follows_store = bool(meta.get("follows_store"))
+    resolved_version = meta.get("artifact", {}).get("version_name") or resolved_version
 
     REC_DIR.mkdir(parents=True, exist_ok=True)
     record = {
+        "status": "success",
         "key": f"{app}|{src}|{arch}",
         "apk": apk_name,
         "resolved_version": resolved_version,
@@ -111,7 +113,7 @@ def main() -> int:
         "arch": arch,
     }
     # Patch lists seen by this build, for spotting newly added patches.
-    for fkey in ("known_patches", "auto_patches"):
+    for fkey in ("known_patches", "auto_patches", "artifact", "last_success_at", "last_attempt_at", "run_url"):
         if fkey in meta:
             record[fkey] = meta[fkey]
 

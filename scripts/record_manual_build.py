@@ -18,8 +18,9 @@ For every built APK of a configured (app, source, arch):
     signature is left alone, so the daily run keeps this APK until the
     patches or settings change and then replaces it with a normal build.
 
-Best-effort: any problem is logged and the script exits 0; the daily planner
-still recovers the APK from the release on its own.
+Failures preserve existing records and return nonzero so cleanup cannot
+remove an APK before the manifest advances. The daily planner can recover
+published immutable APKs if the manifest upload failed.
 """
 import datetime
 import json
@@ -55,11 +56,28 @@ def _follows_store(apk_name: str) -> bool:
         return False
 
 
+def apply_failure_records(entries: dict, records: list[dict], configured_keys: set[str]) -> bool:
+    changed = False
+    for record in records:
+        key = record.get("key")
+        if key not in configured_keys or record.get("status") != "failed":
+            continue
+        entry = entries.setdefault(key, {"app_name": record.get("app_name"),
+            "source": record.get("source"), "arch": record.get("arch")})
+        entry["last_error"] = record.get("error") or "Manual build failed; see workflow logs."
+        for field in ("last_attempt_at", "run_url"):
+            if field in record:
+                entry[field] = record[field]
+        changed = True
+    return changed
+
+
 def main() -> int:
     app = (os.environ.get("APP_NAME") or "").strip()
     source = (os.environ.get("SOURCE") or "").strip()
-    apks = sorted(Path(".").glob("*.apk"))
-    if not app or not source or not apks:
+    apks = sorted(Path("verified-apks").glob("*.apk"))
+    failure_records = [json.loads(p.read_text(encoding="utf-8")) for p in Path("build_records").glob("*.json")]
+    if not app or not source or not (apks or failure_records):
         print("Nothing to record.")
         return 0
 
@@ -68,24 +86,42 @@ def main() -> int:
         for e in planner.build_full_matrix()
     }
 
-    asset_names = planner.fetch_release_asset_names() or []
+    asset_names = planner.fetch_release_asset_names()
+    if asset_names is None:
+        print("Could not confirm release assets; preserving the existing manifest.")
+        return 1
     manifest = planner.fetch_existing_manifest(asset_names)
-    if manifest is None:
-        print("The release has no manifest.json; the next daily run creates it.")
+    if manifest is None and planner.MANIFEST_NAME in asset_names:
+        print("Existing manifest could not be read; refusing to replace its other app records.")
+        return 1
+    if manifest is None and not apks:
+        print("No release manifest to update after failed manual build.")
         return 0
+    manifest = manifest or {"entries": {}}
     entries = manifest.setdefault("entries", {})
+    # This step also runs after a failed upload so it can record failures.
+    # Locally verified bytes alone do not prove the APK was published.
+    published = os.environ.get("BUILD_PUBLISHED", "false").lower() == "true"
+    rejected = [apk for apk in apks if not published or apk.name not in asset_names]
+    for apk in rejected:
+        arch = detect_arch_from_filename(apk.name)
+        failure_records.append({"key": planner.make_manifest_key(app, source, arch),
+            "app_name": app, "source": source, "arch": arch, "status": "failed",
+            "error": "Verified APK was not confirmed published; previous download retained.",
+            "last_attempt_at": datetime.datetime.now(datetime.timezone.utc).isoformat()})
+    apks = [apk for apk in apks if apk not in rejected]
 
     overrides = _overrides(app, source)
     settings = build_config.get_entry(app, source, apply_env=False)
     source_sig = ""
-    if not overrides:
+    if apks and not overrides:
         source_sig = planner.get_source_signature(
             source, settings["patches_channel"], settings["cli_channel"]
         ) + build_config.build_options_signature(settings)
         if planner._is_unreliable_source_sig(source_sig):
             source_sig = ""  # couldn't read the patch releases; leave it as it was
 
-    changed = False
+    changed = apply_failure_records(entries, failure_records, configured_keys)
     for apk in apks:
         arch = detect_arch_from_filename(apk.name)
         key = planner.make_manifest_key(app, source, arch)
@@ -98,9 +134,17 @@ def main() -> int:
         })
         entry["apk"] = apk.name
         entry["built_version"] = extract_version_from_filename(apk.name)
+        meta_path = Path("build_meta") / f"{apk.name}.json"
+        if meta_path.exists():
+            meta = json.loads(meta_path.read_text(encoding="utf-8"))
+            for field in ("artifact", "last_success_at", "last_attempt_at", "run_url",
+                          "known_patches", "auto_patches"):
+                if field in meta:
+                    entry[field] = meta[field]
+            entry["built_version"] = meta.get("artifact", {}).get("version_name") or entry["built_version"]
         entry["follows_store"] = _follows_store(apk.name)
         for k in ("failed_sig", "failed_attempts", "last_failed_at",
-                  "pending_source_sig", "pending_store_version"):
+                  "pending_source_sig", "pending_store_version", "last_error"):
             entry.pop(k, None)
         if overrides:
             entry["manual_build"] = {
@@ -123,6 +167,10 @@ def main() -> int:
                                  planner.MANIFEST_NAME, "--clobber"])
     if rc != 0:
         print(f"⚠️  could not upload {planner.MANIFEST_NAME}: {err.strip()[:200]}")
+        return 1
+    if published and apks and os.environ.get("GITHUB_OUTPUT"):
+        with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as output:
+            output.write("manifest_updated=true\n")
     return 0
 
 
@@ -131,4 +179,4 @@ if __name__ == "__main__":
         sys.exit(main())
     except Exception as e:
         logging.warning(f"record_manual_build failed: {e}")
-        sys.exit(0)
+        sys.exit(1)

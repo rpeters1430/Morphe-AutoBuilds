@@ -1,5 +1,7 @@
 import sys
 import unittest
+import json
+from unittest.mock import patch
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scripts"))
@@ -7,6 +9,14 @@ import cleanup_old_apks as cleanup  # noqa: E402
 
 
 class SupersededTests(unittest.TestCase):
+    def test_checksum_assets_follow_their_apks_without_deleting_other_assets(self):
+        assets = [{"name": n} for n in ("app-universal-source-v1.0.apk", "app-universal-source-v1.0.apk.sha256", "manifest.json")]
+        with patch.object(cleanup.subprocess, "run") as run:
+            run.return_value.stdout = json.dumps({"assets": assets})
+            found = cleanup.gh_release_assets("latest")
+        self.assertEqual(len(found), 2)
+        self.assertEqual(cleanup.identity_prefix(assets[1]["name"]), cleanup.identity_prefix(assets[0]["name"]))
+
     def _superseded(self, name, keep):
         prefixes = {cleanup.identity_prefix(n) for n in keep}
         app_arches = {p for p in (cleanup.app_arch_prefix(n) for n in keep) if p}

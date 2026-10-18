@@ -73,7 +73,7 @@ Each entry comes with these Obtainium settings:
 
 | Setting | Value | Why |
 | :--- | :--- | :--- |
-| Filter APKs by regular expression | `^<app>-(arm64-v8a\|armeabi-v7a\|universal)-.*\.apk$` | Only offers that app's APKs (e.g. YouTube never matches `youtube-music-…`). |
+| Filter APKs by regular expression | Generated for the app, patch source, and available architectures | Matches future source-specific builds and exact attributed legacy filenames; excludes other apps and sources. |
 | Use latest asset upload as release date | on | The release tag is always `latest`, so the upload date of the app's own APK marks a new build. |
 | Use release date as version string | on | Lets Obtainium spot an update when only that app was rebuilt. |
 
@@ -110,6 +110,10 @@ This repository utilizes a robust Python-based pipeline to ensure high reliabili
 * **Granular Patch Control:** Simple text-based configuration allows for precise inclusion or exclusion of specific patches.
 * **Smart Failover:** The system automatically switches download sources if a fetch attempt fails.
 * **Auto-Signing:** All APKs are signed with a consistent public keystore, making them ready to install immediately.
+* **Verified Release Artifacts:** Finished APKs must pass `apksigner verify` and an architecture check before publication. Package ID, version name/code, minimum Android API, actual native ABIs, signing certificate fingerprints, and SHA-256 are read from the finished file and recorded in `manifest.json`. Each newly published APK also has an `.apk.sha256` checksum file.
+* **Safe Same-Version Updates:** New APK filenames include the canonical patch source and a prefix of the final SHA-256 (`<app>-<arch>-<source>-r<digest>-v<version>.apk`). Uploads never overwrite a previous APK, even when only patches changed. Superseded APKs are removed only after the release manifest advances successfully.
+* **Build Health in the Catalog:** App cards show download availability, the latest recorded build attempt, last successful build, failure details, and retained older builds. Architecture filtering uses verified native libraries when available. Older APKs remain downloadable with compatibility marked as unverified until rebuilt.
+* **Accurate Downloads:** The catalog links only to existing release assets. Disabled apps and apps without downloads are omitted from the bulk Obtainium export. Ambiguous legacy source filenames are not guessed, and mixed package IDs across architectures disable the Obtainium entry until consistent builds are available.
 * **Clean Release Cycle:** Previous releases are replaced rather than archived, preventing clutter and making it easy for external managers (like Orion) to track updates.
 
 ---
@@ -275,6 +279,9 @@ If you prefer to build the APKs on your own machine, follow these steps.
 * Java Runtime Environment (JRE)
 * `zip` utility
 * `apksigner` (part of Android SDK Build-Tools)
+* `aapt` (part of Android SDK Build-Tools, used to read finished APK metadata)
+
+Put the Build-Tools executables on `PATH`, or set `ANDROID_HOME` / `ANDROID_SDK_ROOT`. Verification is required for both local and GitHub Actions builds; a rejected artifact is never staged for release. Signature verification checks the APK's cryptographic integrity, and does not establish trust in the patch source.
 
 ### Installation & Execution
 
@@ -360,6 +367,21 @@ Builds and manual patches share one concurrency group, so they never edit the re
 ### App Catalog (`deploy-portal.yml`)
 
 Publishes the web catalog and the Obtainium feed from `docs/` to GitHub Pages. It refreshes after every build, on releases, and when the config changes.
+
+The generator reads release assets and the release manifest. A missing download is shown as not built or unavailable; an unsuccessful release lookup is shown as unknown. New build metadata appears as each app is rebuilt; no full rebuild is required. The displayed retry backoff date applies to repeated scheduled failures with unchanged inputs; changed inputs or an explicit run can retry sooner.
+
+### Pull Request Validation (`validate.yml`)
+
+Pull requests and pushes to `main` run the Python regression suite on Python 3.11 and 3.15, validate app configuration, check catalog JavaScript syntax and rendering, and validate workflows with actionlint. These checks run without release credentials or APK publishing. To run the equivalent checks locally:
+
+```bash
+python -m pip install -r requirements.txt -r scripts/requirements.txt
+python scripts/validate_config.py
+python -m unittest discover -s tests -v
+node --test tests/test_catalog_ui.cjs
+node scripts/check_catalog_syntax.cjs
+actionlint -shellcheck=""
+```
 
 **One-time setup:** open **Settings → Pages** and set **Build and deployment → Source** to **GitHub Actions**. Until then the workflow stops with a message saying so. (Alternatively, add a `PAGES_ENABLEMENT_TOKEN` secret, a fine-grained token with Administration and Pages write access to this repo, and the workflow turns Pages on itself.)
 
