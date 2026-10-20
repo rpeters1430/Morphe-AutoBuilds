@@ -1,1 +1,25 @@
-
++ Add settings
++ Change like animation
++ Copy comment
++ Custom font
++ Custom sharing domain
++ Customize navigation bar
++ Disable Reels scrolling
++ Disable ads
++ Disable analytics
++ Disable screenshot detection
++ Disable typing status
++ Download media
++ External downloader
++ Friendship status indicator
++ Hide suggested content
++ Improve image viewing
++ Recommended flags
++ Remove empty bottom space
++ Sanitize share links
++ Save deleted messages
++ Theme
++ View DMs anonymously
++ View live anonymously
++ View stories anonymously
++ View story mentions
