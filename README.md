@@ -269,6 +269,10 @@ Located in `patches/`. Example for `patches/youtube-morphe.txt`. Use `+` to forc
 
 ---
 
+## 🔒 Play Store Update Protection
+
+TikTok builds set the APK's `android:versionCode` to the maximum signed 32-bit integer before alignment and signing. This blocks ordinary Play Store update offers while preserving the package name and `versionName`. It is not a root-level detach and does not clear Play Store's cached listing. To return to a stock or lower-version-code TikTok build, uninstall the protected build first; that may remove app data. After merging this change, run a manual build for `tiktok` once to replace the existing release APK.
+
 ## 🚀 Local Build Instructions
 
 If you prefer to build the APKs on your own machine, follow these steps.
