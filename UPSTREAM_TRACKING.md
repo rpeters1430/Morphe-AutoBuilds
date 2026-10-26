@@ -59,6 +59,16 @@ Because of these architectural divergences, upstream commits are **reviewed, cur
 | `1596e28` .. `eba1f4b` | 2026-10-07 | Update APKMirror JSON configurations | App Configs | ✅ Ported | Updated slugs/configs for `rar`, `spotify`, `strava`, `tumblr`, `viber`, `proton-vpn`, `smart_launcher`, `sofascore`, `soundcloud`. |
 | — | 2026-10-11 | Add AiScore with Doom (`rushiranpise`) patches | Apps / Configs | ✅ Added | Added `apps/apkpure/aiscore.json` and enabled in `patch-config.json` and `arch-config.json`. |
 
+| `b773fbf` | 2026-10-14 | Prevent Play Store update offers for TikTok | Build behavior | ✅ Adapted | Added a version-code ceiling for the configured TikTok build before zip alignment and signing. Twitter/X are not configured in this repo. |
+| `94fef586` | 2026-10-16 | Restore Nova to the source with Nova patches | Patch source | ✅ Already present | `patch-config.json` already uses `dropped` for Nova. |
+| `c28e2084` | 2026-10-16 | Use APK rather than BUNDLE for Pinterest | App config | ✅ Already present | `apps/apkmirror/pinterest.json` already requests APK. |
+| `e223d4f5` | 2026-10-16 | Move Facebook to HushFacebook patches | Patch source | ✅ Already present | Facebook already uses `hushfacebook`; its source definition is present. |
+| `0facff98` | 2026-10-17 | Allow Facebook mirror fallback | Downloader | ✅ Already present | The downloader tries supported mirror sources and has no Facebook-only restriction. |
+| `7f876580` | 2026-10-17 | Pin Facebook APKMirror config to 583.0.0.39.55 | App config | ✅ Already present | The same APKMirror listing and version are already configured. |
+| `12c02186` | 2026-10-23 | Verify and recover GitLab releases after publishing | Releases | ⏸️ Skipped | Specific to upstream's GitLab publisher; this repo publishes GitHub Releases. |
+| `9c6036a5` | 2026-10-26 | Add Venus patch source for Discord | Patch source | ✅ Already present | Discord is already configured with the Venus patches repository under the local source name `venus`. |
+| `352f61b5` / `7b7a6977` | 2026-10-26 | Add APKPure and Uptodown Discord configs | App configs | ✅ Adapted | Added both mirror configurations as download fallbacks for the existing Discord build. |
+
 ---
 
 ## 🛠️ How to Check & Port Future Upstream Commits
