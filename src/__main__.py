@@ -585,6 +585,24 @@ def run_build(app_name: str, source: str, arch: str = "universal", settings: dic
         if not apksigner:
             raise RuntimeError("apksigner not found")
 
+        # Keep the configured TikTok build from receiving ordinary Play Store
+        # updates, matching Morphe's Disable Play Store updates behavior.
+        if app_name == "tiktok":
+            from src.play_updates import disable_play_store_updates
+
+            disable_play_store_updates(output_apk)
+            aligned_apk = output_apk.with_suffix(".aligned.apk")
+            aligned_apk.unlink(missing_ok=True)
+            try:
+                zipalign = apk_metadata.find_build_tool("zipalign")
+                utils.run_process([
+                    zipalign, "-f", "-P", "16", "4",
+                    str(output_apk), str(aligned_apk),
+                ])
+                aligned_apk.replace(output_apk)
+            finally:
+                aligned_apk.unlink(missing_ok=True)
+
         try:
             utils.run_process([
                 str(apksigner), "sign", "--verbose",
