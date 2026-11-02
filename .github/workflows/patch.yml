@@ -217,10 +217,12 @@ jobs:
           {
             echo "### ❌ ${{ matrix.app_name }} (${{ matrix.source }}) failed"
             echo ""
-            echo "Common fixes in \`patch-config.json\` for this entry:"
-            echo "- a patch no longer matches the app: pin an older \`version\`, or set \`continue_on_error: true\` to skip that patch"
-            echo "- no store has a compatible version: set \`force: true\` or \`experimental: true\`"
-            echo "- the app can't be built right now: set \`enabled: false\`"
+            echo "Check the Build APK log for the failing stage:"
+            echo "- no app-specific patches: confirm the source still supports this package"
+            echo "- supported APK unavailable: provide that exact stock version through a configured provider, or wait for updated upstream support"
+            echo "- patch conflict: use the developer defaults and select only one mutually exclusive option"
+            echo "- HTTP 429 or blocked downloads: retry after the provider cooldown or use another configured provider"
+            echo "The previous successful artifact is retained when a rebuild fails."
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload APK Artifact

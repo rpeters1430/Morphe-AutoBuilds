@@ -29,7 +29,7 @@ class UnknownPatchCompatibilityError(ValueError):
 
 
 def download_resource(url: str, name: str = None) -> Path:
-    res = session.get(url, stream=True)
+    res = utils.get_with_retry(url, stream=True)
     res.raise_for_status()
     final_url = res.url
 
@@ -158,7 +158,7 @@ def download_platform(
     override_version: str = None,
     experimental: bool = False,
     force: bool = False,
-    supported_only: bool = False,
+    supported_only: bool = True,
 ) -> tuple[Path | None, str | None, list[str]]:
     global last_download_from_store
     last_download_from_store = False
@@ -209,18 +209,26 @@ def download_platform(
 
         platform_module = globals()[platform]
 
-        # Candidate versions (highest -> lowest):
+        # Candidate versions (in the CLI's recommended coverage order):
         # - If config pins a version: only try that.
         # - Else if override provided (retry path): try only that.
-        # - Else ask the patching CLI for compatible versions and try those,
-        #   then the store's latest as a last resort. Patch sets like Hoo pin
-        #   one exact build that stores stop carrying; without the fallback
-        #   those apps can't be built at all.
+        # - Else ask the patching CLI for compatible versions and try those.
+        #   Latest fallback requires an explicit supported_only=False override
+        #   or a confirmed version-agnostic patch set.
         # - The store's latest is never used when it predates every supported
         #   version (a stale mirror) or with supported_only, and with force it
         #   is tried first.
         pinned = (config.get("version") or "").strip()
         supported: list[str] | None = None  # None: not asked (pinned/override)
+        if (override_version or pinned) and supported_only and not force:
+            supported = utils.get_supported_versions(
+                config["package"], cli, patches, include_experimental=experimental
+            )
+            if supported is None or (supported and (override_version or pinned) not in supported):
+                raise UnknownPatchCompatibilityError(
+                    f"Pinned version {override_version or pinned} for {app_name} is not "
+                    f"confirmed by the patch bundle (supported: {supported}); refusing to build"
+                )
         if override_version:
             candidates = [override_version]
         elif pinned:
@@ -237,11 +245,12 @@ def download_platform(
                 )
             supported = list(compat or [])
             candidates = list(supported)
-            try:
-                latest = platform_module.get_latest_version(app_name, config)
-            except Exception as e:
-                logging.debug(f"Could not get latest version for {app_name} on {platform}: {e}")
-                latest = None
+            latest = None
+            if not (supported_only and supported and not force):
+                try:
+                    latest = platform_module.get_latest_version(app_name, config)
+                except Exception as e:
+                    logging.debug(f"Could not get latest version for {app_name} on {platform}: {e}")
             if latest:
                 if latest not in candidates and _older_than_all(latest, supported):
                     # Checked before force too: force means "newer than the
@@ -305,7 +314,7 @@ def _platform_downloader(platform: str):
         override_version: str = None,
         experimental: bool = False,
         force: bool = False,
-        supported_only: bool = False,
+        supported_only: bool = True,
     ) -> tuple[Path | None, str | None, list[str]]:
         return download_platform(
             app_name, platform, cli, patches, arch, override_version, experimental, force,

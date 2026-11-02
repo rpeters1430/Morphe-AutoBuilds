@@ -67,12 +67,10 @@ def _previous_patch_state(app_name: str, source: str) -> tuple[set[str], set[str
 
 def _new_patches_to_enable(app_name: str, source: str, settings: dict,
                            cli: Path, patches: Path) -> list[str]:
-    """Patches to turn on with -e because they appeared after an earlier build.
+    """Record newly available patches without overriding developer defaults.
 
-    Patches on by default are applied anyway; this turns on the new ones
-    that ship off by default, and keeps them on in later builds. Patches
-    listed at the first build (the baseline) keep their default, and a "-"
-    rule, exclude_patches or exclusive still wins.
+    Legacy auto-enabled choices are deliberately dropped. Only explicit
+    include rules/options may opt into patches that upstream disables.
     """
     global last_patch_state
     last_patch_state = None
@@ -81,19 +79,14 @@ def _new_patches_to_enable(app_name: str, source: str, settings: dict,
     if not listed:
         return []
 
-    known, auto = _previous_patch_state(app_name, source)
+    known, _ = _previous_patch_state(app_name, source)
     fresh = [n for n in listed if known and n not in known]
     for n in fresh:
-        state = "on by default" if listed[n] else "off by default, enabling it"
+        state = "on by default" if listed[n] else "off by default, leaving it disabled"
         logging.info(f"🆕 New patch for {app_name}: {n} ({state})")
 
-    _, exclude = build_config.patch_selection(settings)
-    enable = set() if settings.get("exclusive") else {
-        n for n in auto | {n for n in fresh if not listed[n]}
-        if n in listed and n not in exclude
-    }
-    last_patch_state = {"known_patches": sorted(listed), "auto_patches": sorted(enable)}
-    return sorted(enable)
+    last_patch_state = {"known_patches": sorted(listed), "auto_patches": []}
+    return []
 
 
 def _cli_supports(cli: Path, flag: str) -> bool:
@@ -393,7 +386,7 @@ def run_build(app_name: str, source: str, arch: str = "universal", settings: dic
     # Ask every source for a patch-supported version before any source falls
     # back to its newest build; otherwise an early store's latest would win
     # over a later store that has the exact version the patches name.
-    passes = [True] if supported_only or pinned_version else [True, False]
+    passes = [supported_only] if pinned_version else ([True] if supported_only else [True, False])
     for only_supported in passes:
         if not only_supported:
             logging.warning(
@@ -429,7 +422,7 @@ def run_build(app_name: str, source: str, arch: str = "universal", settings: dic
         logging.error("All download sources failed. Skipping this app.")
         return None
 
-    # Try the downloaded version first, then (if available) older compatible
+    # Try the downloaded version first, then (if available) other compatible
     # versions from the patch set. This prevents a single bad/overstated
     # compatibility entry from breaking the whole build.
     versions_to_try: list[str] = [version]
@@ -448,7 +441,7 @@ def run_build(app_name: str, source: str, arch: str = "universal", settings: dic
     for attempt_idx, ver in enumerate(versions_to_try):
         if attempt_idx > 0:
             logging.warning(
-                f"Retrying {app_name}/{source}/{arch} with older version {ver} due to patch failure..."
+                f"Retrying {app_name}/{source}/{arch} with compatible version {ver} due to patch failure..."
             )
             # Cleanup any previous attempt artifacts.
             try:

@@ -24,17 +24,14 @@ Fields (per entry or in ``defaults``):
                    experimental when picking which app version to patch.
   force            Patch the newest store version even if the patches don't
                    list it as compatible (passes --force to the CLI).
-  supported_only   Only build app versions the patches list. Without it the
-                   store's latest is a last resort when none of them can be
-                   downloaded, which skips patches tied to those versions.
+  supported_only   Default true: only build app versions the patches list.
+                   Latest is allowed for confirmed version-agnostic patches.
   version          Pin the app version (overrides apps/<platform>/<app>.json).
   arches           Architectures to build (overrides arch-config.json).
   include_patches  Patch names to force-enable (adds to patches/<app>-<source>.txt).
   exclude_patches  Patch names to disable (adds to patches/<app>-<source>.txt).
   exclusive        Apply ONLY the patches in include_patches / "+" rules; every
-                   other patch is off (passes --exclusive to the CLI). Also
-                   stops new off-by-default patches being turned on (see
-                   _new_patches_to_enable in src/__main__.py).
+                   other patch is off (passes --exclusive to the CLI).
   continue_on_error  Keep patching when a single patch fails instead of
                    aborting the whole build (passes --continue-on-error).
   patch_options    Per-patch option values, e.g.
@@ -74,7 +71,7 @@ BUILTIN_DEFAULTS = {
     "cli_channel": SOURCE_CHANNEL,
     "experimental": False,
     "force": False,
-    "supported_only": False,
+    "supported_only": True,
     "version": "",
     "arches": None,          # None -> arch-config.json -> ["universal"]
     "include_patches": [],
@@ -233,8 +230,10 @@ def apply_channels(repo_entries: list, patches_channel: str, cli_channel: str) -
 def build_options_signature(entry: dict) -> str:
     """Short string of the settings that change the build output without
     changing the patch source release, including the +/- rules in
-    patches/<app>-<source>.txt. Empty when none are set."""
-    parts = []
+    patches/<app>-<source>.txt, plus the policy version for artifact migration."""
+    # Migrate existing artifacts once, including entries already using
+    # supported_only whose old manifest persisted auto-enabled patches.
+    parts = ["policy=upstream-defaults-v1"]
     if entry.get("experimental"):
         parts.append("exp")
     if entry.get("force"):

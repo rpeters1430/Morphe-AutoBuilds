@@ -175,7 +175,8 @@ Each entry picks an app and the **patch system** (`source`, a file in `sources/`
 | `cli_channel` | `source` | Same channels, for the patcher CLI. |
 | `experimental` | `false` | Morphe only: also consider app versions the patches mark as *experimental*, so you get newer app versions sooner. |
 | `force` | `false` | Patch the newest store version even if the patches don't list it as compatible (`--force`). May break the app. |
-| `version` | `""` | Pin the app version. Empty picks the newest compatible one. |
+| `supported_only` | `true` | Only use app versions supported by the patch bundle, including pinned versions. Store latest is allowed when app-specific patches are confirmed to be version-independent. |
+| `version` | `""` | Pin a supported app version. Empty follows the CLI's recommended patch-coverage order. |
 | `arches` | from `arch-config.json`, else `["universal"]` | Any of `arm64-v8a`, `armeabi-v7a`, `universal`. |
 | `include_patches` / `exclude_patches` | `[]` | Patch names to enable/disable, added to `patches/<app>-<source>.txt`. A patch in both lists stays disabled. |
 | `exclusive` | `false` | Apply **only** the patches you enabled (`include_patches`, `patch_options`, `+` rules); every other patch is off (`--exclusive`). |
@@ -265,7 +266,11 @@ Located in `patches/`. Example for `patches/youtube-morphe.txt`. Use `+` to forc
 
 ```
 
-**New patches are turned on automatically.** A new patch release triggers a rebuild, and patches that are on by default apply as usual. Each build also records the app's patch list in `manifest.json`. When a later release adds a patch for that app that's **off by default**, the build turns it on and keeps it on. The build log shows it as `🆕 New patch for <app>: <name>`. Patches that existed at the first recorded build keep their default, universal patches (e.g. "Change package name") are never turned on this way, and a `-` rule, `exclude_patches` or `exclusive` always wins.
+**Developer patch defaults are preserved.** A new patch release triggers a rebuild, and patches enabled by the developer apply as usual. New optional patches stay disabled unless explicitly selected with `include_patches`, `patch_options`, or `+` rules. Choices automatically enabled by older builds are discarded, which avoids enabling mutually exclusive options such as the two Google Maps microG implementations. Each successful build still records available patch names in `manifest.json`.
+
+Scheduled builds require supported app versions by default and follow the CLI's recommended patch-coverage order. If a supported stock APK is unavailable, the build fails and retains the previous release artifact rather than trying a newer incompatible app. Version-independent support requires the CLI's explicit `Any` declaration for that package; missing compatibility is rejected. The patcher retains control over which default patches apply to each supported version, and zero-patch builds are rejected. `force` and `supported_only: false` remain explicit overrides for manual experimentation; neither is enabled by the scheduled configuration. The policy change triggers a one-time rebuild so existing artifacts are migrated to these defaults.
+
+Download and release-metadata requests retry transient HTTP 429/502/503/504 responses up to three attempts, respecting `Retry-After` when its delay is at most 60 seconds. Longer cooldowns fail the current run rather than retrying early.
 
 ---
 

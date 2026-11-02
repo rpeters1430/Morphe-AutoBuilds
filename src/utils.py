@@ -3,6 +3,7 @@ import os
 import re
 import shutil
 import time
+from email.utils import parsedate_to_datetime
 import zipfile
 import logging
 from typing import List, Optional
@@ -200,11 +201,11 @@ def get_highest_version(versions: list[str]) -> str | None:
 def get_supported_versions(
     package_name: str, cli: str, patches: str, include_experimental: bool = False
 ) -> Optional[list[str]]:
-    """App versions the patch bundle declares compatibility with, highest first.
+    """App versions in the CLI's recommended patch-coverage order.
 
-    [] means the CLI answered but named no versions (version-agnostic patches),
-    so the store's latest is safe to build. None means the CLI query itself
-    failed and compatibility is unknown; callers must not guess latest.
+    [] means the CLI explicitly reported "Any" for this package. None means
+    no compatible app support was reported or the query failed; callers must
+    not interpret either as permission to use the store's latest.
     """
     # Morphe CLI and ReVanced CLI have different list-versions syntax
     cli_name = Path(cli).name.lower()
@@ -212,12 +213,8 @@ def get_supported_versions(
     is_revanced_v6_or_newer = 'revanced-cli-6' in cli_name or 'revanced-cli-7' in cli_name or 'revanced-cli-8' in cli_name
 
     if is_morphe_cli:
-        # Morphe CLI docs officially describe `list-patches --with-packages --with-versions`
-        # (and the output tends to include more complete version information than
-        # `list-versions`, which may only show "most common" compatible versions).
-        #
-        # We still try `list-versions` first because it's lighter, but if it
-        # yields too little info we fall back to parsing `list-patches`.
+        # list-versions counts default-enabled patches. Do not supplement it
+        # with versions from disabled optional patches in list-patches.
         cmd = [
             'java', '-jar', cli,
             'list-versions',
@@ -255,7 +252,6 @@ def get_supported_versions(
     if '--include-experimental' in cmd and output and 'unknown option' in output.lower():
         logging.warning("This Morphe CLI doesn't support --include-experimental; listing stable versions only")
         cmd.remove('--include-experimental')
-        include_experimental = False  # so the list-patches fallback doesn't pass it either
         output = run_process(cmd, capture=True, silent=True, check=False)
 
     if not output:
@@ -274,12 +270,15 @@ def get_supported_versions(
         logging.warning(f"CLI returned error/usage output, cannot determine version")
         return None
 
-    if len(lines) <= 2:
-        logging.warning("Output has no version lines")
+    cleaned = [line.strip().removeprefix("INFO:").strip() for line in lines]
+    if f"Package name: {package_name}" not in cleaned:
+        logging.error("No compatible app support was reported for %s", package_name)
+        return None
+    if "Any" in cleaned:
         return []
 
     versions = []
-    for line in lines[2:]:
+    for line in cleaned:
         line = line.strip()
         if line and 'Any' not in line:
             # Parse version - may include "build XXX" suffix
@@ -295,37 +294,13 @@ def get_supported_versions(
                     version = f"{parts[0]} build {parts[2]}"
                 versions.append(version)
 
-    # If Morphe CLI only returned a tiny "most common" list (or nothing),
-    # attempt to derive a fuller candidate set from `list-patches`.
-    if is_morphe_cli and len(versions) <= 1:
-        try:
-            alt_cmd = [
-                "java", "-jar", cli,
-                "list-patches",
-                "--with-packages",
-                "--with-versions",
-                *(["--include-experimental"] if include_experimental else []),
-                "--patches", patches,
-            ]
-            alt_out = run_process(alt_cmd, capture=True, silent=True, check=False) or ""
-            derived: list[str] = []
-            for ln in alt_out.splitlines():
-                if package_name not in ln:
-                    continue
-                # Grab any versions mentioned on the same line as the package name.
-                for m in re.finditer(r"\d+(?:\.\d+)+(?:\(\d+\))?", ln):
-                    derived.append(m.group(0))
-            if derived:
-                versions.extend(derived)
-        except Exception:
-            pass
-
     if not versions:
-        logging.warning("No supported versions found")
-        return []
+        logging.error("No supported versions or explicit Any declaration for %s", package_name)
+        return None
 
-    # Sort highest -> lowest.
-    versions = sorted(set(versions), key=normalize_version, reverse=True)
+    # The CLI ranks versions by default patch coverage. A newer version can
+    # support fewer patches, so preserve that recommendation when deduplicating.
+    versions = list(dict.fromkeys(versions))
     logging.info(f"CLI parsed versions: {versions}")
     return versions
 
@@ -376,7 +351,7 @@ def list_app_patches(package_name: str, cli: str, patches: str) -> Optional[dict
 
 
 def get_supported_version(package_name: str, cli: str, patches: str) -> Optional[str]:
-    """Backwards compatible helper: returns the highest compatible version, if any."""
+    """Backwards compatible helper: returns the CLI's first recommended version."""
     versions = get_supported_versions(package_name, cli, patches)
     return versions[0] if versions else None
 
@@ -435,8 +410,35 @@ def gh_api_request(endpoint: str) -> dict:
         raise
 
 
+def get_with_retry(url: str, **kwargs):
+    """Retry transient GET failures without hammering release providers."""
+    kwargs.setdefault("timeout", 60)
+    for attempt in range(3):
+        response = session.get(url, **kwargs)
+        if response.status_code not in (429, 502, 503, 504) or attempt == 2:
+            return response
+        delay = 2 ** (attempt + 1)
+        retry_after = response.headers.get("Retry-After")
+        if retry_after:
+            try:
+                delay = max(0, float(retry_after))
+            except ValueError:
+                try:
+                    delay = max(0, parsedate_to_datetime(retry_after).timestamp() - time.time())
+                except (ValueError, TypeError, OverflowError):
+                    pass
+        # Do not retry earlier than the server permits or hold a runner for
+        # a long cooldown; let this run fail and the next schedule retry.
+        if delay > 60:
+            return response
+        logging.warning("Provider returned HTTP %s; retrying in %.1fs (%s/3)",
+                        response.status_code, delay, attempt + 1)
+        response.close()
+        time.sleep(delay)
+
+
 def fetch_json(url: str, headers: dict | None = None) -> dict | list:
-    response = session.get(url, headers=headers or {})
+    response = get_with_retry(url, headers=headers or {})
     response.raise_for_status()
     return response.json()
 
