@@ -270,7 +270,7 @@ Located in `patches/`. Example for `patches/youtube-morphe.txt`. Use `+` to forc
 
 Scheduled builds require supported app versions by default and follow the CLI's recommended patch-coverage order. If a supported stock APK is unavailable, the build fails and retains the previous release artifact rather than trying a newer incompatible app. Version-independent support requires the CLI's explicit `Any` declaration for that package; missing compatibility is rejected. The patcher retains control over which default patches apply to each supported version, and zero-patch builds are rejected. `force` and `supported_only: false` remain explicit overrides for manual experimentation; neither is enabled by the scheduled configuration. The policy change triggers a one-time rebuild so existing artifacts are migrated to these defaults.
 
-Download and release-metadata requests retry transient HTTP 429/502/503/504 responses up to three attempts, respecting `Retry-After` when its delay is at most 60 seconds. Longer cooldowns fail the current run rather than retrying early.
+Tool downloads and GitLab/Codeberg release-metadata requests retry transient HTTP 429/502/503/504 responses up to three attempts, respecting `Retry-After` when its delay is at most 60 seconds. Longer cooldowns fail the current run rather than retrying early.
 
 ---
 
@@ -427,4 +427,3 @@ Contributions to improve the toolchain or add support for new apps are welcome.
 **If you found this project helpful, please consider giving it a ⭐ Star.**  
 <br>
 **Made with 💜 by RookieZ**
-

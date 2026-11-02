@@ -49,7 +49,7 @@ class UpstreamPolicyTests(unittest.TestCase):
             self.assertIsNone(utils.get_supported_versions(
                 "example.app", "morphe-cli.jar", "patches.mpp"))
 
-    def test_pinned_version_must_be_supported_too(self):
+    def test_unsupported_provider_pin_is_a_source_miss(self):
         with tempfile.TemporaryDirectory() as directory, \
                 patch.object(downloader, "Path", side_effect=lambda *a: Path(directory, *a)), \
                 patch.object(utils, "get_supported_versions", return_value=["1.0"]), \
@@ -57,9 +57,36 @@ class UpstreamPolicyTests(unittest.TestCase):
             configs = Path(directory, "apps", "aptoide")
             configs.mkdir(parents=True)
             (configs / "example.json").write_text(json.dumps({"package": "example.app", "version": "2.0"}))
-            with self.assertRaises(downloader.UnknownPatchCompatibilityError):
+            self.assertEqual(
                 downloader.download_platform("example", "aptoide", "cli.jar", "patches.mpp",
-                                             supported_only=True)
+                                             supported_only=True),
+                (None, None, []),
+            )
+
+    def test_unsupported_build_version_override_still_fails(self):
+        with tempfile.TemporaryDirectory() as directory, \
+                patch.object(downloader, "Path", side_effect=lambda *a: Path(directory, *a)), \
+                patch.object(utils, "get_supported_versions", return_value=["1.0"]):
+            configs = Path(directory, "apps", "aptoide")
+            configs.mkdir(parents=True)
+            (configs / "example.json").write_text(json.dumps({"package": "example.app"}))
+            with self.assertRaises(downloader.UnknownPatchCompatibilityError):
+                downloader.download_platform(
+                    "example", "aptoide", "cli.jar", "patches.mpp",
+                    override_version="2.0", supported_only=True,
+                )
+
+    def test_unknown_provider_pin_compatibility_still_fails(self):
+        with tempfile.TemporaryDirectory() as directory, \
+                patch.object(downloader, "Path", side_effect=lambda *a: Path(directory, *a)), \
+                patch.object(utils, "get_supported_versions", return_value=None):
+            configs = Path(directory, "apps", "aptoide")
+            configs.mkdir(parents=True)
+            (configs / "example.json").write_text(json.dumps({"package": "example.app", "version": "2.0"}))
+            with self.assertRaises(downloader.UnknownPatchCompatibilityError):
+                downloader.download_platform(
+                    "example", "aptoide", "cli.jar", "patches.mpp", supported_only=True
+                )
 
     def test_cli_recommended_patch_coverage_order_is_preserved(self):
         output = ("INFO: Package name: example.app\nMost common compatible versions:\n"

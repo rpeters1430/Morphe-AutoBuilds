@@ -224,11 +224,23 @@ def download_platform(
             supported = utils.get_supported_versions(
                 config["package"], cli, patches, include_experimental=experimental
             )
-            if supported is None or (supported and (override_version or pinned) not in supported):
+            requested_version = override_version or pinned
+            if supported is None:
                 raise UnknownPatchCompatibilityError(
-                    f"Pinned version {override_version or pinned} for {app_name} is not "
-                    f"confirmed by the patch bundle (supported: {supported}); refusing to build"
+                    f"Cannot determine whether pinned version {requested_version} for {app_name} "
+                    "is supported; refusing to build"
                 )
+            if supported and requested_version not in supported:
+                if override_version:
+                    raise UnknownPatchCompatibilityError(
+                        f"Pinned version {requested_version} for {app_name} is not "
+                        f"confirmed by the patch bundle (supported: {supported}); refusing to build"
+                    )
+                logging.info(
+                    f"Skipping {platform} for {app_name}: provider-pinned version "
+                    f"{requested_version} is not patch-supported (supported: {supported})"
+                )
+                return None, None, []
         if override_version:
             candidates = [override_version]
         elif pinned:
