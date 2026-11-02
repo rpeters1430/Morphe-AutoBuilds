@@ -50,8 +50,8 @@
         },
         "supported_only": {
           "type": "boolean",
-          "description": "Only build app versions the patches list; never fall back to the store's latest.",
-          "default": false
+          "description": "Only build supported app versions, including pinned versions. Latest is allowed for confirmed version-agnostic patches.",
+          "default": true
         },
         "version": {
           "type": "string",

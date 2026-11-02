@@ -22,6 +22,52 @@ class BuildHealthTests(unittest.TestCase):
         os.chdir(self.tmp.name)
         self.addCleanup(os.chdir, old)
 
+    def test_policy_migration_rebuilds_previously_auto_enabled_artifacts(self):
+        entry = {"app_name": "google-maps", "source": "bearinmindcat", "arch": "arm64-v8a"}
+        key = "google-maps|bearinmindcat|arm64-v8a"
+        old = {**entry, "apk": "google-maps-arm64-v8a-bearinmindcat-v1.0.apk",
+               "built_version": "1.0", "config_version": "",
+               "source_sig": "sig|opts:supported",
+               "auto_patches": ["Add microG-RE support", "Add original microG support"]}
+        with patch.object(planner, "get_source_signature", return_value="sig"), \
+                patch.object(planner, "load_app_config_version", return_value=""), \
+                patch.object(planner, "fetch_recommended_version", return_value=""), \
+                patch.object(planner, "ONLY_APPS", set()), patch.object(planner, "FORCE_FULL", False):
+            matrix, _, _ = planner.plan_incremental([entry], {"entries": {key: old}}, [old["apk"]])
+        self.assertEqual(matrix, [{"app_name": "google-maps", "source": "bearinmindcat"}])
+
+    def test_planner_carries_forward_the_default_coverage_recommendation(self):
+        patches_json = {"patches": [
+            {"default": True, "compatiblePackages": [{"packageName": "example.app", "targets": [
+                {"version": "1.0", "isExperimental": False},
+                {"version": "2.0", "isExperimental": False},
+            ]}]},
+            {"default": True, "compatiblePackages": [{"packageName": "example.app", "targets": [
+                {"version": "1.0", "isExperimental": False},
+            ]}]},
+            {"default": False, "compatiblePackages": [{"packageName": "example.app", "targets": [
+                {"version": "2.0", "isExperimental": False},
+            ]}]},
+        ]}
+        recommended = planner._pick_recommended_target(patches_json, "example.app")
+        self.assertEqual(recommended, "1.0")
+
+        entry = {"app_name": "example", "source": "source", "arch": "universal"}
+        apk = "example-universal-source-v1.0.apk"
+        key = "example|source|universal"
+        old = {**entry, "apk": apk, "built_version": recommended,
+               "config_version": "", "source_sig": "sig"}
+        with patch.object(planner, "get_source_signature", return_value="sig"), \
+                patch.object(planner.build_config, "build_options_signature", return_value=""), \
+                patch.object(planner, "load_app_config_version", return_value=""), \
+                patch.object(planner, "fetch_recommended_version", return_value=recommended), \
+                patch.object(planner, "ONLY_APPS", set()), patch.object(planner, "FORCE_FULL", False):
+            matrix, carry_over, _ = planner.plan_incremental(
+                [entry], {"entries": {key: old}}, [apk]
+            )
+        self.assertEqual(matrix, [])
+        self.assertEqual(carry_over, [apk])
+
     def test_record_prefers_verified_version_and_carries_metadata(self):
         Path("build_meta").mkdir()
         meta = {"artifact": {"version_name": "actual", "package": "actual.package", "verified": True},

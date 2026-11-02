@@ -567,29 +567,27 @@ def _download_release_asset_json(asset_url: str) -> Optional[dict]:
 
 def _pick_recommended_target(patches_json: dict, package_name: str,
                              include_experimental: bool = False) -> str:
-    """Given a parsed patches-list.json and a package, return the highest
-    non-experimental supported version (i.e. the one the builder ships).
+    """Return the version with the greatest default-patch coverage for a package.
 
-    The upstream patches-list.json marks each compatiblePackages[].targets[]
-    entry with ``isExperimental``. The builder (via the Morphe/ReVanced CLI
-    `list-versions`, which is derived from this same data) picks the highest
-    target, preferring the *recommended* (isExperimental == false) one. We mirror
-    that exactly here so the planner's notion of "the current target version"
-    matches what the build job will actually emit.
+    The builder's CLI recommends versions by the number of enabled-by-default
+    patches that support them, preferring non-experimental targets unless
+    experimental versions were requested. Break ties by version, as before.
 
-    If no non-experimental target exists we fall back to the highest target of
-    any kind (some packages only have experimental targets) and finally to ''.
+    If no non-experimental default-patch target exists, fall back to targets of
+    any kind (some packages only have experimental targets), then to ''.
     """
     patches = patches_json.get("patches") if isinstance(patches_json, dict) else None
     if not isinstance(patches, list):
         return ""
 
-    stable: List[str] = []
-    any_kind: List[str] = []
+    stable_coverage: Dict[str, int] = {}
+    any_coverage: Dict[str, int] = {}
 
     for patch in patches:
-        if not isinstance(patch, dict):
+        if not isinstance(patch, dict) or not patch.get("default", True):
             continue
+        patch_any_versions = set()
+        patch_stable_versions = set()
         for pkg in patch.get("compatiblePackages") or []:
             if not isinstance(pkg, dict):
                 continue
@@ -601,15 +599,22 @@ def _pick_recommended_target(patches_json: dict, package_name: str,
                 ver = (tgt.get("version") or "").strip()
                 if not ver:
                     continue
-                any_kind.append(ver)
+                patch_any_versions.add(ver)
                 if tgt.get("isExperimental") is False:
-                    stable.append(ver)
+                    patch_stable_versions.add(ver)
+        for ver in patch_any_versions:
+            any_coverage[ver] = any_coverage.get(ver, 0) + 1
+        for ver in patch_stable_versions:
+            stable_coverage[ver] = stable_coverage.get(ver, 0) + 1
 
-    if include_experimental and any_kind:
-        return provider_utils.get_highest_version(any_kind) or ""
-    if stable:
-        return provider_utils.get_highest_version(stable) or ""
-    return ""
+    coverage = any_coverage if include_experimental else stable_coverage
+    if not coverage:
+        coverage = any_coverage
+    if not coverage:
+        return ""
+    return max(coverage, key=lambda version: (
+        coverage[version], provider_utils.normalize_version(version)
+    ))
 
 
 def fetch_recommended_version(app_name: str, source: str, settings: Optional[dict] = None) -> str:
