@@ -64,20 +64,22 @@ python morphe.py
 
 ### 🔄 Auto-Updates with Obtainium
 
-Every app ships in the same `latest` release, so each Obtainium entry needs a filter that picks out its own APK. The catalog sets this up for you:
+Obtainium entries from this repo read small static pages on GitHub Pages instead of the GitHub API. GitHub allows only 60 API requests an hour without a sign-in, so with ~100 apps the old GitHub-source entries hit "rate limit, try again in N minutes" on the first check. The Pages files have no such limit, and the APKs still download straight from the `latest` release.
 
 * **One app:** open the [App Catalog](https://rpeters1430.github.io/Morphe-AutoBuilds/) on your phone and tap **+ Obtainium** on the app's card.
 * **Every app:** download [`apps.json`](https://rpeters1430.github.io/Morphe-AutoBuilds/apps.json), then in Obtainium go to **Import/Export → Obtainium Import** and pick the file.
 
-Each entry comes with these Obtainium settings:
+How each entry works (source: **HTML**):
 
-| Setting | Value | Why |
+| Step | Page | What Obtainium does |
 | :--- | :--- | :--- |
-| Filter APKs by regular expression | Generated for the app, patch source, and available architectures | Matches future source-specific builds and exact attributed legacy filenames; excludes other apps and sources. |
-| Use latest asset upload as release date | on | The release tag is always `latest`, so the upload date of the app's own APK marks a new build. |
-| Use release date as version string | on | Lets Obtainium spot an update when only that app was rebuilt. |
+| 1 | `obtainium/<app>-<source>.html` | Lists one link per built architecture; **Filter links by architecture** picks the one for your device. |
+| 2 | `obtainium/<app>-<source>/<arch>.html` | Holds the single current APK link and its upload time. |
+| Version | Upload time, via **Use release date as version string** | The release tag is always `latest`, so the APK's upload time marks a new build, even when only patches changed. |
 
-> **Added an app before these settings existed?** If Obtainium lists other apps' APKs (e.g. Gboard or Instagram under YouTube) or never sees updates, delete the entry and add it again from the catalog, or set the three settings above by hand in the app's settings in Obtainium.
+The pages are regenerated after every build by the **Deploy App Catalog** workflow.
+
+> **Switching over from the old GitHub-source entries:** import the current `apps.json` again. Obtainium matches entries by package ID, so the import replaces each old entry in place. If you'd rather keep the old entries, add a GitHub personal access token under **Settings → GitHub** in Obtainium instead, which raises the limit to 5,000 requests an hour.
 
 ---
 

@@ -9,6 +9,8 @@ import re
 import subprocess
 import tempfile
 import datetime
+import html
+import shutil
 from pathlib import Path
 from typing import Any
 
@@ -26,6 +28,10 @@ APPS_DIR = REPO_ROOT / "apps"
 DATA_JSON_PATH = DOCS_DIR / "data.json"
 DATA_JS_PATH = DOCS_DIR / "data.js"
 OBTAINIUM_JSON_PATH = DOCS_DIR / "apps.json"
+# Static per-app pages Obtainium's HTML source reads instead of the GitHub API.
+OBTAINIUM_PAGES_DIR = DOCS_DIR / "obtainium"
+# ISO-8601 upload time written next to each APK link on the per-arch pages.
+OBTAINIUM_DATE_REGEX = r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z"
 
 # Package IDs of the patched APKs where the patches rename the app (GmsCore
 # support, Piko's X build), keyed by (app_name, source). Obtainium refuses to install an APK
@@ -114,6 +120,55 @@ def get_repo_slug() -> str:
     return DEFAULT_REPO
 
 
+def get_pages_base_url(repo_slug: str) -> str:
+    """GitHub Pages URL of the catalog, e.g. https://owner.github.io/repo/."""
+    if os.getenv("PORTAL_BASE_URL"):
+        return os.environ["PORTAL_BASE_URL"].rstrip("/") + "/"
+    owner, _, repo = repo_slug.partition("/")
+    return f"https://{owner.lower()}.github.io/{repo}/"
+
+
+def _page(title: str, body: str) -> str:
+    return ("<!DOCTYPE html>\n<html lang=\"en\"><head><meta charset=\"utf-8\">"
+            f"<meta name=\"robots\" content=\"noindex\"><title>{html.escape(title)}</title></head>\n"
+            f"<body>\n<h1>{html.escape(title)}</h1>\n<ul>\n{body}</ul>\n</body></html>\n")
+
+
+def write_obtainium_pages(key: str, display_name: str, app_assets: list[dict], base_url: str) -> str | None:
+    """Write the static pages one Obtainium entry polls; return the entry URL.
+
+    Obtainium's GitHub source calls api.github.com on every check, which is
+    limited to 60 requests an hour without a token, so a feed of ~100 apps
+    exhausts it in one refresh. GitHub Pages files have no such limit and
+    the APK links (github.com/.../releases/download/...) are not API calls.
+
+    Layout: obtainium/<key>.html links to one page per architecture; Obtainium
+    picks the device's architecture from those links, then reads the single
+    APK link and its upload time from obtainium/<key>/<arch>.html.
+    """
+    newest: dict[str, dict] = {}
+    for asset in app_assets:
+        current = newest.get(asset["arch"])
+        if current is None or (asset.get("uploaded_at") or "") > (current.get("uploaded_at") or ""):
+            newest[asset["arch"]] = asset
+    if not newest:
+        return None
+    arch_dir = OBTAINIUM_PAGES_DIR / key
+    arch_dir.mkdir(parents=True, exist_ok=True)
+    index_items = ""
+    for arch, asset in sorted(newest.items()):
+        uploaded = asset.get("uploaded_at") or ""
+        url = html.escape(asset["download_url"], quote=True)
+        name = html.escape(asset["filename"])
+        (arch_dir / f"{arch}.html").write_text(_page(
+            f"{display_name} ({arch})",
+            f'<li><a href="{url}">{name}</a> <time>{html.escape(uploaded)}</time></li>\n'), encoding="utf-8")
+        arch_url = html.escape(f"{base_url}obtainium/{key}/{arch}.html", quote=True)
+        index_items += f'<li><a href="{arch_url}">{html.escape(arch)}</a></li>\n'
+    (OBTAINIUM_PAGES_DIR / f"{key}.html").write_text(_page(display_name, index_items), encoding="utf-8")
+    return f"{base_url}obtainium/{key}.html"
+
+
 def fetch_release_assets(repo_slug: str) -> tuple[dict[str, Any], str]:
     """Fetch assets from the 'latest' release using gh CLI or fallback."""
     try:
@@ -191,6 +246,10 @@ def parse_app_packages() -> dict[str, str]:
 def generate_portal_assets(console=None) -> None:
     DOCS_DIR.mkdir(parents=True, exist_ok=True)
     repo_slug = get_repo_slug()
+    base_url = get_pages_base_url(repo_slug)
+    # Rebuilt from scratch so removed apps and arches don't leave stale pages.
+    shutil.rmtree(OBTAINIUM_PAGES_DIR, ignore_errors=True)
+    OBTAINIUM_PAGES_DIR.mkdir(parents=True, exist_ok=True)
 
     if console:
         console.print(f"[cyan]Generating portal metadata for repo: [bold]{repo_slug}[/bold]...[/cyan]")
@@ -286,35 +345,34 @@ def generate_portal_assets(console=None) -> None:
         if len(actual_packages) == 1:
             pkg = next(iter(actual_packages))
 
-        # Only this app's APKs, not e.g. youtube-music's when app_name is youtube
-        # Future immutable builds encode the real source, even when several
-        # sources share a legacy output name. Include only available arches
-        # and exactly the legacy assets attributed above, never every old APK.
-        arch_alt = "|".join(sorted({a["arch"] for a in app_assets})) or "(?!)"
-        future = f"{_regex_literal(app_name)}-({arch_alt})-{_regex_literal(source)}-r[0-9a-f]{{16}}-v.*\\.apk"
-        legacy = [_regex_literal(a["filename"]) for a in app_assets if not re.fullmatch(future, a["filename"])]
-        apk_filter = "^(?:" + "|".join([future, *legacy]) + ")$"
-
         # Obtainium app JSON, used for both the deep link
         # (obtainium://app/{...}) and the bulk import feed. Obtainium only reads
-        # filters from additionalSettings, which must be a JSON-encoded string.
-        # Every app shares the one 'latest' release, so its tag can't tell
-        # versions apart; the newest matching asset's upload date does.
-        obtainium_config = {
-            "id": pkg,
-            "url": f"https://github.com/{repo_slug}",
-            "author": repo_slug.split("/")[0],
-            "name": display_name,
-            "additionalSettings": json.dumps({
-                "apkFilterRegEx": apk_filter,
-                "invertAPKFilter": False,
-                "useLatestAssetDateAsReleaseDate": True,
-                "releaseDateAsVersion": True,
-            }),
-        }
-
-        if len(actual_packages) > 1:
-            obtainium_config = None
+        # settings from additionalSettings, which must be a JSON-encoded string.
+        # The HTML source polls static GitHub Pages files (no API rate limit).
+        # Only this entry's attributed APKs are listed there, so no APK filter
+        # is needed. Every app shares the one 'latest' release, so the upload
+        # time printed next to the APK link is what marks a new build.
+        key = re.sub(r"[^A-Za-z0-9._-]", "_", f"{app_name}-{source}")
+        page_url = None if len(actual_packages) > 1 else write_obtainium_pages(key, display_name, app_assets, base_url)
+        obtainium_config = None
+        if page_url:
+            obtainium_config = {
+                "id": pkg,
+                "url": page_url,
+                "author": repo_slug.split("/")[0],
+                "name": display_name,
+                "overrideSource": "HTML",
+                "additionalSettings": json.dumps({
+                    "intermediateLink": [{
+                        "customLinkFilterRegex": f"/obtainium/{_regex_literal(key)}/[^/]+\\.html$",
+                        "autoLinkFilterByArch": True,
+                    }],
+                    "customLinkFilterRegex": "\\.apk$",
+                    "releaseDateRegEx": OBTAINIUM_DATE_REGEX,
+                    "versionDetection": False,
+                    "releaseDateAsVersion": True,
+                }),
+            }
 
         app_entry = {
             "name": display_name,
@@ -338,7 +396,7 @@ def generate_portal_assets(console=None) -> None:
         apps_portal_data.append(app_entry)
 
         # Feed item for Obtainium bulk import
-        if enabled and app_assets and len(actual_packages) <= 1:
+        if enabled and obtainium_config:
             obtainium_apps.append(obtainium_config)
 
     apps_portal_data.sort(key=lambda a: (a["name"].casefold(), a["source"].casefold()))

@@ -18,6 +18,8 @@ class PortalHealthTests(unittest.TestCase):
                     patch.object(portal, "DATA_JSON_PATH", root / "data.json"), \
                     patch.object(portal, "DATA_JS_PATH", root / "data.js"), \
                     patch.object(portal, "OBTAINIUM_JSON_PATH", root / "apps.json"), \
+                    patch.object(portal, "OBTAINIUM_PAGES_DIR", root / "obtainium"), \
+                    patch.dict(portal.os.environ, {"PORTAL_BASE_URL": "https://owner.github.io/repo"}), \
                     patch.object(portal, "get_repo_slug", return_value="owner/repo"), \
                     patch.object(portal.build_config, "iter_entries", return_value=[
                         {"enabled": True, "patches_channel": "stable", "patch_options": {}, "arches": ["universal"], **e}
@@ -26,6 +28,7 @@ class PortalHealthTests(unittest.TestCase):
                         {"assets": assets} if release is None else release, "2026-10-18")), \
                     patch.object(portal, "fetch_release_manifest", return_value=manifest or {}):
                 portal.generate_portal_assets()
+            self.pages = {str(f.relative_to(root)): f.read_text() for f in (root / "obtainium").rglob("*.html")}
             return json.loads((root / "data.json").read_text()), json.loads((root / "apps.json").read_text())
 
     def test_missing_assets_never_get_fabricated_downloads_or_feed_entries(self):
@@ -101,18 +104,49 @@ class PortalHealthTests(unittest.TestCase):
         self.assertIsNone(data["apps"][0]["obtainium_config"])
         self.assertEqual(feed["apps"], [])
 
-    def test_obtainium_matches_only_attributed_legacy_assets_and_new_source_arches(self):
+    def test_obtainium_pages_list_only_attributed_assets(self):
         name = "youtube-universal-morphe-patches-v1.0.apk"
         manifest = {"entries": {"youtube|adobo|universal": {"apk": name}}}
-        data, _ = self.generate([{"app_name": "youtube", "source": "adobo"}],
-            [{"name": name, "url": "https://github.com/download"}], manifest)
-        pattern = json.loads(data["apps"][0]["obtainium_config"]["additionalSettings"])["apkFilterRegEx"]
-        self.assertIsNotNone(re.fullmatch(pattern, name))
-        self.assertIsNotNone(re.fullmatch(pattern, "youtube-universal-adobo-r0123456789abcdef-v2.0.apk"))
-        self.assertIsNone(re.fullmatch(pattern, "youtube-arm64-v8a-adobo-r0123456789abcdef-v2.0.apk"))
-        self.assertIsNone(re.fullmatch(pattern, "youtube-universal-Hoo-r0123456789abcdef-v2.0.apk"))
-        self.assertIsNone(re.fullmatch(pattern, "youtube-universal-morphe-patches-v0.9.apk"))
+        data, feed = self.generate([{"app_name": "youtube", "source": "adobo"}],
+            [{"name": name, "url": f"https://github.com/o/r/releases/download/latest/{name}"},
+             {"name": "youtube-universal-Hoo-r0123456789abcdef-v2.0.apk", "url": "https://github.com/x"}], manifest)
+        self.assertEqual(sorted(self.pages), ["obtainium/youtube-adobo.html", "obtainium/youtube-adobo/universal.html"])
+        arch_page = self.pages["obtainium/youtube-adobo/universal.html"]
+        self.assertIn(name, arch_page)
+        self.assertNotIn("Hoo", arch_page)
+        self.assertEqual(feed["apps"][0]["url"], "https://owner.github.io/repo/obtainium/youtube-adobo.html")
 
+    def test_obtainium_feed_uses_static_pages_not_github_api(self):
+        entries = [{"app_name": "youtube-music", "source": "morphe", "arches": ["arm64-v8a", "armeabi-v7a"]}]
+        assets = []
+        for arch, when in (("arm64-v8a", "2026-11-12T06:10:00Z"), ("armeabi-v7a", "2026-11-13T06:20:00Z")):
+            name = f"youtube-music-{arch}-morphe-r0123456789abcdef-v8.0.apk"
+            assets.append({"name": name, "url": f"https://github.com/o/r/releases/download/latest/{name}",
+                           "updatedAt": when})
+        data, feed = self.generate(entries, assets)
+        config = feed["apps"][0]
+        self.assertEqual(config, data["apps"][0]["obtainium_config"])
+        self.assertEqual(config["overrideSource"], "HTML")
+        self.assertNotIn("api.github.com", json.dumps(config))
+        settings = json.loads(config["additionalSettings"])
+        self.assertTrue(settings["releaseDateAsVersion"])
+        self.assertFalse(settings["versionDetection"])
+
+        # Intermediate step: the app page links to one page per architecture,
+        # and Obtainium's arch filter matches the arch name in those URLs.
+        step = settings["intermediateLink"][0]
+        self.assertTrue(step["autoLinkFilterByArch"])
+        index = self.pages["obtainium/youtube-music-morphe.html"]
+        arch_links = re.findall(r'href="([^"]+)"', index)
+        self.assertEqual([u for u in arch_links if re.search(step["customLinkFilterRegex"], u)], [
+            "https://owner.github.io/repo/obtainium/youtube-music-morphe/arm64-v8a.html",
+            "https://owner.github.io/repo/obtainium/youtube-music-morphe/armeabi-v7a.html"])
+
+        # Final step: one APK link per arch page, with its own upload time.
+        page = self.pages["obtainium/youtube-music-morphe/armeabi-v7a.html"]
+        apk_links = [u for u in re.findall(r'href="([^"]+)"', page) if re.search(settings["customLinkFilterRegex"], u)]
+        self.assertEqual(apk_links, [assets[1]["url"]])
+        self.assertEqual(re.findall(settings["releaseDateRegEx"], page), ["2026-11-13T06:20:00Z"])
 
 if __name__ == "__main__":
     unittest.main()
