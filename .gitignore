@@ -4,3 +4,6 @@ NUL
 build_meta/
 build_records/
 verified-apks/
+
+# Generated at deploy time by scripts/generate_portal_data.py
+docs/obtainium/
