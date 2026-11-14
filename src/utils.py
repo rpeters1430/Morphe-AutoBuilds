@@ -46,6 +46,23 @@ def parse_header(line):
             pdict[name] = value
     return key, pdict
 
+# Release side files that share the patch bundle's extension but hold no
+# patches (e.g. Gradle's patches-1.3.0-javadoc.mpp / patches-1.3.0-sources.mpp).
+PATCH_SIDE_FILE_MARKERS = ["-javadoc", "-sources"]
+
+
+def find_patches_file(files: list[Path], suffix: str) -> Path | None:
+    """Pick the patch bundle with the given suffix, skipping javadoc/sources jars."""
+    # Filter here: find_file retries without its exclude list when nothing matches.
+    candidates = [f for f in files if not is_patch_side_file(f)]
+    return find_file(candidates, contains="patches", suffix=suffix) or find_file(candidates, suffix=suffix)
+
+
+def is_patch_side_file(file: Path) -> bool:
+    name = file.name.lower()
+    return any(marker in name for marker in PATCH_SIDE_FILE_MARKERS)
+
+
 def find_file(files: list[Path], prefix: str = None, suffix: str = None, contains: str = None, exclude: list = None) -> Path | None:
     """Find a file with various matching criteria"""
     if exclude is None:

@@ -337,18 +337,17 @@ def run_build(app_name: str, source: str, arch: str = "universal", settings: dic
         
         if not cli:
             cli = utils.find_file(download_files, suffix=".jar")
-        patches = utils.find_file(download_files, contains="patches", suffix=".mpp")
-        if not patches:
-            # Fallback to any .mpp file
-            patches = utils.find_file(download_files, suffix=".mpp")
+        patches = utils.find_patches_file(download_files, ".mpp")
     else:
         # Find ReVanced files
         cli = utils.find_file(download_files, contains="revanced-cli", suffix=".jar")
-        patches = utils.find_file(download_files, contains="patches", suffix=".rvp")
-        
+        patches = utils.find_patches_file(download_files, ".rvp")
+
         if not patches:
             # Try .jar extension for patches
-            patches = utils.find_file(download_files, contains="patches", suffix=".jar")
+            patches = utils.find_file(
+                [f for f in download_files if not utils.is_patch_side_file(f)], contains="patches", suffix=".jar"
+            )
 
     # Validate tools
     if not cli:
