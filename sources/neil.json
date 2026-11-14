@@ -1,0 +1,15 @@
+[
+    {
+      "name": "neil-morphe-patches"
+    },
+    {
+      "user": "MorpheApp",
+      "repo": "morphe-cli",
+      "tag": "latest"
+    },
+    {
+      "user": "nm-nvan",
+      "repo": "Neil-Morphe-Patches",
+      "tag": "latest"
+    }
+]

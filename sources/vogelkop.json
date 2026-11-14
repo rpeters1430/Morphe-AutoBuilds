@@ -1,0 +1,15 @@
+[
+    {
+      "name": "vogelkop-patches"
+    },
+    {
+      "user": "MorpheApp",
+      "repo": "morphe-cli",
+      "tag": "latest"
+    },
+    {
+      "user": "maniesh-NR",
+      "repo": "Vogelkop-MorphePatches",
+      "tag": "latest"
+    }
+]

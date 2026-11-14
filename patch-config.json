@@ -79,10 +79,6 @@
       "source": "Hoo"
     },
     {
-      "app_name": "snorelab",
-      "source": "Hoo"
-    },
-    {
       "app_name": "ventusky",
       "source": "Hoo"
     },
@@ -113,10 +109,6 @@
       "source": "Hoo"
     },
     {
-      "app_name": "messenger",
-      "source": "hushmessenger"
-    },
-    {
       "app_name": "photomath",
       "source": "devanced",
       "enabled": false
@@ -142,15 +134,7 @@
       "source": "Hoo"
     },
     {
-      "app_name": "aiocal",
-      "source": "Hoo"
-    },
-    {
       "app_name": "fotmob",
-      "source": "Hoo"
-    },
-    {
-      "app_name": "hellochinese",
       "source": "Hoo"
     },
     {
@@ -160,10 +144,6 @@
     },
     {
       "app_name": "wallcraft",
-      "source": "Hoo"
-    },
-    {
-      "app_name": "bussu",
       "source": "Hoo"
     },
     {
@@ -221,20 +201,12 @@
       "source": "Hoo"
     },
     {
-      "app_name": "cake",
-      "source": "Hoo"
-    },
-    {
       "app_name": "eggbun",
       "source": "Hoo",
       "enabled": false
     },
     {
       "app_name": "lingory",
-      "source": "Hoo"
-    },
-    {
-      "app_name": "teuida",
       "source": "Hoo"
     },
     {
@@ -251,10 +223,6 @@
       "source": "rushiranpise-dev"
     },
     {
-      "app_name": "calistree",
-      "source": "brosssh"
-    },
-    {
       "app_name": "webster",
       "source": "Hoo"
     },
@@ -269,10 +237,6 @@
     {
       "app_name": "telegram",
       "source": "rushiranpise-dev"
-    },
-    {
-      "app_name": "park4night",
-      "source": "brosssh"
     },
     {
       "app_name": "komoot",
@@ -296,16 +260,7 @@
       "source": "paresh"
     },
     {
-      "app_name": "crex",
-      "source": "paresh",
-      "supported_only": true
-    },
-    {
       "app_name": "documentscanner",
-      "source": "paresh"
-    },
-    {
-      "app_name": "eyecon",
       "source": "paresh"
     },
     {
@@ -340,10 +295,6 @@
       "app_name": "alarmo",
       "source": "paresh",
       "enabled": false
-    },
-    {
-      "app_name": "vn",
-      "source": "paresh"
     },
     {
       "app_name": "splitwise",
@@ -418,6 +369,9 @@
         "Remove promotional banners",
         "Network privacy",
         "Disable telemetry & federated learning"
+      ],
+      "exclude_patches": [
+        "Always incognito mode"
       ]
     },
     {
@@ -502,8 +456,36 @@
       "supported_only": true
     },
     {
-      "app_name": "aiscore",
-      "source": "rushiranpise"
+      "app_name": "waze",
+      "source": "bearinmindcat"
+    },
+    {
+      "app_name": "linkedin",
+      "source": "badfella"
+    },
+    {
+      "app_name": "walmart",
+      "source": "semicoloncolonel"
+    },
+    {
+      "app_name": "retailmenot",
+      "source": "semicoloncolonel"
+    },
+    {
+      "app_name": "npr",
+      "source": "semicoloncolonel"
+    },
+    {
+      "app_name": "cnn",
+      "source": "semicoloncolonel"
+    },
+    {
+      "app_name": "thescore",
+      "source": "neil"
+    },
+    {
+      "app_name": "opera-gx",
+      "source": "vogelkop"
     }
   ]
 }

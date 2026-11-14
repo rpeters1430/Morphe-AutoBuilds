@@ -24,7 +24,6 @@ jobs:
           echo '{"org":"facebook-2","name":"facebook","type":"APK","arch":"universal","dpi":"nodpi","package":"com.facebook.katana","version":""}' > apps/apkmirror/facebook.json
           echo '{"org":"duolingo","name":"duolingo","type":"APK","arch":"universal","dpi":"nodpi","package":"com.duolingo","version":""}' > apps/apkmirror/duolingo.json
           echo '{"org":"google-inc","name":"google-news","type":"APK","arch":"universal","dpi":"nodpi","package":"com.google.android.apps.magazines","version":""}' > apps/apkmirror/google-news.json
-          echo '{"org":"facebook-2","name":"messenger","type":"APK","arch":"universal","dpi":"nodpi","package":"com.facebook.orca","version":""}' > apps/apkmirror/messenger.json
           echo '{"org":"adobe","name":"lightroom","type":"APK","arch":"universal","dpi":"nodpi","package":"com.adobe.lrmobile","version":""}' > apps/apkmirror/lightroom.json
           echo '{"org":"photomath","name":"photomath","type":"APK","arch":"universal","dpi":"nodpi","package":"com.microblink.photomath","version":""}' > apps/apkmirror/photomath.json
           echo '{"org":"pixiv","name":"pixiv","type":"APK","arch":"universal","dpi":"nodpi","package":"jp.pxv.android","version":""}' > apps/apkmirror/pixiv.json
@@ -43,7 +42,6 @@ jobs:
           echo '{"name":"facebook","package":"com.facebook.katana","version":""}' > apps/apkpure/facebook.json
           echo '{"name":"duolingo","package":"com.duolingo","version":""}' > apps/apkpure/duolingo.json
           echo '{"name":"google-news","package":"com.google.android.apps.magazines","version":""}' > apps/apkpure/google-news.json
-          echo '{"name":"messenger","package":"com.facebook.orca","version":""}' > apps/apkpure/messenger.json
           echo '{"name":"lightroom","package":"com.adobe.lrmobile","version":""}' > apps/apkpure/lightroom.json
           echo '{"name":"photomath","package":"com.microblink.photomath","version":""}' > apps/apkpure/photomath.json
           echo '{"name":"pixiv","package":"jp.pxv.android","version":""}' > apps/apkpure/pixiv.json
@@ -62,7 +60,6 @@ jobs:
           echo '{"name":"facebook","package":"com.facebook.katana","version":""}' > apps/uptodown/facebook.json
           echo '{"name":"duolingo","package":"com.duolingo","version":""}' > apps/uptodown/duolingo.json
           echo '{"name":"google-news","package":"com.google.android.apps.magazines","version":""}' > apps/uptodown/google-news.json
-          echo '{"name":"messenger","package":"com.facebook.orca","version":""}' > apps/uptodown/messenger.json
           echo '{"name":"lightroom","package":"com.adobe.lrmobile","version":""}' > apps/uptodown/lightroom.json
           echo '{"name":"photomath","package":"com.microblink.photomath","version":""}' > apps/uptodown/photomath.json
           echo '{"name":"pixiv","package":"jp.pxv.android","version":""}' > apps/uptodown/pixiv.json
