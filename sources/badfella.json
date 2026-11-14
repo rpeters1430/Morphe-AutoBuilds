@@ -1,0 +1,15 @@
+[
+    {
+      "name": "badfella-patches"
+    },
+    {
+      "user": "MorpheApp",
+      "repo": "morphe-cli",
+      "tag": "latest"
+    },
+    {
+      "user": "XBadFellaX",
+      "repo": "BadFella-Patches",
+      "tag": "latest"
+    }
+]
