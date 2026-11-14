@@ -131,5 +131,22 @@ class PatchPipelineTests(unittest.TestCase):
             self.assertIn("last_success_at", data)
 
 
+class PatchFileSelectionTests(unittest.TestCase):
+    def test_skips_javadoc_and_sources_bundles(self):
+        # Vogelkop's release lists these side files ahead of the real bundle.
+        files = [
+            Path("morphe-desktop-2.1.1-all.jar"),
+            Path("patches-1.3.0-javadoc.mpp"),
+            Path("patches-1.3.0-sources.mpp"),
+            Path("patches-1.3.0.mpp"),
+            Path("SHA256SUMS.txt"),
+        ]
+        self.assertEqual(utils.find_patches_file(files, ".mpp"), Path("patches-1.3.0.mpp"))
+
+    def test_side_files_alone_are_not_used(self):
+        files = [Path("patches-1.3.0-javadoc.mpp"), Path("patches-1.3.0-sources.mpp")]
+        self.assertIsNone(utils.find_patches_file(files, ".mpp"))
+
+
 if __name__ == "__main__":
     unittest.main()
